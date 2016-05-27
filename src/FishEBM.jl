@@ -3,7 +3,7 @@
   File: FishEBM.jl
   Justin Angevaare, Devin Rose
   Module definition for an agent-based model
-  May 2015
+  Created: May 2015
 """
 
 module FishEBM
