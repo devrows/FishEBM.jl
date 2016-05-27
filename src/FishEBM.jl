@@ -45,11 +45,8 @@ module FishEBM
 
     #include types.jl in the module first, types are used in various .jl files
     include("types.jl")
-    include("agent_stock_interaction.jl")
     include("agents.jl")
     include("environment.jl")
     include("simulate.jl")
-    include("simulationResults.jl")
-    include("stock.jl")
     include("utilities.jl")
 end
