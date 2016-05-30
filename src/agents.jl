@@ -43,7 +43,7 @@ end
 #Add a function for getStageVector(::EnviroAgent, ::AgentAssumptions, curr_week::Int64)
 
 #Return: Int64
-function findCurrentStage(current_age::Int64, growth_age::Vector)
+function findCurrentStage(current_week::Int64, spawn_week::Int64, growth_age::Vector)
   """
     Description: Function used to find the current life stage of a cohort from
       the current age using the agent assumptions growth vector.
@@ -55,6 +55,7 @@ function findCurrentStage(current_age::Int64, growth_age::Vector)
   #Initialize the life stage number to 4
   currentStage = 4
   q = length(growth_age)-1
+  current_age = current_week - spawn_week
 
   #Most cohorts are likely to be adults, thus check stages from old to young
   while q > 0 && current_age < growth_age[q]
@@ -104,6 +105,49 @@ function injectAgents!(agent_db::Vector, spawn_agents::Vector, new_stock::Int64,
   return agent_db
 end
 
+#Return: Vector (acts directly on agent_db)
+function kill!(agent_db::Vector, e_a::EnvironmentAssumptions, a_a::AgentAssumptions, current_week::Int64)
+  """
+    Description:  This function generates a mortality based on the stage of the
+    fish and its corresponding natural mortality and its location within the
+    habitat as described in EnvironmentAssumptions.
+
+    Precondition: None
+
+    Last update: May 2016
+  """
+  classLength = length((agent_db[1]).weekNum)
+
+  for i = 1:length(agent_db)
+    #Check if class is empty. If not empty, continue with kill function. Otherwise skip to next agent
+    if (isEmpty(agent_db[i]) == false)
+      for j = 1:classLength
+
+        #current_age = current_week - agent_db[i].weekNum[j]
+        stage = findCurrentStage(current_week, agent_db[i].weekNum[j], a_a.growth)
+        if agent_db[i].alive[j] > 0
+
+          habitat = e_a.habitat[agent_db[i].locationID]
+
+          #Number of fish killed follows binomial distribution with arguments of number of fish alive
+          #and natural mortality in the form of a probability
+          killed = rand(Binomial(agent_db[i].alive[j], a_a.naturalmortality[habitat, stage]))
+          agent_db[i].killed[stage] += killed #This SHOULD add the number of killed fish to the vector, but doesn't...
+          agent_db[i].alive[j] -= killed
+          if agent_db[i].alive[j] > 0
+            if in(agent_db[i].locationID, e_a.risk)
+              killed = rand(Binomial(agent_db[i].alive[j], a_a.extramortality[stage]))
+              agent_db[i].killed[stage] += killed
+              agent_db[i].alive[j] -= killed
+            end
+          end
+        end
+      end
+    end
+  end
+
+  return agent_db
+end
 
 #Return: operates directly on age_db
 function removeEmptyClass!(age_db::Vector)
