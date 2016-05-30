@@ -19,6 +19,7 @@ module FishEBM
     findCurrentStage,
     injectAgents!,
     kill!,
+    move!,
     removeEmptyClass!,
 
     # environment.jl functions

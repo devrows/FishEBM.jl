@@ -109,8 +109,8 @@ end
 function kill!(agent_db::Vector, e_a::EnvironmentAssumptions, a_a::AgentAssumptions, current_week::Int64)
   """
     Description:  This function generates a mortality based on the stage of the
-    fish and its corresponding natural mortality and its location within the
-    habitat as described in EnvironmentAssumptions.
+      fish and its corresponding natural mortality and its location within the
+      habitat as described in EnvironmentAssumptions.
 
     Precondition: None
 
@@ -148,6 +148,86 @@ function kill!(agent_db::Vector, e_a::EnvironmentAssumptions, a_a::AgentAssumpti
 
   return agent_db
 end
+
+
+#Returns: operates directly on agent_db
+function move!(agent_db::Vector, agent_a::AgentAssumptions, enviro_types::Array, current_week::Int64)
+  """
+    Description: This function uses known information from the environment
+      surrounding each agent as well as known movements to move agents around
+      the environment during runtime.
+
+    Precondition: Movement autonomy must be between 0 and 1.
+
+    Last update: May 2016
+  """
+  @assert(0.<= AgentAssumptions.autonomy[stage] <=1., "Autonomy level must be between 0 and 1")
+
+  #put this in environment assumptions when running AgentDB()
+  idToAgentNum = Array(Int64, length(agent_db))
+  for age = 1:length(agent_db)
+    idToAgentNum[age] = agent_db[age].locationID
+  end
+
+  lifeStages = Array(Int64, length(agent_db[1].alive)); lifeStages[:] = 0;
+  totalHeight = size(enviro_a.habitat)[1]
+
+  stageWeeks = [agent_a.growth[4], agent_a.growth[3], agent_a.growth[2], agent_a.growth[1]]
+
+  #find the age and stage of each current cohort
+  for m = 1:length(lifeStages)
+    lifeStages[m] = findCurrentStage(current_week, agent_db[1].weekNum[m], agent_a.growth)
+  end
+
+  #For each agent
+  for n = 1:length(agent_db)
+    #simply the location id of the enviro agent
+    id = agent_db[n].locationID
+
+    #Check if the enviro agent is empty before preceeding to movement prep
+    if isEmpty(agent_db[n]) == false
+      #find local movement avalibility
+      moveChoices = Array(Float64, 9)
+      moveChoices = [
+        id-totalHeight-1, id-1, id+totalHeight-1,
+        id-totalHeight, id, id+totalHeight,
+        id-totalHeight+1, id+1, id+totalHeight+1]
+
+      moveChoices = hcat(moveChoices,[1,2,3,4,5,6,7,8,9])
+
+      #remove all non water choices
+      moveChoices = moveChoices[enviro_a.habitat[moveChoices[:,1]] .> 0, :]
+
+      #for each cohort in the agent database
+      for cohort = 1:length(lifeStages)
+        stage = lifeStages[cohort]
+        choices = deepcopy(moveChoices)
+
+        #match the moveChoices with the corresponding movement array
+        for moveNum = 1:size(choices)[1]
+          choices[moveNum, 2] = (agent_a.movement[stage])[choices[moveNum, 2]]
+        end
+
+        #Match natural mortality rate by location, habitat type, and fish age
+        choices = hcat(choices, 1-agent_a.naturalmortality[enviro_a.habitat[choices[:,1]], stage])
+
+        #Normalize the choices
+        choices[:,2]=choices[:,2]/sum(choices[:,2])
+        choices[:,3]=choices[:,3]/sum(choices[:,3])
+
+        moveDistrib = Multinomial(1, choices[:,2]*(1-agent_a.autonomy[stage]) + choices[:,3]*(agent_a.autonomy[stage]))
+
+        for aliveAges = 1:agent_db[n].alive[cohort]
+          tester = round(Int, (choices[findfirst(rand(moveDistrib)), 1]))
+          newAgentNum = findfirst(idToAgentNum, tester)
+          agent_db[n].alive[cohort] -= 1
+          agent_db[newAgentNum].alive[cohort] += 1
+        end #for alive
+      end #for cohort
+    end #if empty
+  end #for agent
+end
+
 
 #Return: operates directly on age_db
 function removeEmptyClass!(age_db::Vector)
