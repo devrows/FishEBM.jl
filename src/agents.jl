@@ -151,7 +151,8 @@ end
 
 
 #Returns: operates directly on agent_db
-function move!(agent_db::Vector, agent_a::AgentAssumptions, enviro_types::Array, current_week::Int64)
+function move!(agent_db::Vector, agent_a::AgentAssumptions,
+  enviro_a::EnvironmentAssumptions, current_week::Int64)
   """
     Description: This function uses known information from the environment
       surrounding each agent as well as known movements to move agents around
@@ -161,7 +162,7 @@ function move!(agent_db::Vector, agent_a::AgentAssumptions, enviro_types::Array,
 
     Last update: May 2016
   """
-  @assert(0.<= AgentAssumptions.autonomy[stage] <=1., "Autonomy level must be between 0 and 1")
+  #@assert(0.<= agent_a.autonomy[stage] <=1., "Autonomy level for stage $stage must be between 0 and 1")
 
   #put this in environment assumptions when running AgentDB()
   idToAgentNum = Array(Int64, length(agent_db))
