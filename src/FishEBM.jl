@@ -21,6 +21,7 @@ module FishEBM
     spawn!,
     getAdultPopulation,
     kill!,
+    move!,
     removeEmptyClass!,
 
     # environment.jl functions
