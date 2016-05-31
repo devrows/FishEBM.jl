@@ -214,7 +214,8 @@ function kill!(agent_db::Vector, e_a::EnvironmentAssumptions, a_a::AgentAssumpti
 end
 
 #Returns: operates directly on agent_db
-function move!(agent_db::Vector, agent_a::AgentAssumptions, enviro_types::Array, enviro_a::EnvironmentAssumptions, current_week::Int64)
+function move!(agent_db::Vector, agent_a::AgentAssumptions,
+  enviro_a::EnvironmentAssumptions, current_week::Int64)
   """
     Description: This function uses known information from the environment
       surrounding each agent as well as known movements to move agents around
@@ -222,9 +223,9 @@ function move!(agent_db::Vector, agent_a::AgentAssumptions, enviro_types::Array,
     Precondition: Movement autonomy must be between 0 and 1.
     Last update: May 2016
   """
-  #@assert(0.<= AgentAssumptions.autonomy[stage] <=1., "Autonomy level must be between 0 and 1")
+  #@assert(0.<= agent_a.autonomy[stage] <=1., "Autonomy level for stage $stage must be between 0 and 1")
 
-  #put this in environment assumptions when running AgentDB()
+  #put this in environment assumptions when running initEnvironment()
   idToAgentNum = Array(Int64, length(agent_db))
   for age = 1:length(agent_db)
     idToAgentNum[age] = agent_db[age].locationID
