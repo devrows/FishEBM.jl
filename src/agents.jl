@@ -37,11 +37,6 @@ function AgentDB(enviro::EnvironmentAssumptions)
 end
 
 
-#=
-  Tweak this to find the current stage from the current_week and spawn_week
-=#
-#Add a function for getStageVector(::EnviroAgent, ::AgentAssumptions, curr_week::Int64)
-
 #Return: Int64
 function findCurrentStage(current_week::Int64, spawn_week::Int64, growth_age::Vector)
   """
@@ -65,6 +60,9 @@ function findCurrentStage(current_week::Int64, spawn_week::Int64, growth_age::Ve
 
   return currentStage
 end
+
+
+#Add a function for getStageVector(::EnviroAgent, ::AgentAssumptions, curr_week::Int64)
 
 
 #Return: Vector
@@ -104,6 +102,7 @@ function injectAgents!(agent_db::Vector, spawn_agents::Vector, new_stock::Int64,
 
   return agent_db
 end
+
 
 #Return: Vector (acts directly on agent_db)
 function kill!(agent_db::Vector, e_a::EnvironmentAssumptions, a_a::AgentAssumptions, current_week::Int64)
@@ -164,7 +163,7 @@ function move!(agent_db::Vector, agent_a::AgentAssumptions,
   """
   #@assert(0.<= agent_a.autonomy[stage] <=1., "Autonomy level for stage $stage must be between 0 and 1")
 
-  #put this in environment assumptions when running AgentDB()
+  #put this in environment assumptions when running initEnvironment()
   idToAgentNum = Array(Int64, length(agent_db))
   for age = 1:length(agent_db)
     idToAgentNum[age] = agent_db[age].locationID
