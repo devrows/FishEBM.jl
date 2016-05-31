@@ -105,14 +105,13 @@ function injectAgents!(agent_db::Vector, spawn_agents::Vector, new_stock::Int64,
   return agent_db
 end
 
+
 #Return: Vector (acts directly on agent_db)
 function spawn!(agent_db::Vector, adult_a::AdultAssumptions, enviro_a::EnvironmentAssumptions, week::Int64, carryingcapacity::Float64,
   adult_pop::Int64)
   """
     Description:  This function generates a brood size and location based on
     specific carrying capacities and compensatory values.
-
-    Precondition: None
 
     Last update: May 2016
   """
@@ -153,14 +152,25 @@ function spawn!(agent_db::Vector, adult_a::AdultAssumptions, enviro_a::Environme
   return agent_db
 end
 
-function getAdultPopulation(agent_db::Vector, a_a::AgentAssumptions, e_a::EnvironmentAssumptions, week::Int64)
+
+function getPopulation(agent_db::Vector, a_a::AgentAssumptions, e_a::EnvironmentAssumptions, week::Int64, stage::Int)
+  """
+    Description:  Gets population of specified stage passed into the argument.
+    TO FIX: Currently this only gets the spawning population. Fix to get population
+    based on argument (i.e. specify whether spawning population is desired or
+    if complete population is required)
+
+    Precondition: None
+
+    Last update: May 2016
+  """
   classLength = length((agent_db[1]).weekNum)
-  adult_pop = 0
+  pop = 0
   for i = 1:length(e_a.spawningHash)
     if (isEmpty(agent_db[e_a.spawningHash[i]]) == false)
       for j = 1:classLength
-        if findCurrentStage(week, agent_db[e_a.spawningHash[i]].weekNum[j], a_a.growth) == 4
-          adult_pop += agent_db[e_a.spawningHash[i]].alive[j]
+        if findCurrentStage(week, agent_db[e_a.spawningHash[i]].weekNum[j], a_a.growth) == stage
+          pop += agent_db[e_a.spawningHash[i]].alive[j]
         end
       end
     end
@@ -168,6 +178,7 @@ function getAdultPopulation(agent_db::Vector, a_a::AgentAssumptions, e_a::Enviro
 
   return adult_pop
 end
+
 
 #Return: Vector (acts directly on agent_db)
 function kill!(agent_db::Vector, e_a::EnvironmentAssumptions, a_a::AgentAssumptions, current_week::Int64)
@@ -212,6 +223,7 @@ function kill!(agent_db::Vector, e_a::EnvironmentAssumptions, a_a::AgentAssumpti
 
   return agent_db
 end
+
 
 #Returns: operates directly on agent_db
 function move!(agent_db::Vector, agent_a::AgentAssumptions,
@@ -289,6 +301,7 @@ function move!(agent_db::Vector, agent_a::AgentAssumptions,
     end #if empty
   end #for agent
 end
+
 
 #Return: operates directly on age_db
 function removeEmptyClass!(age_db::Vector)
