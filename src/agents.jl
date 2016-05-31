@@ -37,11 +37,6 @@ function AgentDB(enviro::EnvironmentAssumptions)
 end
 
 
-#=
-  Tweak this to find the current stage from the current_week and spawn_week
-=#
-#Add a function for getStageVector(::EnviroAgent, ::AgentAssumptions, curr_week::Int64)
-
 #Return: Int64
 function findCurrentStage(current_week::Int64, spawn_week::Int64, growth_age::Vector)
   """
@@ -65,6 +60,9 @@ function findCurrentStage(current_week::Int64, spawn_week::Int64, growth_age::Ve
 
   return currentStage
 end
+
+
+#Add a function for getStageVector(::EnviroAgent, ::AgentAssumptions, curr_week::Int64)
 
 
 #Return: Vector
@@ -103,80 +101,6 @@ function injectAgents!(agent_db::Vector, spawn_agents::Vector, new_stock::Int64,
   end
 
   return agent_db
-end
-
-
-#Return: Vector (acts directly on agent_db)
-function spawn!(agent_db::Vector, adult_a::AdultAssumptions, enviro_a::EnvironmentAssumptions, week::Int64, carryingcapacity::Float64,
-  adult_pop::Int64)
-  """
-    Description:  This function generates a brood size and location based on
-    specific carrying capacities and compensatory values.
-
-    Last update: May 2016
-  """
-
-  if isnan(adult_a.fecunditycompensation)
-    compensation_factor_a = 1
-  else
-    compensation_factor_a = 2*(1-cdf(Normal(carryingcapacity, carryingcapacity/adult_a.fecunditycompensation), adult_pop))
-  end
-
-  @assert(0.01 < compensation_factor_a < 1.99, "Population regulation has failed, respecify simulation parameters")
-
-  if isnan(adult_a.maturitycompensation)
-    compensation_factor_b = 1
-  else
-    compensation_factor_b = 2*(1-cdf(Normal(carryingcapacity, carryingcapacity/adult_a.maturitycompensation), adult_pop))
-  end
-
-  @assert(0.01 < compensation_factor_b < 1.99, "Population regulation has failed, respecify simulation parameters")
-
-  brood_size = rand(Poisson(compensation_factor_a*adult_a.broodsize[1]), rand(Binomial(adult_pop, cdf(Binomial(length(adult_a.broodsize)+2, min(1, compensation_factor_b*adult_a.halfmature/(length(adult_a.broodsize)+2))), 2)*0.5)))
-
-  for i = 2:length(adult_a.broodsize)
-    append!(brood_size, rand(Poisson(compensation_factor_a*adult_a.broodsize[i]), rand(Binomial(adult_pop, cdf(Binomial(length(adult_a.broodsize)+2, min(1, compensation_factor_b*adult_a.halfmature/(length(adult_a.broodsize)+2))), i + 1)*0.5))))
-  end
-  brood_location = sample(find(enviro_a.spawningHash), length(brood_size))
-
-  for i = 1:length(agent_db)
-    push!((agent_db[i]).alive, 0)
-    push!((agent_db[i]).weekNum, week)
-  end
-
-  classLength = length((agent_db[1]).weekNum)
-  for i = 1:length(brood_size)
-    agent_db[brood_location[i]].alive[classLength] = brood_size[i]
-  end
-
-  return agent_db
-end
-
-
-function getPopulation(agent_db::Vector, a_a::AgentAssumptions, e_a::EnvironmentAssumptions, week::Int64, stage::Int)
-  """
-    Description:  Gets population of specified stage passed into the argument.
-    TO FIX: Currently this only gets the spawning population. Fix to get population
-    based on argument (i.e. specify whether spawning population is desired or
-    if complete population is required)
-
-    Precondition: None
-
-    Last update: May 2016
-  """
-  classLength = length((agent_db[1]).weekNum)
-  pop = 0
-  for i = 1:length(e_a.spawningHash)
-    if (isEmpty(agent_db[e_a.spawningHash[i]]) == false)
-      for j = 1:classLength
-        if findCurrentStage(week, agent_db[e_a.spawningHash[i]].weekNum[j], a_a.growth) == stage
-          pop += agent_db[e_a.spawningHash[i]].alive[j]
-        end
-      end
-    end
-  end
-
-  return adult_pop
 end
 
 
