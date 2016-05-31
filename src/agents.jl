@@ -219,9 +219,7 @@ function move!(agent_db::Vector, agent_a::AgentAssumptions, enviro_types::Array,
     Description: This function uses known information from the environment
       surrounding each agent as well as known movements to move agents around
       the environment during runtime.
-
     Precondition: Movement autonomy must be between 0 and 1.
-
     Last update: May 2016
   """
   #@assert(0.<= AgentAssumptions.autonomy[stage] <=1., "Autonomy level must be between 0 and 1")
@@ -290,7 +288,6 @@ function move!(agent_db::Vector, agent_a::AgentAssumptions, enviro_types::Array,
     end #if empty
   end #for agent
 end
-
 
 #Return: operates directly on age_db
 function removeEmptyClass!(age_db::Vector)
