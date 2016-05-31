@@ -138,7 +138,7 @@ function spawn!(agent_db::Vector, adult_a::AdultAssumptions, enviro_a::Environme
   for i = 2:length(adult_a.broodsize)
     append!(brood_size, rand(Poisson(compensation_factor_a*adult_a.broodsize[i]), rand(Binomial(adult_pop, cdf(Binomial(length(adult_a.broodsize)+2, min(1, compensation_factor_b*adult_a.halfmature/(length(adult_a.broodsize)+2))), i + 1)*0.5))))
   end
-  brood_location = sample(find(enviro_a.spawning), length(brood_size))
+  brood_location = sample(find(enviro_a.spawningHash), length(brood_size))
 
   for i = 1:length(agent_db)
     push!((agent_db[i]).alive, 0)
@@ -159,7 +159,7 @@ function getAdultPopulation(agent_db::Vector, a_a::AgentAssumptions, e_a::Enviro
   for i = 1:length(e_a.spawningHash)
     if (isEmpty(agent_db[e_a.spawningHash[i]]) == false)
       for j = 1:classLength
-        if findCurrentStage(week, agent_db[e_a.spawningHash].weekNum[j], a_a.growth) == 4
+        if findCurrentStage(week, agent_db[e_a.spawningHash[i]].weekNum[j], a_a.growth) == 4
           adult_pop += agent_db[e_a.spawningHash[i]].alive[j]
         end
       end
@@ -213,9 +213,8 @@ function kill!(agent_db::Vector, e_a::EnvironmentAssumptions, a_a::AgentAssumpti
   return agent_db
 end
 
-
 #Returns: operates directly on agent_db
-function move!(agent_db::Vector, agent_a::AgentAssumptions, enviro_types::Array, current_week::Int64)
+function move!(agent_db::Vector, agent_a::AgentAssumptions, enviro_types::Array, enviro_a::EnvironmentAssumptions, current_week::Int64)
   """
     Description: This function uses known information from the environment
       surrounding each agent as well as known movements to move agents around
@@ -225,7 +224,7 @@ function move!(agent_db::Vector, agent_a::AgentAssumptions, enviro_types::Array,
 
     Last update: May 2016
   """
-  @assert(0.<= AgentAssumptions.autonomy[stage] <=1., "Autonomy level must be between 0 and 1")
+  #@assert(0.<= AgentAssumptions.autonomy[stage] <=1., "Autonomy level must be between 0 and 1")
 
   #put this in environment assumptions when running AgentDB()
   idToAgentNum = Array(Int64, length(agent_db))
