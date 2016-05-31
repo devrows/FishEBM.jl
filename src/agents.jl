@@ -12,9 +12,7 @@ function AgentDB(enviro::EnvironmentAssumptions)
   """
     Description: A function to create an empty agent database for the specified
       simulation length.
-
     Precondition: None
-
     Last update: March 2016
   """
   #Initialize the database
@@ -42,9 +40,7 @@ function findCurrentStage(current_week::Int64, spawn_week::Int64, growth_age::Ve
   """
     Description: Function used to find the current life stage of a cohort from
       the current age using the agent assumptions growth vector.
-
     Precondition: None
-
     Last update: May 2016
   """
   #Initialize the life stage number to 4
@@ -71,10 +67,8 @@ function injectAgents!(agent_db::Vector, spawn_agents::Vector, new_stock::Int64,
     Description: This function injects agents into the environment, this is
       function is mainly used for adding agents to the environment to test new
       functions.
-
     Precondition: The new_stock vector cannot have more elements than life
       stages.
-
     Last update: May 2016
   """
   @assert(length(new_stock)<=4, "There can only by four independent life stages of fish.")
@@ -105,14 +99,84 @@ end
 
 
 #Return: Vector (acts directly on agent_db)
+function spawn!(agent_db::Vector, adult_a::AdultAssumptions, enviro_a::EnvironmentAssumptions, week::Int64, carryingcapacity::Float64,
+  adult_pop::Int64)
+  """
+    Description:  This function generates a brood size and location based on
+    specific carrying capacities and compensatory values.
+
+    Last update: May 2016
+  """
+
+  if isnan(adult_a.fecunditycompensation)
+    compensation_factor_a = 1
+  else
+    compensation_factor_a = 2*(1-cdf(Normal(carryingcapacity, carryingcapacity/adult_a.fecunditycompensation), adult_pop))
+  end
+
+  @assert(0.01 < compensation_factor_a < 1.99, "Population regulation has failed, respecify simulation parameters")
+
+  if isnan(adult_a.maturitycompensation)
+    compensation_factor_b = 1
+  else
+    compensation_factor_b = 2*(1-cdf(Normal(carryingcapacity, carryingcapacity/adult_a.maturitycompensation), adult_pop))
+  end
+
+  @assert(0.01 < compensation_factor_b < 1.99, "Population regulation has failed, respecify simulation parameters")
+
+  brood_size = rand(Poisson(compensation_factor_a*adult_a.broodsize[1]), rand(Binomial(adult_pop, cdf(Binomial(length(adult_a.broodsize)+2, min(1, compensation_factor_b*adult_a.halfmature/(length(adult_a.broodsize)+2))), 2)*0.5)))
+
+  for i = 2:length(adult_a.broodsize)
+    append!(brood_size, rand(Poisson(compensation_factor_a*adult_a.broodsize[i]), rand(Binomial(adult_pop, cdf(Binomial(length(adult_a.broodsize)+2, min(1, compensation_factor_b*adult_a.halfmature/(length(adult_a.broodsize)+2))), i + 1)*0.5))))
+  end
+  brood_location = sample(find(enviro_a.spawningHash), length(brood_size))
+
+  for i = 1:length(agent_db)
+    push!((agent_db[i]).alive, 0)
+    push!((agent_db[i]).weekNum, week)
+  end
+
+  classLength = length((agent_db[1]).weekNum)
+  for i = 1:length(brood_size)
+    agent_db[brood_location[i]].alive[classLength] = brood_size[i]
+  end
+
+  return agent_db
+end
+
+
+function getPopulation(agent_db::Vector, a_a::AgentAssumptions, e_a::EnvironmentAssumptions, week::Int64, stage::Int)
+  """
+    Description:  Gets population of specified stage passed into the argument.
+    TO FIX: Currently this only gets the spawning population. Fix to get population
+    based on argument (i.e. specify whether spawning population is desired or
+    if complete population is required)
+
+    Last update: May 2016
+  """
+  classLength = length((agent_db[1]).weekNum)
+  pop = 0
+  for i = 1:length(e_a.spawningHash)
+    if (isEmpty(agent_db[e_a.spawningHash[i]]) == false)
+      for j = 1:classLength
+        if findCurrentStage(week, agent_db[e_a.spawningHash[i]].weekNum[j], a_a.growth) == stage
+          pop += agent_db[e_a.spawningHash[i]].alive[j]
+        end
+      end
+    end
+  end
+
+  return adult_pop
+end
+
+
+#Return: Vector (acts directly on agent_db)
 function kill!(agent_db::Vector, e_a::EnvironmentAssumptions, a_a::AgentAssumptions, current_week::Int64)
   """
     Description:  This function generates a mortality based on the stage of the
       fish and its corresponding natural mortality and its location within the
       habitat as described in EnvironmentAssumptions.
-
     Precondition: None
-
     Last update: May 2016
   """
   classLength = length((agent_db[1]).weekNum)
@@ -156,9 +220,7 @@ function move!(agent_db::Vector, agent_a::AgentAssumptions,
     Description: This function uses known information from the environment
       surrounding each agent as well as known movements to move agents around
       the environment during runtime.
-
     Precondition: Movement autonomy must be between 0 and 1.
-
     Last update: May 2016
   """
   #@assert(0.<= agent_a.autonomy[stage] <=1., "Autonomy level for stage $stage must be between 0 and 1")
@@ -234,9 +296,7 @@ function removeEmptyClass!(age_db::Vector)
   """
     Description: This function is used to remove an empty spawn class once all
       agents in the entire spawn class have been removed.
-
     Precondition: None
-
     Last Update: March 2016
   """
   removeClass = true
