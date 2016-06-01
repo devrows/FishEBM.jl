@@ -99,14 +99,18 @@ end
 
 
 #Return: Vector (acts directly on agent_db)
-function spawn!(agent_db::Vector, adult_a::AdultAssumptions, enviro_a::EnvironmentAssumptions, week::Int64, carryingcapacity::Float64,
-  adult_pop::Int64)
+function spawn!(agent_db::Vector, adult_a::AdultAssumptions, age_assumpt::AgentAssumptions, enviro_a::EnvironmentAssumptions, week::Int64, carryingcapacity::Float64)
   """
     Description:  This function generates a brood size and location based on
     specific carrying capacities and compensatory values.
 
-    Last update: May 2016
+    Last update: June 2016
   """
+  adult_pop = 0
+  #Gets population of all spawning fish
+  for i = 2:8
+    adult_pop += getPopulationOfAge(i, week, agent_db, age_assumpt, enviro_a)
+  end
 
   if isnan(adult_a.fecunditycompensation)
     compensation_factor_a = 1
@@ -124,10 +128,10 @@ function spawn!(agent_db::Vector, adult_a::AdultAssumptions, enviro_a::Environme
 
   @assert(0.01 < compensation_factor_b < 1.99, "Population regulation has failed, respecify simulation parameters")
 
-  brood_size = rand(Poisson(compensation_factor_a*adult_a.broodsize[1]), rand(Binomial(adult_pop, cdf(Binomial(length(adult_a.broodsize)+2, min(1, compensation_factor_b*adult_a.halfmature/(length(adult_a.broodsize)+2))), 2)*0.5)))
+  brood_size = rand(Poisson(compensation_factor_a*adult_a.broodsize[1]), rand(Binomial(getPopulationOfAge(2, week, agent_db, age_assumpt, enviro_a), cdf(Binomial(length(adult_a.broodsize)+2, min(1, compensation_factor_b*adult_a.halfmature/(length(adult_a.broodsize)+2))), 2)*0.5)))
 
   for i = 2:length(adult_a.broodsize)
-    append!(brood_size, rand(Poisson(compensation_factor_a*adult_a.broodsize[i]), rand(Binomial(adult_pop, cdf(Binomial(length(adult_a.broodsize)+2, min(1, compensation_factor_b*adult_a.halfmature/(length(adult_a.broodsize)+2))), i + 1)*0.5))))
+    append!(brood_size, rand(Poisson(compensation_factor_a*adult_a.broodsize[i]), rand(Binomial(getPopulationOfAge(i + 2, week, agent_db, age_assumpt, enviro_a), cdf(Binomial(length(adult_a.broodsize)+2, min(1, compensation_factor_b*adult_a.halfmature/(length(adult_a.broodsize)+2))), i + 1)*0.5))))
   end
   brood_location = sample(find(enviro_a.spawningHash), length(brood_size))
 
@@ -138,35 +142,42 @@ function spawn!(agent_db::Vector, adult_a::AdultAssumptions, enviro_a::Environme
 
   classLength = length((agent_db[1]).weekNum)
   for i = 1:length(brood_size)
-    agent_db[brood_location[i]].alive[classLength] = brood_size[i]
+    agent_db[enviro_a.spawningHash[brood_location[i]]].alive[classLength] = brood_size[i]
   end
 
   return agent_db
 end
 
 
-function getPopulation(agent_db::Vector, a_a::AgentAssumptions, e_a::EnvironmentAssumptions, week::Int64, stage::Int)
+function getPopulationOfAge(age::Int64, current_week::Int64, agent_db::Vector, a_a::AgentAssumptions, e_a::EnvironmentAssumptions)
   """
-    Description:  Gets population of specified stage passed into the argument.
-    TO FIX: Currently this only gets the spawning population. Fix to get population
-    based on argument (i.e. specify whether spawning population is desired or
-    if complete population is required)
+    Description:  Used for getting the spawning population. This function returns
+    the total population of fish in the spawning area of a specified age.
 
-    Last update: May 2016
+    Last update: June 2016
   """
   classLength = length((agent_db[1]).weekNum)
   pop = 0
   for i = 1:length(e_a.spawningHash)
     if (isEmpty(agent_db[e_a.spawningHash[i]]) == false)
       for j = 1:classLength
-        if findCurrentStage(week, agent_db[e_a.spawningHash[i]].weekNum[j], a_a.growth) == stage
-          pop += agent_db[e_a.spawningHash[i]].alive[j]
-        end
-      end
-    end
-  end
+        if findCurrentStage(current_week, agent_db[e_a.spawningHash[i]].weekNum[j], a_a.growth) == 4
+          if age == 8
+            #Find population of fish of age 8 or higher since they all have the same age-specific fecundity
+            if floor((current_week - agent_db[e_a.spawningHash[i]].weekNum[j]) / 52) >= age
+              pop += agent_db[e_a.spawningHash[i]].alive[j]
+            end
+          else
+            if floor((current_week - agent_db[e_a.spawningHash[i]].weekNum[j]) / 52) == age
+              pop += agent_db[e_a.spawningHash[i]].alive[j]
+            end #if floor
+          end #if age == 8
+        end #findCurrentStage
+      end #for j=1:classLength
+    end #if isEmpty
+  end #for i=1:length spawningHash
 
-  return adult_pop
+  return pop
 end
 
 

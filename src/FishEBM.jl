@@ -19,7 +19,7 @@ module FishEBM
     findCurrentStage,
     injectAgents!,
     spawn!,
-    getAdultPopulation,
+    getPopulationOfAge,
     kill!,
     move!,
     removeEmptyClass!,
