@@ -30,6 +30,15 @@ module FishEBM
     initEnvironment,
     pad_environment!,
 
+    # FileIO.jl functions
+    setProjPath,
+    createResDir,
+    createDateDir,
+    runDirCheck,
+    createRunDir,
+    standardReport,
+    createReadme,
+
     # simulationResults.jl functions
 
     # simulate.jl functions
@@ -53,4 +62,5 @@ module FishEBM
     include("environment.jl")
     include("simulate.jl")
     include("utilities.jl")
+    include("FileIO.jl")
 end
