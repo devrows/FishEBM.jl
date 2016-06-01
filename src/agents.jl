@@ -125,6 +125,7 @@ function spawn!(agent_db::Vector, adult_a::AdultAssumptions, age_assumpt::AgentA
     Last update: June 2016
   """
   adult_pop = 0
+
   #Gets population of all spawning fish
   for i = 2:8
     adult_pop += getPopulationOfAge(i, week, agent_db, age_assumpt, enviro_a)
@@ -146,18 +147,24 @@ function spawn!(agent_db::Vector, adult_a::AdultAssumptions, age_assumpt::AgentA
 
   @assert(0.01 < compensation_factor_b < 1.99, "Population regulation has failed, respecify simulation parameters")
 
+  #Brood size of 2 year old adult fish
   brood_size = rand(Poisson(compensation_factor_a*adult_a.broodsize[1]), rand(Binomial(getPopulationOfAge(2, week, agent_db, age_assumpt, enviro_a), cdf(Binomial(length(adult_a.broodsize)+2, min(1, compensation_factor_b*adult_a.halfmature/(length(adult_a.broodsize)+2))), 2)*0.5)))
 
+  #Append brood size for adult fish ages 3 to 8
   for i = 2:length(adult_a.broodsize)
     append!(brood_size, rand(Poisson(compensation_factor_a*adult_a.broodsize[i]), rand(Binomial(getPopulationOfAge(i + 2, week, agent_db, age_assumpt, enviro_a), cdf(Binomial(length(adult_a.broodsize)+2, min(1, compensation_factor_b*adult_a.halfmature/(length(adult_a.broodsize)+2))), i + 1)*0.5))))
   end
+
+  #Find brood locations from spawning hash and length of brood_size
   brood_location = sample(find(enviro_a.spawningHash), length(brood_size))
 
+  #create new class in each agent_db
   for i = 1:length(agent_db)
     push!((agent_db[i]).alive, 0)
     push!((agent_db[i]).weekNum, week)
   end
 
+  #Add each brood size to new class based on its brood location
   classLength = length((agent_db[1]).weekNum)
   for i = 1:length(brood_size)
     agent_db[enviro_a.spawningHash[brood_location[i]]].alive[classLength] = brood_size[i]
@@ -174,18 +181,19 @@ function getPopulationOfAge(age::Int64, current_week::Int64, agent_db::Vector, a
 
     Last update: June 2016
   """
+  @assert(2 <= age <= 8, "Age argument must be between 2 and 8, inclusive.")
+
   classLength = length((agent_db[1]).weekNum)
   pop = 0
   for i = 1:length(e_a.spawningHash)
     if (isEmpty(agent_db[e_a.spawningHash[i]]) == false)
       for j = 1:classLength
         if findCurrentStage(current_week, agent_db[e_a.spawningHash[i]].weekNum[j], a_a.growth) == 4
-          if age == 8
-            #Find population of fish of age 8 or higher since they all have the same age-specific fecundity
+          if age == 8 #Find population of fish of age 8 or higher since they all have the same age-specific fecundity
             if floor((current_week - agent_db[e_a.spawningHash[i]].weekNum[j]) / 52) >= age
               pop += agent_db[e_a.spawningHash[i]].alive[j]
             end
-          else
+          else #If ages 2 through 7, only get population of that particular age
             if floor((current_week - agent_db[e_a.spawningHash[i]].weekNum[j]) / 52) == age
               pop += agent_db[e_a.spawningHash[i]].alive[j]
             end #if floor
@@ -205,8 +213,8 @@ function kill!(agent_db::Vector, e_a::EnvironmentAssumptions, a_a::AgentAssumpti
     Description:  This function generates a mortality based on the stage of the
       fish and its corresponding natural mortality and its location within the
       habitat as described in EnvironmentAssumptions.
-    Precondition: None
-    Last update: May 2016
+
+    Last update: June 2016
   """
   classLength = length((agent_db[1]).weekNum)
 
@@ -218,25 +226,24 @@ function kill!(agent_db::Vector, e_a::EnvironmentAssumptions, a_a::AgentAssumpti
         #current_age = current_week - agent_db[i].weekNum[j]
         stage = findCurrentStage(current_week, agent_db[i].weekNum[j], a_a.growth)
         if agent_db[i].alive[j] > 0
-
           habitat = e_a.habitat[agent_db[i].locationID]
 
           #Number of fish killed follows binomial distribution with arguments of number of fish alive
           #and natural mortality in the form of a probability
           killed = rand(Binomial(agent_db[i].alive[j], a_a.naturalmortality[habitat, stage]))
-          agent_db[i].killed[stage] += killed #This SHOULD add the number of killed fish to the vector, but doesn't...
+          agent_db[i].killed[stage] += killed
           agent_db[i].alive[j] -= killed
           if agent_db[i].alive[j] > 0
-            if in(agent_db[i].locationID, e_a.risk)
+            if in(agent_db[i].locationID, e_a.risk) #Check if this particular locationID is in risk zone
               killed = rand(Binomial(agent_db[i].alive[j], a_a.extramortality[stage]))
               agent_db[i].killed[stage] += killed
               agent_db[i].alive[j] -= killed
-            end
-          end
-        end
-      end
-    end
-  end
+            end #if risk
+          end #if agent_db[i].alive (inner)
+        end #if agent_db[i].alive (outer)
+      end #for j=1:classLength
+    end #if isEmpty
+  end #for i=1:length(agent_db)
 
   return agent_db
 end
