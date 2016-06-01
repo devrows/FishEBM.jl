@@ -300,7 +300,8 @@ function move!(agent_db::Vector, agent_a::AgentAssumptions,
         choices[:,2]=choices[:,2]/sum(choices[:,2])
         choices[:,3]=choices[:,3]/sum(choices[:,3])
 
-        moveDistrib = Multinomial(1, choices[:,2]*(1-agent_a.autonomy[stage]) + choices[:,3]*(agent_a.autonomy[stage]))
+        moveDistrib = Multinomial(1, choices[:,2]*(1-agent_a.autonomy[stage])
+          + choices[:,3]*(agent_a.autonomy[stage]))
 
         for aliveAges = 1:agent_db[n].alive[cohort]
           newLocation = round(Int, (choices[findfirst(rand(moveDistrib)), 1]))
