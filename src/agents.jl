@@ -249,16 +249,10 @@ function move!(agent_db::Vector, agent_a::AgentAssumptions,
     Description: This function uses known information from the environment
       surrounding each agent as well as known movements to move agents around
       the environment during runtime.
-    Precondition: Movement autonomy must be between 0 and 1.
+
     Last update: May 2016
   """
   #@assert(0.<= agent_a.autonomy[stage] <=1., "Autonomy level for stage $stage must be between 0 and 1")
-
-  #put this in environment assumptions when running initEnvironment()
-  idToAgentNum = Array(Int64, length(agent_db))
-  for age = 1:length(agent_db)
-    idToAgentNum[age] = agent_db[age].locationID
-  end
 
   lifeStages = Array(Int64, length(agent_db[1].alive)); lifeStages[:] = 0;
   totalHeight = size(enviro_a.habitat)[1]
@@ -309,14 +303,16 @@ function move!(agent_db::Vector, agent_a::AgentAssumptions,
         moveDistrib = Multinomial(1, choices[:,2]*(1-agent_a.autonomy[stage]) + choices[:,3]*(agent_a.autonomy[stage]))
 
         for aliveAges = 1:agent_db[n].alive[cohort]
-          tester = round(Int, (choices[findfirst(rand(moveDistrib)), 1]))
-          newAgentNum = findfirst(idToAgentNum, tester)
-          agent_db[n].alive[cohort] -= 1
-          agent_db[newAgentNum].alive[cohort] += 1
-        end #for alive
-      end #for cohort
-    end #if empty
-  end #for agent
+          newLocation = round(Int, (choices[findfirst(rand(moveDistrib)), 1]))
+          if agent_db[n].locationID != newLocation
+            newAgentNum = IDToAgentNum(agent_db, newLocation, length(agent_db), 1)
+            agent_db[n].alive[cohort] -= 1
+            agent_db[newAgentNum].alive[cohort] += 1
+          end #if doesn't move
+        end #for all alive
+      end #for each cohort
+    end #if enviro empty
+  end #for number agent
 end
 
 
