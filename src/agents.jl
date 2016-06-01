@@ -213,8 +213,8 @@ function kill!(agent_db::Vector, e_a::EnvironmentAssumptions, a_a::AgentAssumpti
     Description:  This function generates a mortality based on the stage of the
       fish and its corresponding natural mortality and its location within the
       habitat as described in EnvironmentAssumptions.
-    Precondition: None
-    Last update: May 2016
+
+    Last update: June 2016
   """
   classLength = length((agent_db[1]).weekNum)
 
