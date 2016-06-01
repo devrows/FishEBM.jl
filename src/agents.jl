@@ -58,8 +58,26 @@ function findCurrentStage(current_week::Int64, spawn_week::Int64, growth_age::Ve
 end
 
 
-#Add a function for getStageVector(::EnviroAgent, ::AgentAssumptions, curr_week::Int64)
+"""
+  Description: This function is used for finding the Agent number from a known
+  environment id.
 
+  Last update: June 2016
+"""
+function IDToAgentNum(a_db::Vector, id_num::Int64, max_val::Int64, min_val::Int64)
+  testVal = rand(min_val:max_val)
+
+  #uses recursion
+  if id_num == a_db[testVal].locationID
+    return testVal
+  elseif a_db[testVal].locationID > id_num
+    testVal = IDToAgentNum(a_db, id_num, testVal, min_val)
+  elseif a_db[testVal].locationID < id_num
+    testVal = IDToAgentNum(a_db, id_num, max_val, testVal)
+  end
+
+  return testVal
+end
 
 #Return: Vector
 function injectAgents!(agent_db::Vector, spawn_agents::Vector, new_stock::Int64, week_num::Int64)
