@@ -27,6 +27,7 @@ function initPopulationDensity(enviro_a::EnvironmentAssumptions)
 end
 
 
+#Returns: integer of total population
 function updatePopulationDensity!(agent_db::Vector, pop_density::Array)
   """
     Description: Updates a population density matrix in the simulate function.
@@ -39,11 +40,18 @@ function updatePopulationDensity!(agent_db::Vector, pop_density::Array)
     Last update: May 2016
   """
 
+  totalPop = 0
+
   for k = 1:length(agent_db)
     pop_density[agent_db[k].locationID] = 1
 
-    for m = 1:length(agent_db[1].alive)
-      pop_density[agent_db[k].locationID] += agent_db[k].alive[m]
+    if isEmpty(agent_db[k]) == false
+      for m = 1:length(agent_db[1].alive)
+        pop_density[agent_db[k].locationID] += agent_db[k].alive[m]
+        totalPop += agent_db[k].alive[m]
+      end
     end
   end
+
+  return totalPop
 end

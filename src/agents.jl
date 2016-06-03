@@ -61,7 +61,6 @@ end
 """
   Description: This function is used for finding the Agent number from a known
   environment id.
-
   Last update: June 2016
 """
 function IDToAgentNum(a_db::Vector, id_num::Int64, max_val::Int64, min_val::Int64)
@@ -121,7 +120,6 @@ function spawn!(agent_db::Vector, adult_a::AdultAssumptions, age_assumpt::AgentA
   """
     Description:  This function generates a brood size and location based on
     specific carrying capacities and compensatory values.
-
     Last update: June 2016
   """
   adult_pop = 0
@@ -178,10 +176,9 @@ function getPopulationOfAge(age::Int64, current_week::Int64, agent_db::Vector, a
   """
     Description:  Used for getting the spawning population. This function returns
     the total population of fish in the spawning area of a specified age.
-
     Last update: June 2016
   """
-  @assert(2 <= age <= 8, "Age (age=$age) argument must be between 2 and 8, inclusive.")
+  @assert(2 <= age <= 8, "Age argument must be greater than 2, inclusive (age = $age was passed).")
 
   classLength = length((agent_db[1]).weekNum)
   pop = 0
@@ -213,7 +210,6 @@ function kill!(agent_db::Vector, e_a::EnvironmentAssumptions, a_a::AgentAssumpti
     Description:  This function generates a mortality based on the stage of the
       fish and its corresponding natural mortality and its location within the
       habitat as described in EnvironmentAssumptions.
-
     Last update: June 2016
   """
   classLength = length((agent_db[1]).weekNum)
@@ -256,7 +252,6 @@ function move!(agent_db::Vector, agent_a::AgentAssumptions,
     Description: This function uses known information from the environment
       surrounding each agent as well as known movements to move agents around
       the environment during runtime.
-
     Last update: May 2016
   """
   #@assert(0.<= agent_a.autonomy[stage] <=1., "Autonomy level for stage $stage must be between 0 and 1")
@@ -345,5 +340,6 @@ function removeEmptyClass!(age_db::Vector)
       shift!((age_db[j]).alive)
       shift!((age_db[j]).weekNum)
     end
+    removeEmptyClass!(age_db)
   end
 end
