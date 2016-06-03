@@ -152,7 +152,7 @@ function spawn!(agent_db::Vector, adult_a::AdultAssumptions, age_assumpt::AgentA
 
   #Append brood size for adult fish ages 3 to 8
   for i = 2:length(adult_a.broodsize)
-    append!(brood_size, rand(Poisson(compensation_factor_a*adult_a.broodsize[i]), rand(Binomial(getPopulationOfAge(i + 2, week, agent_db, age_assumpt, enviro_a), cdf(Binomial(length(adult_a.broodsize)+2, min(1, compensation_factor_b*adult_a.halfmature/(length(adult_a.broodsize)+2))), i + 1)*0.5))))
+    append!(brood_size, rand(Poisson(compensation_factor_a*adult_a.broodsize[i]), rand(Binomial(getPopulationOfAge(i + 1, week, agent_db, age_assumpt, enviro_a), cdf(Binomial(length(adult_a.broodsize)+2, min(1, compensation_factor_b*adult_a.halfmature/(length(adult_a.broodsize)+2))), i + 1)*0.5))))
   end
 
   #Find brood locations from spawning hash and length of brood_size
@@ -181,7 +181,7 @@ function getPopulationOfAge(age::Int64, current_week::Int64, agent_db::Vector, a
 
     Last update: June 2016
   """
-  @assert(2 <= age <= 8, "Age argument must be between 2 and 8, inclusive.")
+  @assert(2 <= age <= 8, "Age (age=$age) argument must be between 2 and 8, inclusive.")
 
   classLength = length((agent_db[1]).weekNum)
   pop = 0
