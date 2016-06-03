@@ -327,19 +327,21 @@ function removeEmptyClass!(age_db::Vector)
     Precondition: None
     Last Update: March 2016
   """
-  removeClass = true
-  for i = 1:length(age_db)
-    if (age_db[i]).alive[1] != 0
-      removeClass = false
-      i = length(age_db)
+  if length(age_db[1].alive) > 1
+    removeClass = true
+    for i = 1:length(age_db)
+      if (age_db[i]).alive[1] != 0
+        removeClass = false
+        i = length(age_db)
+      end
     end
-  end
 
-  if removeClass
-    for j = 1:length(age_db)
-      shift!((age_db[j]).alive)
-      shift!((age_db[j]).weekNum)
+    if removeClass
+      for j = 1:length(age_db)
+        shift!((age_db[j]).alive)
+        shift!((age_db[j]).weekNum)
+      end
+      removeEmptyClass!(age_db)
     end
-    removeEmptyClass!(age_db)
   end
 end
