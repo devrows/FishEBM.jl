@@ -21,6 +21,8 @@ module FishEBM
     spawn!,
     getAgeSpecificPop,
     getStagePopulation,
+    harvest!,
+    getCohortNumber,
     kill!,
     move!,
     removeEmptyClass!,
