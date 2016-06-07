@@ -61,7 +61,6 @@ end
 """
   Description: This function is used for finding the Agent number from a known
   environment id.
-
   Last update: June 2016
 """
 function IDToAgentNum(a_db::Vector, id_num::Int64, max_val::Int64, min_val::Int64)
@@ -116,20 +115,18 @@ function injectAgents!(agent_db::Vector, spawn_agents::Vector, new_stock::Int64,
 end
 
 
+"""
+  Description: Generates a brood size for each spawning location based on number
+  of adults in the spawning location, and their age specific fecundity. Brood size
+  is affected by a compensation factor based on the total adult population in the
+  environment.
+
+  Last Update: June 2016
+"""
 #Return: Vector (acts directly on agent_db)
 function spawn!(agent_db::Vector, adult_a::AdultAssumptions, age_assumpt::AgentAssumptions, enviro_a::EnvironmentAssumptions, week::Int64, carryingcapacity::Float64)
-  """
-    Description:  This function generates a brood size and location based on
-    specific carrying capacities and compensatory values.
 
-    Last update: June 2016
-  """
-  adult_pop = 0
-
-  #Gets population of all spawning fish
-  for i = 2:8
-    adult_pop += getPopulationOfAge(i, week, agent_db, age_assumpt, enviro_a)
-  end
+  adult_pop = getStagePopulation(4, week, agent_db, age_assumpt)
 
   if isnan(adult_a.fecunditycompensation)
     compensation_factor_a = 1
@@ -147,61 +144,83 @@ function spawn!(agent_db::Vector, adult_a::AdultAssumptions, age_assumpt::AgentA
 
   @assert(0.01 < compensation_factor_b < 1.99, "Population regulation has failed, respecify simulation parameters")
 
-  #Brood size of 2 year old adult fish
-  brood_size = rand(Poisson(compensation_factor_a*adult_a.broodsize[1]), rand(Binomial(getPopulationOfAge(2, week, agent_db, age_assumpt, enviro_a), cdf(Binomial(length(adult_a.broodsize)+2, min(1, compensation_factor_b*adult_a.halfmature/(length(adult_a.broodsize)+2))), 2)*0.5)))
-
-  #Append brood size for adult fish ages 3 to 8
-  for i = 2:length(adult_a.broodsize)
-    append!(brood_size, rand(Poisson(compensation_factor_a*adult_a.broodsize[i]), rand(Binomial(getPopulationOfAge(i + 1, week, agent_db, age_assumpt, enviro_a), cdf(Binomial(length(adult_a.broodsize)+2, min(1, compensation_factor_b*adult_a.halfmature/(length(adult_a.broodsize)+2))), i + 1)*0.5))))
-  end
-
-  #Find brood locations from spawning hash and length of brood_size
-  brood_location = sample(find(enviro_a.spawningHash), length(brood_size))
-
-  #create new class in each agent_db
   for i = 1:length(agent_db)
     push!((agent_db[i]).alive, 0)
     push!((agent_db[i]).weekNum, week)
   end
 
-  #Add each brood size to new class based on its brood location
-  classLength = length((agent_db[1]).weekNum)
-  for i = 1:length(brood_size)
-    agent_db[enviro_a.spawningHash[brood_location[i]]].alive[classLength] = brood_size[i]
-  end
+  newClass = length(agent_db[1].weekNum)
+
+  for i = 1:length(enviro_a.spawningHash)
+    if isEmpty(agent_db[enviro_a.spawningHash[i]]) == false
+      for age = 2:8
+        ageSpecificPop = getAgeSpecificPop(age, week, agent_db[enviro_a.spawningHash[i]].alive, agent_db[enviro_a.spawningHash[i]].weekNum, age_assumpt)
+        if ageSpecificPop != 0
+          numSpawningAdults = rand(1:ageSpecificPop/2) #ageSpecificPop/2 implies a 50% male/female ratio, this will be number of females able to lay eggs
+          for j = 1:numSpawningAdults
+            brood = rand(Poisson(compensation_factor_a*adult_a.broodsize[age - 1]), rand(Binomial(ageSpecificPop, cdf(Binomial(length(adult_a.broodsize)+2, min(1, compensation_factor_b*adult_a.halfmature/(length(adult_a.broodsize)+2))), age)*0.5)))
+            for k = 1:length(brood)
+              agent_db[enviro_a.spawningHash[i]].alive[newClass] += brood[k]
+            end #for k=1:brood
+          end #for j = 1:numSpawningAdults
+        end #if ageSpecificPop
+      end #for ages
+    end #if isEmpty
+  end #for i=1:length spawningHash
 
   return agent_db
 end
 
 
-function getPopulationOfAge(age::Int64, current_week::Int64, agent_db::Vector, a_a::AgentAssumptions, e_a::EnvironmentAssumptions)
-  """
-    Description:  Used for getting the spawning population. This function returns
-    the total population of fish in the spawning area of a specified age.
+"""
+  Description: Returns population of a specific age in an environment agent.
+  Used for functions that requires age-specific population to be taken into account
+  (such as spawning or harvest).
 
-    Last update: June 2016
-  """
-  @assert(2 <= age <= 8, "Age argument must be greater than 2, inclusive (age = $age was passed).")
+  Last Update: June 2016
+"""
+function getAgeSpecificPop(age::Int64, current_week::Int64, alive::Array, weekNum::Array, a_a::AgentAssumptions)
+  @assert(2 <= age <= 8, "Age argument must be between 2 and 8, inclusive (age = $age was passed).")
+  classLength = length(weekNum)
+  pop = 0
+  for i = 1:classLength
+    if findCurrentStage(current_week, weekNum[i], a_a.growth) == 4
+      if age == 8
+        if floor((current_week - weekNum[i]) / 52) >= age
+          pop += alive[i]
+        end
+      else
+        if floor((current_week - weekNum[i]) / 52) == age
+          pop += alive[i]
+        end #if floor
+      end #if age == 8 else
+    end #findCurrentStage
+  end #for i = 1:classLength
+
+  return pop
+end
+
+
+"""
+  Description:  Used to get population of any of the stages (egg, larva, juvenile, adult).
+  Will only return population of one stage at a time. To get total population of fish,
+  loop through for i = 1:4.
+
+  Last update: June 2016
+"""
+function getStagePopulation(stage::Int64, current_week::Int64, agent_db::Vector, a_a::AgentAssumptions)
 
   classLength = length((agent_db[1]).weekNum)
   pop = 0
-  for i = 1:length(e_a.spawningHash)
-    if (isEmpty(agent_db[e_a.spawningHash[i]]) == false)
+  for i = 1:length(agent_db)
+    if (isEmpty(agent_db[i]) == false)
       for j = 1:classLength
-        if findCurrentStage(current_week, agent_db[e_a.spawningHash[i]].weekNum[j], a_a.growth) == 4
-          if age == 8 #Find population of fish of age 8 or higher since they all have the same age-specific fecundity
-            if floor((current_week - agent_db[e_a.spawningHash[i]].weekNum[j]) / 52) >= age
-              pop += agent_db[e_a.spawningHash[i]].alive[j]
-            end
-          else #If ages 2 through 7, only get population of that particular age
-            if floor((current_week - agent_db[e_a.spawningHash[i]].weekNum[j]) / 52) == age
-              pop += agent_db[e_a.spawningHash[i]].alive[j]
-            end #if floor
-          end #if age == 8
+        if findCurrentStage(current_week, agent_db[i].weekNum[j], a_a.growth) == stage
+          pop += agent_db[i].alive[j]
         end #findCurrentStage
       end #for j=1:classLength
     end #if isEmpty
-  end #for i=1:length spawningHash
+  end #for i=1:length
 
   return pop
 end
@@ -213,7 +232,6 @@ function kill!(agent_db::Vector, e_a::EnvironmentAssumptions, a_a::AgentAssumpti
     Description:  This function generates a mortality based on the stage of the
       fish and its corresponding natural mortality and its location within the
       habitat as described in EnvironmentAssumptions.
-
     Last update: June 2016
   """
   classLength = length((agent_db[1]).weekNum)
@@ -256,7 +274,6 @@ function move!(agent_db::Vector, agent_a::AgentAssumptions,
     Description: This function uses known information from the environment
       surrounding each agent as well as known movements to move agents around
       the environment during runtime.
-
     Last update: May 2016
   """
   #@assert(0.<= agent_a.autonomy[stage] <=1., "Autonomy level for stage $stage must be between 0 and 1")
