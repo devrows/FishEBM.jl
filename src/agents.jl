@@ -155,8 +155,9 @@ function spawn!(agent_db::Vector, adult_a::AdultAssumptions, age_assumpt::AgentA
     if isEmpty(agent_db[enviro_a.spawningHash[i]]) == false
       for age = 2:8
         ageSpecificPop = getAgeSpecificPop(age, week, agent_db[enviro_a.spawningHash[i]].alive, agent_db[enviro_a.spawningHash[i]].weekNum, age_assumpt)
-        if ageSpecificPop != 0
-          numSpawningAdults = rand(1:ageSpecificPop/2) #ageSpecificPop/2 implies a 50% male/female ratio, this will be number of females able to lay eggs
+        if ageSpecificPop > 1
+          #ageSpecificPop/2 implies a 50% male/female ratio, this will be number of females able to lay eggs
+          numSpawningAdults = rand(1:ageSpecificPop/2)
           for j = 1:numSpawningAdults
             brood = rand(Poisson(compensation_factor_a*adult_a.broodsize[age - 1]), rand(Binomial(ageSpecificPop, cdf(Binomial(length(adult_a.broodsize)+2, min(1, compensation_factor_b*adult_a.halfmature/(length(adult_a.broodsize)+2))), age)*0.5)))
             for k = 1:length(brood)
