@@ -1,5 +1,5 @@
 # Load required packages
-using FishEBM
+using FishEBM, DataFrames
 
 #fill params
 # Specify stock assumptions:
@@ -78,12 +78,12 @@ end
 # *k = carrying capacity.
 # *effort = fishing effort.
 # *bump = stock pop. bump (might be removed in time.)
-# *initStock = stock population.
 k = 1
 effort = [0]
 bump = [100000]
-initStock = [5000, 10000, 15000, 20000]
 description = "Test description for simulation simREADME file."
+final_week = 5
 
-# Generates: /results/<date>/run_<i>/simREADME.txt, as a warning, these are non-empty files.
-createReadme(standardReport(), description, k, effort, bump, initStock, adult_a, a_a)
+# Generates: /results/<date>/run_<i>/<simREADME.txt, simSUMMARY.csv>, as a warning, these are non-empty files.
+@time createReadme(standardReport(), description, k, effort, bump, addingStock, adult_a, a_a)
+@time simSummary(final_week, a_db, a_a)
