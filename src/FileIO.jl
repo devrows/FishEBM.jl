@@ -224,3 +224,8 @@ function createReadme(runDir::ASCIIString, userInput::ASCIIString, k::Int64, eff
 
     close(output_file)
 end
+
+
+function summary(a_db::Vector)
+
+end
