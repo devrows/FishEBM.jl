@@ -109,6 +109,10 @@ function runDirCheck(fullDir::ASCIIString)
     end
 end
 
+function currentRunDir(fullDir::ASCIIString)
+  
+end
+
 
 function standardReport()
     """
