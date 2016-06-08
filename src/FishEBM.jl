@@ -9,7 +9,7 @@
 module FishEBM
 
   #Packages used by this package
-  using Distributions, ProgressMeter
+  using Distributions, ProgressMeter, DataFrames, DataArrays
 
   export
     # agent_stock_interaction.jl functions
@@ -41,6 +41,8 @@ module FishEBM
     createRunDir,
     standardReport,
     createReadme,
+    currentRunDir,
+    simSummary,
 
     # simulationResults.jl functions
 
