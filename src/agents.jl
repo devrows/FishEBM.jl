@@ -144,12 +144,18 @@ function spawn!(agent_db::Vector, adult_a::AdultAssumptions, age_assumpt::AgentA
 
   @assert(0.01 < compensation_factor_b < 1.99, "Population regulation has failed, respecify simulation parameters")
 
-  for i = 1:length(agent_db)
-    push!((agent_db[i]).alive, 0)
-    push!((agent_db[i]).weekNum, week)
+  newClass = length(agent_db[1].weekNum)
+
+  #Check if currently in same spawning season as most recent class. If so, continue adding brood to that class.
+  #If not, add a new class to each agent and begin adding brood to the new class.
+  if week - agent_db[1].weekNum[newClass] > 12
+    for i = 1:length(agent_db)
+      push!((agent_db[i]).alive, 0)
+      push!((agent_db[i]).weekNum, week)
+    end
+    newClass += 1
   end
 
-  newClass = length(agent_db[1].weekNum)
 
   for i = 1:length(enviro_a.spawningHash)
     if isEmpty(agent_db[enviro_a.spawningHash[i]]) == false
