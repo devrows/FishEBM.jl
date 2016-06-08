@@ -73,3 +73,13 @@ addingStock = [5000, 10000, 15000, 20000]
 for i = 1:4
   injectAgents!(a_db, enviro_a.spawningHash, addingStock[5-i], -a_a.growth[((7-i)%4)+1])
 end
+
+# Additional values, used in createReadme() and simulate()
+k = 1
+effort = [0]
+bump = [100000]
+initStock = [5000, 10000, 15000, 20000]
+description = "Test description for simulation README file."
+
+# Generates a README, as a warning, these are non-empty files.
+createReadme(standardReport(), description, k, effort, bump, initStock, adult_a, a_a)
