@@ -130,7 +130,7 @@ function createReadme(runDir::ASCIIString, userInput::ASCIIString, k::Int64, eff
   agentAssumpt::AgentAssumptions)
     """
         INPUT: runDir, userInput, k, effort, bump, initStock, adultAssumpt, agentAssumpt.
-        OUTPUT: SIMREADME.txt
+        OUTPUT: simREADME.txt
 
         Function creats a formatted textfile containing information particular to a simulation's run.
         The file saves in the same directory as the current date's run number. For descriptions
@@ -138,7 +138,7 @@ function createReadme(runDir::ASCIIString, userInput::ASCIIString, k::Int64, eff
         PATH and description respectively.
     """
 
-    file_name = string(runDir,"\\test.txt")
+    file_name = string(runDir,"\\simREADME.txt")
     output_file = open(file_name, "w")
 
     write(output_file,"-------------------------\n")

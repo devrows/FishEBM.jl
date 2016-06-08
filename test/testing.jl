@@ -75,11 +75,15 @@ for i = 1:4
 end
 
 # Additional values, used in createReadme() and simulate()
+# *k = carrying capacity.
+# *effort = fishing effort.
+# *bump = stock pop. bump (might be removed in time.)
+# *initStock = stock population.
 k = 1
 effort = [0]
 bump = [100000]
 initStock = [5000, 10000, 15000, 20000]
-description = "Test description for simulation README file."
+description = "Test description for simulation simREADME file."
 
-# Generates a README, as a warning, these are non-empty files.
+# Generates: /results/<date>/run_<i>/simREADME.txt, as a warning, these are non-empty files.
 createReadme(standardReport(), description, k, effort, bump, initStock, adult_a, a_a)
