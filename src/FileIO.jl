@@ -90,7 +90,8 @@ function runDirCheck(fullDir::ASCIIString)
         OUTPUT: String containing the PATH for a currently
                 non-existent RUN directory.
 
-        Checks if a run directory already exist (reliant on INPUT).
+        Checks if a run directory already exist (reliant on INPUT)
+        and sends a string for the name of the new run directory.
     """
 
     dirCounter = 0
@@ -107,6 +108,34 @@ function runDirCheck(fullDir::ASCIIString)
         end
         dirCounter = dirCounter + 1
     end
+end
+
+
+function currentRunDir(fullDir::ASCIIString)
+  """
+      INPUT: fullDir = user specified directory PATH.
+      OUTPUT: String containing the PATH for current working
+          run directory.
+
+      Checks if a run directory already exist (reliant on INPUT)
+      and sends a string for the name of the new run directory.
+  """
+
+  dirCounter = 0
+  stopCriteria = 0
+
+  while (stopCriteria == 0)
+      runDirSub = string("\\run_", dirCounter)
+      dirExist = isdir(string(fullDir, runDirSub))
+
+      if dirExist == false
+          runDirSub = string("\\run_", dirCounter-1)
+          runDir = string(fullDir, runDirSub)
+          return string(runDir)
+          stopCriteria = 1
+      end
+      dirCounter = dirCounter + 1
+  end
 end
 
 
@@ -130,7 +159,7 @@ function createReadme(runDir::ASCIIString, userInput::ASCIIString, k::Int64, eff
   agentAssumpt::AgentAssumptions)
     """
         INPUT: runDir, userInput, k, effort, bump, initStock, adultAssumpt, agentAssumpt.
-        OUTPUT: SIMREADME.txt
+        OUTPUT: simREADME.txt
 
         Function creats a formatted textfile containing information particular to a simulation's run.
         The file saves in the same directory as the current date's run number. For descriptions
@@ -138,7 +167,7 @@ function createReadme(runDir::ASCIIString, userInput::ASCIIString, k::Int64, eff
         PATH and description respectively.
     """
 
-    file_name = string(runDir,"\\test.txt")
+    file_name = string(runDir,"\\simREADME.txt")
     output_file = open(file_name, "w")
 
     write(output_file,"-------------------------\n")
@@ -223,4 +252,25 @@ function createReadme(runDir::ASCIIString, userInput::ASCIIString, k::Int64, eff
     show(output_file, agentAssumpt.autonomy)
 
     close(output_file)
+end
+
+
+function simSummary(final_week::Int64, a_db::Vector, a_a::AgentAssumptions)
+    """
+      INPUT: final_week = final week from simulate's "current_week" IE. the last week of the simulation.
+      OUTPUT: simSUMMARY.csv: file containing weekly population levels.
+    """
+    runDir  = currentRunDir(createDateDir(createResDir(setProjPath())))
+    stagePopulation = [0,0,0,0]
+    popDataFrame = DataFrame(Week = 0, Stage1 = stagePopulation[1], Stage2 = stagePopulation[2], Stage3 = stagePopulation[3],Stage4 = stagePopulation[4], Total = sum(stagePopulation))
+
+    for i = 1:final_week
+      for j = 1:4
+        stagePopulation[j] = getStagePopulation(j, final_week, a_db, a_a)
+      end
+      push!(popDataFrame,(i,stagePopulation[1],stagePopulation[2],stagePopulation[3],stagePopulation[4],sum(stagePopulation)))
+    end
+
+    file = string(runDir,"\\simSUMMARY.csv")
+    writetable(file, popDataFrame)
 end
