@@ -74,7 +74,7 @@ for i = 1:4
   injectAgents!(a_db, enviro_a.spawningHash, addingStock[5-i], -a_a.growth[((7-i)%4)+1])
 end
 
-# Additional values, used in createReadme() and simulate()
+# Additional values, used in simSummary
 # *k = carrying capacity.
 # *effort = fishing effort.
 # *bump = stock pop. bump (might be removed in time.)
@@ -85,12 +85,4 @@ description = "Test description for simulation simREADME file."
 finalWeek = 5
 
 # Generates: /results/<date>/run_<i>/<simREADME.txt, simSUMMARY.csv>, as a warning, these are non-empty files.
-@time createReadme(standardReport(), description, k, effort, bump, addingStock, adult_a, a_a)
-@time simSummary(final_week, a_db, a_a)
-
-simulationDir()
-path = runDir(dateDir(resultsDir(setProjPath())[1])[1])[2]
-simReadme(path, description, k, effort, bump, addingStock, adult_a, a_a)
-simSummary(path, final_week, a_db, a_a)
-
 @time simSummary(adult_a, a_a, a_db, bump, effort, finalWeek, addingStock, k, description)
