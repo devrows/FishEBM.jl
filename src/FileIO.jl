@@ -9,7 +9,6 @@ function setProjPath()
         splitting the string of the current directory pathway at
         the first and second intstance of '\\' (in reverse order).
     """
-
     projPath = Base.source_path()
     pathEndSearch = rsearch(projPath, "\\")[1]
     endOfDirPath = projPath[pathEndSearch:length(projPath)]
@@ -23,7 +22,14 @@ end
 
 
 function createDir(path::ASCIIString, exists::Bool)
+    """
+        INPUT:  path = user specified path
+                & exists = True/False.
+        OUTPUT: N/A.
 
+        Creates a directory based on the user defined path and has dependency
+        on exists. It is reconmended that one passes isdir(path) into exists.
+      """
     if exists == true
         print("This directory already exists.\n")
     else
@@ -33,6 +39,11 @@ end
 
 
 function resultsDir(path::ASCIIString)
+    """
+        INPUT:  path = user specified path.
+        OUTPUT: resultsPath = dir. for results folder
+                & dirExist = True/False.
+    """
     resultsPath = string(path, "\\results")
     dirExist = isdir(resultsPath)
 
@@ -41,6 +52,11 @@ end
 
 
 function dateDir(path::ASCIIString)
+    """
+        INPUT:  path = user specified path.
+        OUTPUT: datePath = dir. for date folder
+                & dirExist = True/False.
+    """
     currentDate = string(Dates.today())
     datePath =string(path,string("\\",currentDate))
     dirExist = isdir(datePath)
@@ -50,6 +66,12 @@ end
 
 
 function runDir(path::ASCIIString)
+  """
+      INPUT:  path = user specified path.
+      OUTPUT: newRunPath = dir. for new run folder,
+              currentRunPath = dir. for current run folder,
+              & dirExist = True/False.
+  """
   dirCounter = 0
   stopCriteria = 0
 
@@ -216,6 +238,12 @@ end
 
 
 function simSummary(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumptions, agentDB::Vector, bump::Array{Int64,1}, effort::Array{Int64,1}, finalWeek::Int64, initStock::Array{Int64,1}, carryingCap::Int64, userInput::ASCIIString)
+    """
+        INPUT: See: aliveData() & simReadme().
+        OUTPUT: N/A.
+
+        General function for FishEBM.jl to automatically generate summary files per simulation for archiving and analysis.
+    """
     simDir()
     path = runDir(dateDir(resultsDir(setProjPath())[1])[1])[2]
     aliveData(agentAssumpt, agentDB, finalWeek, path)
