@@ -35,13 +35,13 @@ module FishEBM
 
     # FileIO.jl functions
     setProjPath,
-    createResDir,
-    createDateDir,
-    runDirCheck,
-    createRunDir,
-    standardReport,
-    createReadme,
-    currentRunDir,
+    resultsDir,
+    dateDir,
+    runDir,
+    createDir,
+    simDir,
+    simReadme,
+    aliveData,
     simSummary,
 
     # simulationResults.jl functions
