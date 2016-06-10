@@ -82,8 +82,15 @@ k = 1
 effort = [0]
 bump = [100000]
 description = "Test description for simulation simREADME file."
-final_week = 5
+finalWeek = 5
 
 # Generates: /results/<date>/run_<i>/<simREADME.txt, simSUMMARY.csv>, as a warning, these are non-empty files.
 @time createReadme(standardReport(), description, k, effort, bump, addingStock, adult_a, a_a)
 @time simSummary(final_week, a_db, a_a)
+
+simulationDir()
+path = runDir(dateDir(resultsDir(setProjPath())[1])[1])[2]
+simReadme(path, description, k, effort, bump, addingStock, adult_a, a_a)
+simSummary(path, final_week, a_db, a_a)
+
+@time simSummary(adult_a, a_a, a_db, bump, effort, finalWeek, addingStock, k, description)
