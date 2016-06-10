@@ -18,145 +18,85 @@ function setProjPath()
     endOfDirPath = projPath[pathEndSearch:length(projPath)]
     projPath = split(projPath, endOfDirPath)[1]
 
-    return projPath
+    return ascii(projPath)
 end
 
 
-function createResDir(projPath::SubString)
-    """
-        INPUT: projPath = current project path.
-        OUTPUT: resultsDirPath = location of results directory.
+function createDir(path::ASCIIString, exists::Bool)
 
-        Creates a results directory the the location of INPUT. Defensively
-        checks if a results directory already exists. Might be wise to just
-        skip the check and produce results. That is, people will have a results
-        directory, a check after will be kinda redundant, maybe...
-    """
-
-    resultsDirPath = string(projPath, "\\results")
-    dirResultsExist = isdir(resultsDirPath)
-
-    if dirResultsExist == false
-        mkdir(resultsDirPath)
-        print("Creating a results directory.\n")
-    elseif dirResultsExist == true
-        print("Results directory already exists\n")
+    if exists == true
+        print("This directory already exists.\n")
+    else
+      mkdir(path)
     end
-
-    return resultsDirPath
 end
 
 
-function createDateDir(resultsDirPath::ASCIIString)
-    """
-        INPUT: resultsDirPath = location of results directory.
-        OUTPUT: fullDir = location of the current dates directory.
+function resultsDir(path::ASCIIString)
+    resultsPath = string(path, "\\results")
+    dirExist = isdir(resultsPath)
 
-        Creates a new directory for a set of results (based on input and date).
-        Defensively checks to see if a current directory exists for the same date.
-    """
+    return (resultsPath,dirExist)
+end
+
+
+function dateDir(path::ASCIIString)
     currentDate = string(Dates.today())
-    resultsDirName = string("\\",currentDate)
-    fullDir = string(resultsDirPath, resultsDirName)
-    dirExist = isdir(fullDir)
+    datePath =string(path,string("\\",currentDate))
+    dirExist = isdir(datePath)
 
-    if dirExist == true
-        print("A directory for: ",currentDate," already exists.\n")
-    elseif dirExist == false
-        mkdir(fullDir)
-        print("Creating a directory specific to: ", currentDate,"\n")
-    end
-
-    return fullDir
+    return (datePath,dirExist)
 end
 
 
-function createRunDir(runDir::ASCIIString)
-    """
-        INPUT: runDir = location of the current run directory.
-        OUTPUT: none.
-
-        Creates a RUN directory based on its INPUT.
-    """
-
-    print("Now printing README to ", runDir,"\n")
-    mkdir(runDir)
-end
-
-
-function runDirCheck(fullDir::ASCIIString)
-    """
-        INPUT: fullDir = user specified directory PATH.
-        OUTPUT: String containing the PATH for a currently
-                non-existent RUN directory.
-
-        Checks if a run directory already exist (reliant on INPUT)
-        and sends a string for the name of the new run directory.
-    """
-
-    dirCounter = 0
-    stopCriteria = 0
-
-    while (stopCriteria == 0)
-        runDirSub = string("\\run_", dirCounter)
-        dirExist = isdir(string(fullDir, runDirSub))
-
-        if dirExist == false
-            runDir = string(fullDir, runDirSub)
-            return string(runDir)
-            stopCriteria = 1
-        end
-        dirCounter = dirCounter + 1
-    end
-end
-
-
-function currentRunDir(fullDir::ASCIIString)
-  """
-      INPUT: fullDir = user specified directory PATH.
-      OUTPUT: String containing the PATH for current working
-          run directory.
-
-      Checks if a run directory already exist (reliant on INPUT)
-      and sends a string for the name of the new run directory.
-  """
-
+function runDir(path::ASCIIString)
   dirCounter = 0
   stopCriteria = 0
 
   while (stopCriteria == 0)
-      runDirSub = string("\\run_", dirCounter)
-      dirExist = isdir(string(fullDir, runDirSub))
+      newRunPath = string(path,string("\\run_", dirCounter))
+      dirExist = isdir(newRunPath)
 
       if dirExist == false
-          runDirSub = string("\\run_", dirCounter-1)
-          runDir = string(fullDir, runDirSub)
-          return string(runDir)
           stopCriteria = 1
+      elseif dirExist == true
+          dirCounter = dirCounter + 1
       end
-      dirCounter = dirCounter + 1
   end
+
+  if dirCounter == 0
+      currentRunPath = string(path,string("\\run_", dirCounter))
+  else
+      currentRunPath = string(path,string("\\run_", dirCounter-1))
+  end
+
+  newRunPath = string(path,string("\\run_", dirCounter))
+  dirExist = isdir(newRunPath)
+
+  return (newRunPath, currentRunPath, dirExist)
 end
 
 
-function standardReport()
+function simDir()
     """
         INPUT: none.
         OUTPUT: none.
 
-        Runs the nested call back function for standard result reporting.
-        IE. assuming there is no custom input from the user.
+        Creates the newest directory for the current simulation.
     """
 
-    runDir  = runDirCheck(createDateDir(createResDir(setProjPath())))
-    createRunDir(runDir)
+    path = setProjPath()
+    results = resultsDir(path)
+    date = dateDir(results[1])
+    run = runDir(date[1])
 
-    return string(runDir)
+    createDir(results[1],results[2])
+    createDir(date[1],date[2])
+    createDir(run[1],run[3])
 end
 
 
-function createReadme(runDir::ASCIIString, userInput::ASCIIString, k::Int64, effort::Array{Int64,1}, bump::Array{Int64,1}, initStock::Array{Int64,1}, adultAssumpt::AdultAssumptions,
-  agentAssumpt::AgentAssumptions)
+function simReadme(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumptions, bump::Array{Int64,1}, effort::Array{Int64,1}, initStock::Array{Int64,1}, carryingCap::Int64, path::ASCIIString, userInput::ASCIIString)
     """
         INPUT: runDir, userInput, k, effort, bump, initStock, adultAssumpt, agentAssumpt.
         OUTPUT: simREADME.txt
@@ -167,7 +107,7 @@ function createReadme(runDir::ASCIIString, userInput::ASCIIString, k::Int64, eff
         PATH and description respectively.
     """
 
-    file_name = string(runDir,"\\simREADME.txt")
+    file_name = string(path,"\\simREADME.txt")
     output_file = open(file_name, "w")
 
     write(output_file,"-------------------------\n")
@@ -180,7 +120,7 @@ function createReadme(runDir::ASCIIString, userInput::ASCIIString, k::Int64, eff
     genAssumpt_string = "General Assumptions: \n-------------------------\n"
     write(output_file, genAssumpt_string)
 
-    carryingCap_string = string("Carrying capacity: ",k,"\n")
+    carryingCap_string = string("Carrying capacity: ",carryingCap,"\n")
     write(output_file, carryingCap_string)
 
     effort_string = "Effort vector: "
@@ -255,22 +195,29 @@ function createReadme(runDir::ASCIIString, userInput::ASCIIString, k::Int64, eff
 end
 
 
-function simSummary(final_week::Int64, a_db::Vector, a_a::AgentAssumptions)
+function aliveData(agentAssumpt::AgentAssumptions, agentDB::Vector, finalWeek::Int64, path::ASCIIString)
     """
       INPUT: final_week = final week from simulate's "current_week" IE. the last week of the simulation.
       OUTPUT: simSUMMARY.csv: file containing weekly population levels.
     """
-    runDir  = currentRunDir(createDateDir(createResDir(setProjPath())))
     stagePopulation = [0,0,0,0]
     popDataFrame = DataFrame(Week = 0, Stage1 = stagePopulation[1], Stage2 = stagePopulation[2], Stage3 = stagePopulation[3],Stage4 = stagePopulation[4], Total = sum(stagePopulation))
 
-    for i = 1:final_week
+    for i = 1:finalWeek
       for j = 1:4
-        stagePopulation[j] = getStagePopulation(j, final_week, a_db, a_a)
+        stagePopulation[j] = getStagePopulation(j, finalWeek, agentDB, agentAssumpt)
       end
       push!(popDataFrame,(i,stagePopulation[1],stagePopulation[2],stagePopulation[3],stagePopulation[4],sum(stagePopulation)))
     end
 
-    file = string(runDir,"\\simSUMMARY.csv")
+    file = string(path,"\\simSUMMARY.csv")
     writetable(file, popDataFrame)
+end
+
+
+function simSummary(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumptions, agentDB::Vector, bump::Array{Int64,1}, effort::Array{Int64,1}, finalWeek::Int64, initStock::Array{Int64,1}, carryingCap::Int64, userInput::ASCIIString)
+    simDir()
+    path = runDir(dateDir(resultsDir(setProjPath())[1])[1])[2]
+    aliveData(agentAssumpt, agentDB, finalWeek, path)
+    simReadme(adultAssumpt, agentAssumpt, bump, effort, initStock, carryingCap, path, userInput)
 end
