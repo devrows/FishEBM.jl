@@ -398,9 +398,38 @@ function move!(agent_db::Vector, agent_a::AgentAssumptions,
         stage = lifeStages[cohort]
         choices = deepcopy(moveChoices)
 
+        if stage == 4
+          periodicWeek = current_week%52
+          moveX = -5*cosd((180*periodicWeek)/27)+1
+          moveY = -5*sind((180*periodicWeek)/27)+1
+          moveRadius = sqrt(moveX^2 + moveY^2)
+          moveArray = Array(Float64, 3, 3)
+          fill!(moveArray, 1.)
+
+          if periodicWeek < 14
+            moveArray[2,1] = -moveX
+            moveArray[3,1] = moveRadius
+            moveArray[3,2] = -moveY
+          elseif periodicWeek > 13 && periodicWeek < 27
+            moveArray[2,3] = moveX
+            moveArray[3,2] = -moveY
+            moveArray[3,3] = moveRadius
+          elseif periodicWeek > 26 && periodicWeek < 40
+            moveArray[1,2] = moveY
+            moveArray[1,3] = moveRadius
+            moveArray[2,3] = moveX
+          elseif periodicWeek > 39
+            moveArray[1,1] = moveRadius
+            moveArray[1,2] = moveY
+            moveArray[2,1] = -moveX
+          end
+        else
+          moveArray = agent_a.movement[stage]
+        end
+
         #match the moveChoices with the corresponding movement array
         for moveNum = 1:size(choices)[1]
-          choices[moveNum, 2] = (agent_a.movement[stage])[choices[moveNum, 2]]
+          choices[moveNum, 2] = round(Int, moveArray[choices[moveNum, 2]])
         end
 
         #Match natural mortality rate by location, habitat type, and fish age
