@@ -65,7 +65,7 @@ type EnviroAgent
   """
     This is an "Environment agent" used to track fish population dynamics.
 
-    Last Update: May 2016
+    Last Update: June 2016
   """
   locationID::Int64 #locationID corresponds to the ID in the habitat array
 
