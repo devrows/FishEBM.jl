@@ -9,7 +9,7 @@
 module FishEBM
 
   #Packages used by this package
-  using Distributions, ProgressMeter, DataFrames, DataArrays
+  using DataArrays, DataFrames, Distributions, Gadfly, ProgressMeter
 
   export
     # agent_stock_interaction.jl functions
