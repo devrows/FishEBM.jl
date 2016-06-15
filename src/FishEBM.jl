@@ -47,6 +47,7 @@ module FishEBM
     # simulationResults.jl functions
 
     # simulate.jl functions
+    simulate,
 
     # stock.jl functions
 
