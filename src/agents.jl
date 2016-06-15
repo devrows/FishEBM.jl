@@ -334,14 +334,14 @@ function kill!(agent_db::Vector, e_a::EnvironmentAssumptions, a_a::AgentAssumpti
 
           #Number of fish killed follows binomial distribution with arguments of number of fish alive
           #and natural mortality in the form of a probability
-          killed = rand(Binomial(agent_db[i].alive[j], a_a.naturalmortality[habitat, stage]))
-          agent_db[i].killed[stage] += killed
-          agent_db[i].alive[j] -= killed
+          killedNatural = rand(Binomial(agent_db[i].alive[j], a_a.naturalmortality[habitat, stage]))
+          agent_db[i].killedNatural[stage] += killedNatural
+          agent_db[i].alive[j] -= killedNatural
           if agent_db[i].alive[j] > 0
             if in(agent_db[i].locationID, e_a.risk) #Check if this particular locationID is in risk zone
-              killed = rand(Binomial(agent_db[i].alive[j], a_a.extramortality[stage]))
-              agent_db[i].killed[stage] += killed
-              agent_db[i].alive[j] -= killed
+              killedExtra = rand(Binomial(agent_db[i].alive[j], a_a.extramortality[stage]))
+              agent_db[i].killedExtra[stage] += killedExtra
+              agent_db[i].alive[j] -= killedExtra
             end #if risk
           end #if agent_db[i].alive (inner)
         end #if agent_db[i].alive (outer)
