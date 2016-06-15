@@ -268,6 +268,7 @@ function harvest!(effort::Float64, week::Int64, agent_db::Vector, enviro_a::Envi
       if cohort == 0 #check if cohort exists
         leftOver += harvestFromEach #If cohort does not exist in agent, add what woud have been their harvest to leftover
       else
+        agent_db[enviro_a.spawningHash[harvest_loc[i]]].harvest += harvestFromEach
         agent_db[enviro_a.spawningHash[harvest_loc[i]]].alive[cohort] -= harvestFromEach
         if agent_db[enviro_a.spawningHash[harvest_loc[i]]].alive[cohort] < 0
           harvestFromEach += 0 - agent_db[enviro_a.spawningHash[harvest_loc[i]]].alive[cohort]
@@ -280,6 +281,7 @@ function harvest!(effort::Float64, week::Int64, agent_db::Vector, enviro_a::Envi
     for i = 1:length(randomAgents) #loop through all harvest locations
       cohort = getCohortNumber(age, week, agent_db[enviro_a.spawningHash[randomAgents[i]]].weekNum)
       if cohort != 0
+        agent_db[enviro_a.spawningHash[harvest_loc[i]]].harvest += 1
         agent_db[enviro_a.spawningHash[harvest_loc[i]]].alive[cohort] -= 1
         if agent_db[enviro_a.spawningHash[harvest_loc[i]]].alive[cohort] < 0
           agent_db[enviro_a.spawningHash[harvest_loc[i]]].alive[cohort] = 0

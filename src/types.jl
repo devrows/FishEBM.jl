@@ -72,9 +72,10 @@ type EnviroAgent
   alive::Vector
   killedNatural::Vector
   killedExtra::Vector
+  harvest::Int64
   weekNum::Vector
 
-  EnviroAgent(locationID) = new(locationID, [0], [0,0,0,0], [0,0,0,0], [0])
+  EnviroAgent(locationID) = new(locationID, [0], [0,0,0,0], [0,0,0,0], 0, [0])
 end
 
 
