@@ -2,13 +2,11 @@
   Package: FishEBM
   File: simulate.jl
   Justin Angevaare, Devin Rose
-  Combine agent and stock level functions into a simulation framework
+  Brings together all of the functions necessary for a life cycle simulation
   May 2015
 """
 
-"""
-  Brings together all of the functions necessary for a life cycle simulation
-"""
+
 function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
   initStock::Vector, e_a::EnvironmentAssumptions, adult_a::AdultAssumptions,
   age_a::AgentAssumptions, progress=true::Bool, limit=50000000::Int64)
