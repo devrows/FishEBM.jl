@@ -42,6 +42,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
     spawnWeek = 40
     print("Year = $y \n")
     for w = 1:52
+
       @assert(totalPopulation < limit, "> $limit agents in current simulation, stopping here.")
 
       if progress
@@ -76,6 +77,12 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
         removeEmptyClass!(a_db)
         return a_db
       end
+
+      if totalPopulation > limit
+        print("$limit agents in current simulation, stopping here.")
+        return a_db
+      end
+      
     end
     #Remove empty cohorts
     removeEmptyClass!(a_db)
