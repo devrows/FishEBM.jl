@@ -58,7 +58,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
       end
 
       if w > spawnMin
-        spawn!(a_db, aadult_a, age_a, e_a, totalWeek, carrying_capacity[y])
+        spawn!(a_db, adult_a, age_a, e_a, totalWeek, carrying_capacity[y])
       end
 
       #Agents are killed and moved weekly
