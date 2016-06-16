@@ -237,7 +237,7 @@ function aliveData(agentAssumpt::AgentAssumptions, agentDB::Vector, finalWeek::I
 end
 
 
-function simSummary(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumptions, agentDB::Vector, bump::Array{Int64,1}, effort::Array{Int64,1}, finalWeek::Int64, initStock::Array{Int64,1}, carryingCap::Int64, userInput::ASCIIString)
+function simSummary(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumptions, agentDB::Vector, bump::Array{Int64,1}, effort::Array{Int64,1}, finalWeek::Int64, initStock::Array{Int64,1}, carryingCap::Array{Int64,1}, userInput::ASCIIString)
     """
         INPUT: See: aliveData() & simReadme().
         OUTPUT: N/A.
