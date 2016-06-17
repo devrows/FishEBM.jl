@@ -118,7 +118,7 @@ function simDir()
 end
 
 
-function simReadme(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumptions, bump::Array{Int64,1}, effort::Array{Int64,1}, initStock::Array{Int64,1}, carryingCap::Int64, path::ASCIIString, userInput::ASCIIString)
+function simReadme(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumptions, bump::Vector, effort::Vector, initStock::Vector, carryingCap::Vector, path::ASCIIString, userInput::ASCIIString)
     """
         INPUT: runDir, userInput, k, effort, bump, initStock, adultAssumpt, agentAssumpt.
         OUTPUT: simREADME.txt
@@ -217,27 +217,18 @@ function simReadme(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumption
 end
 
 
-function aliveData(agentAssumpt::AgentAssumptions, agentDB::Vector, finalWeek::Int64, path::ASCIIString)
+function aliveData(popDataFrame::DataFrame, path::ASCIIString)
     """
       INPUT: final_week = final week from simulate's "current_week" IE. the last week of the simulation.
       OUTPUT: simSUMMARY.csv: file containing weekly population levels.
     """
-    stagePopulation = [0,0,0,0]
-    popDataFrame = DataFrame(Week = 0, Stage1 = stagePopulation[1], Stage2 = stagePopulation[2], Stage3 = stagePopulation[3],Stage4 = stagePopulation[4], Total = sum(stagePopulation))
-
-    for i = 1:finalWeek
-      for j = 1:4
-        stagePopulation[j] = getStagePopulation(j, finalWeek, agentDB, agentAssumpt)
-      end
-      push!(popDataFrame,(i,stagePopulation[1],stagePopulation[2],stagePopulation[3],stagePopulation[4],sum(stagePopulation)))
-    end
 
     file = string(path,"\\simSUMMARY.csv")
     writetable(file, popDataFrame)
 end
 
 
-function simSummary(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumptions, agentDB::Vector, bump::Array{Int64,1}, effort::Array{Int64,1}, finalWeek::Int64, initStock::Array{Int64,1}, carryingCap::Array{Int64,1}, userInput::ASCIIString)
+function simSummary(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumptions, agentDB::Vector, bump::Vector, effort::Vector, finalWeek::Int64, initStock::Vector, carryingCap::Vector, popDataFrame::DataFrame, userInput::ASCIIString)
     """
         INPUT: See: aliveData() & simReadme().
         OUTPUT: N/A.
@@ -246,6 +237,6 @@ function simSummary(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumptio
     """
     simDir()
     path = runDir(dateDir(resultsDir(setProjPath())[1])[1])[2]
-    aliveData(agentAssumpt, agentDB, finalWeek, path)
+    aliveData(popDataFrame, path)
     simReadme(adultAssumpt, agentAssumpt, bump, effort, initStock, carryingCap, path, userInput)
 end
