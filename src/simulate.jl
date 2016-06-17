@@ -22,6 +22,9 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
   for i = 1:4
     injectAgents!(a_db, e_a.spawningHash, initStock[5-i], -age_a.growth[((7-i)%4)+1])
   end
+
+  popDataFrame = DataFrame(Week = 0, Stage1 = initStock[1], Stage2 = initStock[2], Stage3 = initStock[3],Stage4 = initStock[4], Total = sum(initStock))
+
   spawn!(a_db, adult_a, age_a, e_a, 1, carrying_capacity[1])
 
   bumpvec = fill(0, years)
@@ -42,6 +45,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
     spawnWeek = 40
     print("Year = $y \n")
     for w = 1:52
+
       @assert(totalPopulation < limit, "> $limit agents in current simulation, stopping here.")
 
       if progress
@@ -72,10 +76,22 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
         display(popPlot)
       end
 
+      stagePopulation = [0,0,0,0]
+      for j = 1:4
+        stagePopulation[j] = getStagePopulation(j, totalWeek, a_db, age_a)
+      end
+      push!(popDataFrame,(totalWeek,stagePopulation[1],stagePopulation[2],stagePopulation[3],stagePopulation[4],sum(stagePopulation)))
+
       if totalPopulation == 0
         removeEmptyClass!(a_db)
         return a_db
       end
+
+      if totalPopulation > limit
+        print("$limit agents in current simulation, stopping here.")
+        return a_db
+      end
+      
     end
     #Remove empty cohorts
     removeEmptyClass!(a_db)
