@@ -76,6 +76,12 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
         display(popPlot)
       end
 
+      stagePopulation = [0,0,0,0]
+      for j = 1:4
+        stagePopulation[j] = getStagePopulation(j, totalWeek, a_db, age_a)
+      end
+      push!(popDataFrame,(totalWeek,stagePopulation[1],stagePopulation[2],stagePopulation[3],stagePopulation[4],sum(stagePopulation)))
+
       if totalPopulation == 0
         removeEmptyClass!(a_db)
         return a_db
@@ -85,13 +91,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
         print("$limit agents in current simulation, stopping here.")
         return a_db
       end
-
-      stagePopulation = [0,0,0,0]
-      for j = 1:4
-        stagePopulation[j] = getStagePopulation(j, totalWeek, a_db, age_a)
-      end
-      push!(popDataFrame,(totalWeek,stagePopulation[1],stagePopulation[2],stagePopulation[3],stagePopulation[4],sum(stagePopulation)))
-
+      
     end
     #Remove empty cohorts
     removeEmptyClass!(a_db)
