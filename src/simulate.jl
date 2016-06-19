@@ -84,18 +84,24 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
 
       if totalPopulation == 0
         removeEmptyClass!(a_db)
+        description = "Simulation ended with 0 population."
+        simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity, popDataFrame, description)
+
         return a_db
       end
 
       if totalPopulation > limit
         print("$limit agents in current simulation, stopping here.")
+        description = "Simulation past limit of $limit"
+        simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity, popDataFrame, description)
         return a_db
       end
-      
+
     end
     #Remove empty cohorts
     removeEmptyClass!(a_db)
   end
-
+  description = "Simulation ended normally"
+  simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity, popDataFrame, description)
   return a_db
 end
