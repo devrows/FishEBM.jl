@@ -91,8 +91,8 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
       end
 
       if totalPopulation > limit
-        print("$limit agents in current simulation, stopping here.")
-        description = "Simulation past limit of $limit"
+        print("$limit agents in current simulation, stopping here. \n")
+        description = "Simulation passed the total population limit of $limit (totalPopulation = $totalPopulation agents)"
         simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity, popDataFrame, description)
         return a_db
       end
