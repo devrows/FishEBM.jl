@@ -42,8 +42,6 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
   spawnMin = 39; harvestMin = 39;
 
   for y = 1:years
-    spawnWeek = 40
-    print("Year = $y \n")
     for w = 1:52
 
       @assert(totalPopulation < limit, "> $limit agents in current simulation, stopping here.")
