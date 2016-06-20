@@ -3,20 +3,23 @@
   File: simulate.jl
   Justin Angevaare, Devin Rose
   Brings together all of the functions necessary for a life cycle simulation
-  May 2015
+  Last update: June 2016
 """
 
 
 function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
   initStock::Vector, e_a::EnvironmentAssumptions, adult_a::AdultAssumptions,
-  age_a::AgentAssumptions, progress=true::Bool, limit=50000000::Int64)
+  age_a::AgentAssumptions, progress=true::Bool, limit=50000000::Int64,
+  plotPopDensity=true::Bool)
 
   @assert(all(carrying_capacity .> 0.), "There is at least one negative carrying capacity")
   years = length(carrying_capacity)
 
   #initialize the agent database and hash the enviro
   a_db = AgentDB(e_a); hashEnvironment!(a_db, e_a);
-  popDensity = initPopulationDensity(e_a)
+  if plotPopDensity
+    popDensity = initPopulationDensity(e_a)
+  end
 
   #initialize the stock with a spawn
   for i = 1:4
@@ -44,10 +47,9 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
   for y = 1:years
     for w = 1:52
 
-      @assert(totalPopulation < limit, "> $limit agents in current simulation, stopping here.")
-
       if progress
-        progressBar.desc = " Year $y (of $years), week $w of simulation ($totalPopulation) agents) "
+        updatePopulationDensity!(a_db, popDensity)
+        progressBar.desc = " Year $y (of $years), week $w of simulation ($totalPopulation agents) "
         next!(progressBar)
       end
 
@@ -67,39 +69,35 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
       kill!(a_db, e_a, age_a, totalWeek)
       move!(a_db, age_a, e_a, totalWeek)
 
+      #update population information
+      stagePopulation = [0,0,0,0]; totalPopulation = 0;
+      for j = 1:4
+        stagePopulation[j] = getStagePopulation(j, totalWeek, a_db, age_a)
+      end
+      totalPopulation = sum(stagePopulation)
+      push!(popDataFrame,(totalWeek,stagePopulation[1],stagePopulation[2],stagePopulation[3],stagePopulation[4], totalPopulation))
+
       #show a real time plot (weekly) of agent movement
-      if w == 1 || w%10 == 0
-        totalPopulation = updatePopulationDensity!(a_db, popDensity)
+      if plotPopDensity && (w == 1 || w%10 == 0)
+        updatePopulationDensity!(a_db, popDensity)
         popPlot = spy(popDensity, Guide.title("Year = $y, week = $w, totalPopulation = $totalPopulation"))
         display(popPlot)
       end
 
-      stagePopulation = [0,0,0,0]
-      for j = 1:4
-        stagePopulation[j] = getStagePopulation(j, totalWeek, a_db, age_a)
-      end
-      push!(popDataFrame,(totalWeek,stagePopulation[1],stagePopulation[2],stagePopulation[3],stagePopulation[4],sum(stagePopulation)))
-
-      if totalPopulation == 0
+      #if simulation fails
+      if totalPopulation == 0 || totalPopulation > limit
         removeEmptyClass!(a_db)
-        description = "Simulation ended with 0 population."
-        simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity, popDataFrame, description)
-
-        return a_db
-      end
-
-      if totalPopulation > limit
-        print("$limit agents in current simulation, stopping here. \n")
-        description = "Simulation passed the total population limit of $limit (totalPopulation = $totalPopulation agents)"
+        description = "Simulation was stopped in year $y, week $w due to population failure (total population = $totalPopulation, population limit = $limit)."
         simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity, popDataFrame, description)
         return a_db
       end
 
-    end
-    #Remove empty cohorts
+    end #end for week
+    #Remove empty cohorts annually
     removeEmptyClass!(a_db)
-  end
-  description = "Simulation ended normally"
+  end #end for year
+
+  description = "Simulation was successfully completed."
   simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity, popDataFrame, description)
   return a_db
 end

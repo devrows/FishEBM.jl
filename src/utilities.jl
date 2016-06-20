@@ -27,31 +27,26 @@ function initPopulationDensity(enviro_a::EnvironmentAssumptions)
 end
 
 
-#Returns: integer of total population
+#Returns: operates on pop_density array
+"""
+  Description: Updates a population density matrix in the simulate function.
+    The population density is used for visualizing the movement of fish during
+    the simulation to monitor the behaviour.
+
+  Precondition: A population density matrix is already allocated prior to
+    calling this function.
+
+  Last update: June 2016
+"""
 function updatePopulationDensity!(agent_db::Vector, pop_density::Array)
-  """
-    Description: Updates a population density matrix in the simulate function.
-      The population density is used for visualizing the movement of fish during
-      the simulation to monitor the behaviour.
-
-    Precondition: A population density matrix is already allocated prior to
-      calling this function.
-
-    Last update: May 2016
-  """
-
-  totalPop = 0
-
   for k = 1:length(agent_db)
     pop_density[agent_db[k].locationID] = 1
 
     if isEmpty(agent_db[k]) == false
       for m = 1:length(agent_db[1].alive)
         pop_density[agent_db[k].locationID] += agent_db[k].alive[m]
-        totalPop += agent_db[k].alive[m]
+        agent_db[k].alive[m]
       end
     end
   end
-
-  return totalPop
 end
