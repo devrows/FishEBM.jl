@@ -1,8 +1,14 @@
 """
   Package: FishEBM
   File: simulate.jl
-  Justin Angevaare, Devin Rose
-  Brings together all of the functions necessary for a life cycle simulation
+
+  Description: Brings together all of the functions necessary for a life cycle
+    simulation
+
+  Returns: Vector(EnviroAgent)
+
+  Contributors: Justin Angevaare, Devin Rose
+
   Last update: June 2016
 """
 

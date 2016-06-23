@@ -1,10 +1,10 @@
-"""
+#=
   Package: FishEBM
   File: FishEBM.jl
   Justin Angevaare, Devin Rose
   Module definition for an agent-based model
   Created: May 2015
-"""
+=#
 
 module FishEBM
 

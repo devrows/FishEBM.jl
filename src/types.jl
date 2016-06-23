@@ -1,33 +1,37 @@
-"""
+#=
   Package: FishEBM
   File: types.jl
   Justin Angevaare, Devin Rose
   Type definitions for the structured stock-level and agent-level model components
   Created: May 2015
+=#
+
+
 """
+  naturalmortality = Age specific survivorship (survivorship at carrying
+    capacity if density depedence occurs)
+  halfmature = Age at 50% mature (Binomial cdf assumed)
+  broodsize = Age specific fecundity (i.e. mean quantity of eggs each spawning
+    female will produce)
+  fecunditycompensation = compensatory strength for changes in fecundity.
+    Compensatory strength is a divisor of K which will result in a 68% change in
+    fecundity - smaller values indicate lower compensation strength.
+    Compensation function based on Normal CDF. Use NaN if compensation is
+    assumed to not occur.
+  maturitycompensation = compensatory strength for changes in age of sexual
+    maturity. Compensatory strength is a divisor of K which will result in a 68%
+    change in age of sexual maturity - smaller values indicate lower
+    compensation strength. Compensation function based on Normal CDF. Use NaN if
+    compensation is assumed to not occur.
+  mortalitycompensation = compensatory strength for changes in age of sexual
+    maturity. Compensatory strength is a divisor of K which will result in a 68%
+    change in natural mortality - smaller values indicate lower compensation
+    strength. Compensation function based on Normal CDF. Use NaN if compensation
+    is assumed to not occur.
 
-
-
+    Last Update: March 2016
+"""
 type AdultAssumptions
-  """
-    Age specific survivorship (survivorship at carrying capacity if density depedence occurs)
-    Age at 50% mature (Binomial cdf assumed)
-    Age specific fecundity (i.e. mean quantity of eggs each spawning female will produce)
-    Compensatory fecundity - compensatory strength for changes in fecundity. Compensatory strength
-      is a divisor of K which will result in a 68% change in fecundity - smaller values indicate
-      lower compensation strength. Compensation function based on Normal CDF. Use NaN if compensation
-      is assumed to not occur.
-    Compensatory sexual maturity - compensatory strength for changes in age of sexual maturity.
-      Compensatory strength is a divisor of K which will result in a 68% change in age of sexual
-      maturity - smaller values indicate lower compensation strength. Compensation function based on
-      Normal CDF. Use NaN if compensation is assumed to not occur.
-    Compensatory mortality - compensatory strength for changes in age of sexual maturity. Compensatory
-      strength is a divisor of K which will result in a 68% change in natural mortality - smaller
-      values indicate lower compensation strength. Compensation function based on Normal CDF. Use NaN
-      if compensation is assumed to not occur.
-
-      Last Update: March 2016
-  """
   naturalmortality::Vector
   halfmature::Float64
   broodsize::Vector
@@ -42,13 +46,12 @@ type AdultAssumptions
 end
 
 
+"""
+  Description: Assumptions regarding mortality, movement, and growth of agents.
 
+  Last Update: April 2016
+"""
 type AgentAssumptions
-  """
-    Assumptions regarding mortality, movement, and growth of agents.
-
-    Last Update: April 2016
-  """
   naturalmortality::Array
   extramortality::Vector
   growth::Vector
@@ -61,12 +64,13 @@ type AgentAssumptions
 end
 
 
-type EnviroAgent
-  """
-    This is an "Environment agent" used to track fish population dynamics.
+"""
+  Description: This "Environment agent" is used to track fish population
+    dynamics during a simulation.
 
-    Last Update: June 2016
-  """
+  Last Update: June 2016
+"""
+type EnviroAgent
   locationID::Int64 #locationID corresponds to the ID in the habitat array
 
   alive::Vector
@@ -79,14 +83,16 @@ type EnviroAgent
 end
 
 
+"""
+  Description: A specialized type which contains layers of information to
+    indicate spawning area, habitat type, and additional risks.
 
+  Precondition: Location id should be specified as NaN when a valid location
+    does not exist.
+
+  Last Update: March 2016
+"""
 type EnvironmentAssumptions
-  """
-    Precondition: Location id should be specified as NaN when a valid location does not exist.
-    A specialized type which contains layers of information to indicate spawning area, habitat type, and additional risks.
-
-    Last Update: March 2016
-  """
   spawning::Array
   spawningHash::Vector
   habitat::Array
@@ -97,12 +103,4 @@ type EnvironmentAssumptions
 
   EnvironmentAssumptions(spawning, spawningHash, habitat, risk, riskHash) =
   new(spawning, spawningHash, habitat, risk, riskHash)
-end
-
-
-
-type MortalitySummary
-  """
-    Last Update: March 2016
-  """
 end

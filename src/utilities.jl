@@ -1,20 +1,25 @@
-"""
+#=
   Package: FishEBM
   File: utilities.jl
-  Devin Rose
-  Utilities for use of FishEBM
+
+  Description: Utilities for use of FishEBM, plots, memory allocation, etc.
+    during runtime.
+
+  Contributors: Devin Rose
+
   Created: March 2016
+=#
+
+
 """
+  Description: Allocates enough memory for a population density matrix and
+    sets all elements in the array to zero.
 
+  Returns: Array(Int64, size of habitat)
+
+  Last update: May 2016
+"""
 function initPopulationDensity(enviro_a::EnvironmentAssumptions)
-  """
-    Description: Allocates enough memory for a population density matrix and
-      sets all elements in the array to zero.
-
-    Precondition: None
-
-    Last update: May 2016
-  """
   popDensity = Array(Int64, size(enviro_a.habitat)[1], size(enviro_a.habitat)[2])
 
   for i = 1:size(enviro_a.habitat)[1]
@@ -27,7 +32,6 @@ function initPopulationDensity(enviro_a::EnvironmentAssumptions)
 end
 
 
-#Returns: operates on pop_density array
 """
   Description: Updates a population density matrix in the simulate function.
     The population density is used for visualizing the movement of fish during
@@ -35,6 +39,8 @@ end
 
   Precondition: A population density matrix is already allocated prior to
     calling this function.
+
+  Returns: operates directly on pop_density
 
   Last update: June 2016
 """

@@ -1,23 +1,22 @@
-"""
+#=
   Package: FishEBM
   File name: environment.jl
   Devin Rose
   Generates an abstracted environment environment agent interaction from known
     bathymetry data.
   Created: March, 2016
+=#
+
+
 """
-
-
-#Return: Boolean
-function isEmpty(empty_check::EnviroAgent)
-  """
   Description: Checks all cohorts within an enviro-agent to determine whether or
     not the enviroment location contains any agents.
 
-  Precondition: None
+  Returns: Boolean
 
   Last update: May 2016
-  """
+"""
+function isEmpty(empty_check::EnviroAgent)
   #check length of vector
   for i = 1:length(empty_check.alive)
     #if agents are in the location
@@ -32,21 +31,20 @@ end
 
 
 #Return: EnvironmentAssumptions
+"""
+  Description: Generates an environment for the simulation. Both the risk
+    assessment and spawning environments are abstracted to a list of integer
+    values.
+
+  Returns: EnvironmentAssumptions
+
+  Last update: June 2016
+"""
 function initEnvironment(pathToSpawn::ASCIIString, pathToHabitat::ASCIIString, pathToRisk::ASCIIString)
-  """
-    Description: Generates an environment for the simulation. Both the risk
-      assessment and spawning environments are abstracted to a list of integer
-      values.
-
-    Precondition: The files containing the spawn, habitat and risk data are all
-      csv files.
-
-    Last update: March 2016
-  """
   #Pad all incoming arrays
-  spawn = readdlm(pathToSpawn, ',', Bool)[150:end, 200:370]; spawn = pad_environment!(spawn);
-  habitat = readdlm(pathToHabitat, ',', Int)[150:end, 200:370]; habitat = pad_environment!(habitat);
-  risk = readdlm(pathToRisk, ',', Bool)[150:end, 200:370]; risk = pad_environment!(risk);
+  spawn = readdlm(pathToSpawn, ',', Bool)[150:end, 200:370]; pad_environment!(spawn);
+  habitat = readdlm(pathToHabitat, ',', Int)[150:end, 200:370]; pad_environment!(habitat);
+  risk = readdlm(pathToRisk, ',', Bool)[150:end, 200:370]; pad_environment!(risk);
   totalLength = (size(spawn)[1])*(size(spawn)[2])
 
   abstractSpawn = [0]
@@ -87,6 +85,8 @@ end
   Description: Generates an environment for the simulation. Container function
     for the other initEnvironment for simplicity.
 
+  Returns: EnvironmentAssumptions
+
   Last update: June 2016
 """
 function initEnvironment()
@@ -98,17 +98,16 @@ function initEnvironment()
 end
 
 
-#Return: Vector
+"""
+  Description: Generates a hash map to reference agent numbers from known
+    spawning and risk spatial locations. i.e. e_a.spawning[someNum] =
+    (a_db[e_a.spawningHash[sumNum]]).locationID
+
+  Returns: Operates directly on enviro
+
+  Last update: May 2016
+"""
 function hashEnvironment!(a_db::Vector, enviro::EnvironmentAssumptions)
-  """
-    Generates a hash map to reference agent numbers from known spawning and risk spatial locations.
-    i.e. e_a.spawning[someNum] = (a_db[e_a.spawningHash[sumNum]]).locationID
-
-    Precondition: The environment has been initialized (initEnvironment) and AgentDB
-      has been generated.
-
-    Last update: May 2016
-  """
   #Initialize required variables
   totalAgents = length(a_db)
   enviro.spawningHash = Array(Int64, length(enviro.spawning))
@@ -126,27 +125,22 @@ function hashEnvironment!(a_db::Vector, enviro::EnvironmentAssumptions)
       enviro.spawningHash[spawnNum] = agent
     end
   end
-
-  return enviro
 end
 
 
-#Return: Array
-function pad_environment!(pad_array::Array)
-  """
-    Taken from FishABM.utilities.jl
-    Justin Angevaare
-    Created: May 2015
+"""
+  Taken from FishABM.utilities.jl
 
-    Description: A basic utility function which will pad the
+  Description: A basic utility function which will pad the
     EnvironmentAssumptions such that bounds errors do not occur when performing
     hashing and movement.
 
-    Postcondition: When padding takes place, any boolean arrays will be given a false
-      value instead of 0 automatically.
-  """
+  Retruns: Array
+
+  Updated: June 2016
+"""
+function pad_environment!(pad_array::Array)
   a = fill(0, (size(pad_array, 1)+2, size(pad_array, 2)+2))
   a[2:end-1, 2:end-1] = pad_array
   pad_array = a
-  return pad_array
 end

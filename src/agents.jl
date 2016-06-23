@@ -1,20 +1,21 @@
-"""
+#=
   Package: FishEBM
   File: agents.jl
   Justin Angevaare, Devin Rose
   Functions for agent-level model components
   Created: May 2015
+=#
+
+
 """
+  Description: A function to create an empty agent database for the specified
+    simulation length.
 
+  Returns: Vector(EnviroAgent)
 
-#Return: Vector(EnviroAgent)
+  Last update: March 2016
+"""
 function AgentDB(enviro::EnvironmentAssumptions)
-  """
-    Description: A function to create an empty agent database for the specified
-      simulation length.
-    Precondition: None
-    Last update: March 2016
-  """
   #Initialize the database
   agent_db = [EnviroAgent(0)]; init = false;
   length = (size(enviro.habitat)[1])*(size(enviro.habitat)[2])
@@ -35,14 +36,15 @@ function AgentDB(enviro::EnvironmentAssumptions)
 end
 
 
-#Return: Int64
+"""
+  Description: Function used to find the current life stage of a cohort from
+    the current age using the agent assumptions growth vector.
+
+  Returns: Int64
+
+  Last update: May 2016
+"""
 function findCurrentStage(current_week::Int64, spawn_week::Int64, growth_age::Vector)
-  """
-    Description: Function used to find the current life stage of a cohort from
-      the current age using the agent assumptions growth vector.
-    Precondition: None
-    Last update: May 2016
-  """
   #Initialize the life stage number to 4
   currentStage = 4
   q = length(growth_age)-1
@@ -59,8 +61,11 @@ end
 
 
 """
-  Description: This function is used for finding the Agent number from a known
-  environment id.
+  Description: This function is used for efficiently finding the Agent number
+    from a known environment id.
+
+  Returns: Int64
+
   Last update: June 2016
 """
 function IDToAgentNum(a_db::Vector, id_num::Int64, max_val::Int64, min_val::Int64)
@@ -78,16 +83,17 @@ function IDToAgentNum(a_db::Vector, id_num::Int64, max_val::Int64, min_val::Int6
   return testVal
 end
 
-#Return: Vector
+
+"""
+  Description: This function injects agents into the environment, this is
+    function is mainly used for adding agents to the environment to test new
+    functions.
+
+    Returns: Operates directly on agent_db
+
+  Last update: May 2016
+"""
 function injectAgents!(agent_db::Vector, spawn_agents::Vector, new_stock::Int64, week_num::Int64)
-  """
-    Description: This function injects agents into the environment, this is
-      function is mainly used for adding agents to the environment to test new
-      functions.
-    Precondition: The new_stock vector cannot have more elements than life
-      stages.
-    Last update: May 2016
-  """
   @assert(length(new_stock)<=4, "There can only by four independent life stages of fish.")
 
   addToEach = round(Int, floor(new_stock/length(spawn_agents)))
@@ -110,20 +116,19 @@ function injectAgents!(agent_db::Vector, spawn_agents::Vector, new_stock::Int64,
 
     (agent_db[spawn_agents[agentNum]]).alive[classLength] = addToAgent
   end
-
-  return agent_db
 end
 
 
 """
   Description: Generates a brood size for each spawning location based on number
-  of adults in the spawning location, and their age specific fecundity. Brood size
-  is affected by a compensation factor based on the total adult population in the
-  environment.
+    of adults in the spawning location, and their age specific fecundity. Brood
+    size is affected by a compensation factor based on the total adult
+    population in the environment.
+
+  Returns: Operates directly on agent_db
 
   Last Update: June 2016
 """
-#Return: Vector (acts directly on agent_db)
 function spawn!(agent_db::Vector, adult_a::AdultAssumptions, age_assumpt::AgentAssumptions, enviro_a::EnvironmentAssumptions, week::Int64, carryingcapacity::Float64)
 
   adult_pop = getStagePopulation(4, week, agent_db, age_assumpt)
@@ -174,15 +179,15 @@ function spawn!(agent_db::Vector, adult_a::AdultAssumptions, age_assumpt::AgentA
       end #for ages
     end #if isEmpty
   end #for i=1:length spawningHash
-
-  return agent_db
 end
 
 
 """
   Description: Returns population of a specific age in an environment agent.
-  Used for functions that requires age-specific population to be taken into account
-  (such as spawning or harvest).
+    Used for functions that requires age-specific population to be taken into
+    account (such as spawning or harvest).
+
+    Returns: Int64
 
   Last Update: June 2016
 """
@@ -209,9 +214,11 @@ end
 
 
 """
-  Description:  Used to get population of any of the stages (egg, larva, juvenile, adult).
-  Will only return population of one stage at a time. To get total population of fish,
-  loop through for i = 1:4.
+  Description:  Used to get population of any of the stages (egg, larva,
+    juvenile, adult). Will only return population of one stage at a time. To
+    get total population of fish, loop through for i = 1:4.
+
+  Returns: Int64
 
   Last update: June 2016
 """
@@ -235,9 +242,11 @@ end
 
 """
   Description: Generates a harvest size based on total number of age-specific
-  fish in the environment. Currently, harvest location is a randomly generated
-  vector of locations from the spawningHash. Harvest size is divided up into each
-  harvest location.
+    fish in the environment. Currently, harvest location is a randomly
+    generated vector of locations from the spawningHash. Harvest size is
+    divided up into each harvest location.
+
+  Returns: Operates directly on agent_db
 
   Last Update: June 2016
 """
@@ -289,16 +298,16 @@ function harvest!(effort::Float64, week::Int64, agent_db::Vector, enviro_a::Envi
       end #if cohort
     end #for i=1:length(randomAgents)
   end #for age
-
-  return agent_db
 end
 
 
 """
-  Description: Returns index of cohort of specified age. Used in harvest! to determine
-  which cohort to subtract the harvest size from. If no cohort exist for the
-  specified age, function will return 0 and so calling function should check if
-  this function returns 0.
+  Description: Returns index of cohort of specified age. Used in harvest! to
+    determine which cohort to subtract the harvest size from. If no cohort exist
+    for the specified age, function will return 0 and so calling function should
+    check if this function returns 0.
+
+  Returns: Int64
 
   Last Update: June 2016
 """
@@ -314,14 +323,16 @@ function getCohortNumber(age::Int64, current_week::Int64, weekNum::Array)
 end
 
 
-#Return: Vector (acts directly on agent_db)
+"""
+  Description:  This function generates a mortality based on the stage of the
+    fish and its corresponding natural mortality and its location within the
+    habitat as described in EnvironmentAssumptions.
+
+  Returns: Operates directly on agent_db
+
+  Last update: June 2016
+"""
 function kill!(agent_db::Vector, e_a::EnvironmentAssumptions, a_a::AgentAssumptions, current_week::Int64)
-  """
-    Description:  This function generates a mortality based on the stage of the
-      fish and its corresponding natural mortality and its location within the
-      habitat as described in EnvironmentAssumptions.
-    Last update: June 2016
-  """
   classLength = length((agent_db[1]).weekNum)
 
   for i = 1:length(agent_db)
@@ -355,15 +366,18 @@ function kill!(agent_db::Vector, e_a::EnvironmentAssumptions, a_a::AgentAssumpti
 end
 
 
-#Returns: operates directly on agent_db
+"""
+  Description: This function uses known information from the environment
+    surrounding each agent as well as known movements to move agents around
+    the environment during runtime.
+
+  Returns: Operates directly on agent_db
+
+  Last update: May 2016
+"""
 function move!(agent_db::Vector, agent_a::AgentAssumptions,
   enviro_a::EnvironmentAssumptions, current_week::Int64)
-  """
-    Description: This function uses known information from the environment
-      surrounding each agent as well as known movements to move agents around
-      the environment during runtime.
-    Last update: May 2016
-  """
+
   #@assert(0.<= agent_a.autonomy[stage] <=1., "Autonomy level for stage $stage must be between 0 and 1")
 
   lifeStages = Array(Int64, length(agent_db[1].alive)); lifeStages[:] = 0;
@@ -401,9 +415,10 @@ function move!(agent_db::Vector, agent_a::AgentAssumptions,
         choices = deepcopy(moveChoices)
 
         if stage == 4
+          #Create a periodicMovement function for readability
           periodicWeek = current_week%52
-          moveX = -5*cosd((180*periodicWeek)/27)+1
-          moveY = -5*sind((180*periodicWeek)/27)+1
+          moveX = -10*cosd((180*periodicWeek)/27)+1
+          moveY = -10*sind((180*periodicWeek)/27)+1
           moveRadius = sqrt(moveX^2 + moveY^2)
           moveArray = Array(Float64, 3, 3)
           fill!(moveArray, 1.)
@@ -458,14 +473,15 @@ function move!(agent_db::Vector, agent_a::AgentAssumptions,
 end
 
 
-#Return: operates directly on age_db
+"""
+  Description: This function is used to remove an empty spawn class once all
+    agents in the entire spawn class have been removed.
+
+  Returns: Operates directly on age_db
+
+  Last Update: March 2016
+"""
 function removeEmptyClass!(age_db::Vector)
-  """
-    Description: This function is used to remove an empty spawn class once all
-      agents in the entire spawn class have been removed.
-    Precondition: None
-    Last Update: March 2016
-  """
   if length(age_db[1].alive) > 1
     removeClass = true
     for i = 1:length(age_db)
