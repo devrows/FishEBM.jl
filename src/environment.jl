@@ -83,6 +83,21 @@ function initEnvironment(pathToSpawn::ASCIIString, pathToHabitat::ASCIIString, p
 end
 
 
+"""
+  Description: Generates an environment for the simulation. Container function
+    for the other initEnvironment for simplicity.
+
+  Last update: June 2016
+"""
+function initEnvironment()
+  spawnPath = string(split(Base.source_path(), "FishEBM.jl")[1], "FishEBM.jl/maps/LakeHuron_1km_spawning.csv")
+  habitatPath = string(split(Base.source_path(), "FishEBM.jl")[1], "FishEBM.jl/maps/LakeHuron_1km_habitat.csv")
+  riskPath = string(split(Base.source_path(), "FishEBM.jl")[1], "FishEBM.jl/maps/LakeHuron_1km_risk.csv")
+
+  return initEnvironment(spawnPath, habitatPath, riskPath)
+end
+
+
 #Return: Vector
 function hashEnvironment!(a_db::Vector, enviro::EnvironmentAssumptions)
   """
