@@ -9,7 +9,7 @@ function setProjPath()
         splitting the string of the current directory pathway at
         the first and second intstance of '\\' (in reverse order).
     """
-    @assert(OS_NAME == :Windows, "There is currently no functionality for the operating system :$OS_NAME")
+    @assert(OS_NAME == :Windows, "There is currently no functionality for the operating system :$OS_NAME, now aborting.")
     projPath = Base.source_path()
     #add if statement here
     pathEndSearch = rsearch(projPath, "\\")[1]
