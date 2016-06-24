@@ -229,8 +229,7 @@ end
 
 
 """
-  INPUT: final_week = final week from simulate's "current_week" IE. the last
-    week of the simulation.
+  INPUT: popDataFrame = DataFrame of weekly stage population.
   OUTPUT: simSUMMARY.csv: file containing weekly population levels.
 
   Last update: June 2016
@@ -242,9 +241,8 @@ end
 
 
 """
-  INPUT: final_week = final week from simulate's "current_week" IE. the last
-    week of the simulation.
-  OUTPUT: simSUMMARY.csv: file containing weekly population levels.
+  INPUT: hdf = DataFrame of weekly age-specific harvest levels and total harvest.
+  OUTPUT: harvestSUMMARY.csv: file containing weekly harvest levels.
 
   Last update: June 2016
 """
@@ -255,9 +253,8 @@ end
 
 
 """
-  INPUT: final_week = final week from simulate's "current_week" IE. the last
-    week of the simulation.
-  OUTPUT: simSUMMARY.csv: file containing weekly population levels.
+  INPUT: sdf = DataFrame of weekly age-specific spawn levels and total spawn size.
+  OUTPUT: spawnSUMMARY.csv: file containing weekly spawn levels.
 
   Last update: June 2016
 """
@@ -268,9 +265,8 @@ end
 
 
 """
-  INPUT: final_week = final week from simulate's "current_week" IE. the last
-    week of the simulation.
-  OUTPUT: simSUMMARY.csv: file containing weekly population levels.
+  INPUT: kdf = DataFrame of weekly killed data by natural and extra mortality.
+  OUTPUT: killedSUMMARY.csv: file containing weekly mortality levels.
 
   Last update: June 2016
 """
