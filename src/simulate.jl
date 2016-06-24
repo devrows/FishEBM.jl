@@ -63,6 +63,13 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
 
       totalWeek = ((y-1)*52)+w
 
+      ageSpecificPop = fill(0, 7)
+      for i = 1:length(a_db)
+        for age = 2:8
+          ageSpecificPop[age - 1] += getAgeSpecificPop(age, totalWeek, a_db[i].alive, a_db[i].weekNum, age_a)
+        end #for age
+      end #for i
+
       #harvest and spawn can be set to any week(s)
       if w > harvestMin
         #harvest can be set to any week(s)
