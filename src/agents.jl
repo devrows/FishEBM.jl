@@ -417,8 +417,8 @@ function move!(agent_db::Vector, agent_a::AgentAssumptions,
         if stage == 4
           #Create a periodicMovement function for readability
           periodicWeek = current_week%52
-          moveX = -10*cosd((180*periodicWeek)/27)+1
-          moveY = -10*sind((180*periodicWeek)/27)+1
+          moveX = -5*cosd((180*periodicWeek)/27)+1
+          moveY = -5*sind((180*periodicWeek)/27)+1
           moveRadius = sqrt(moveX^2 + moveY^2)
           moveArray = Array(Float64, 3, 3)
           fill!(moveArray, 1.)

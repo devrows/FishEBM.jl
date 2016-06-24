@@ -47,12 +47,14 @@ end
 function updatePopulationDensity!(agent_db::Vector, pop_density::Array)
   for k = 1:length(agent_db)
     pop_density[agent_db[k].locationID] = 1
+    totalPop = 0
 
     if isEmpty(agent_db[k]) == false
       for m = 1:length(agent_db[1].alive)
         pop_density[agent_db[k].locationID] += agent_db[k].alive[m]
-        agent_db[k].alive[m]
+        totalPop += agent_db[k].alive[m]
       end
     end
   end
+  return totalPop
 end

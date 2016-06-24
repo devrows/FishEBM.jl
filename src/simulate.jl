@@ -41,7 +41,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
   harvest_effort = fill(0., years)
   harvest_effort[1:length(effort)] = effort
 
-  totalPopulation = initStock[length(initStock)]
+  totalPopulation = sum(initStock)
 
   #initialize the progress meter
   if progress
@@ -54,7 +54,6 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
     for w = 1:52
 
       if progress
-        updatePopulationDensity!(a_db, popDensity)
         progressBar.desc = " Year $y (of $years), week $w of simulation ($totalPopulation agents) "
         next!(progressBar)
       end
@@ -84,10 +83,12 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
       push!(popDataFrame,(totalWeek,stagePopulation[1],stagePopulation[2],stagePopulation[3],stagePopulation[4], totalPopulation))
 
       #show a real time plot (weekly) of agent movement
-      if plotPopDensity && (w == 1 || w%10 == 0)
-        updatePopulationDensity!(a_db, popDensity)
-        popPlot = spy(popDensity, Guide.title("Year = $y, week = $w, totalPopulation = $totalPopulation"))
-        display(popPlot)
+      if plotPopDensity
+        if w == 1 || w%10 == 0
+          updatePopulationDensity!(a_db, popDensity)
+          popPlot = spy(popDensity, Guide.title("Year = $y, week = $w, totalPopulation = $totalPopulation"))
+          display(popPlot)
+        end
       end
 
       #if simulation fails

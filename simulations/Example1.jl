@@ -38,7 +38,7 @@ enviro_a = initEnvironment(spawnPath, habitatPath, riskPath)
 # * a_a.autonomy =  Movement autonomy
 
 agent_a = AgentAssumptions([[0.15 0.10 0.05 0.002]
-                        [0.05 0.04 0.02 0.001]
+                        [0.132 0.066 0.033 0.005]
                         [0.40 0.20 0.10 0.004]
                         [0.60 0.30 0.15 0.006]
                         [0.80 0.40 0.20 0.008]
@@ -63,10 +63,15 @@ agent_a = AgentAssumptions([[0.15 0.10 0.05 0.002]
 # * Population bump
 
 
-k = rand(Normal(500000, 50000), 20)
+k = rand(Normal(500000, 50000), 100)
 effortVar = [0]
 bumpVar = [100000]
 initialStock = [5000, 10000, 12500, 15000]
+plotPopDensity=false
 
+#simDir()
+#path = runDir(dateDir(resultsDir(setProjPath())[1])[1])[2]
+#userInput = "First real simulation, searching for stable populations. See the file attributes for information on the simulation variable choices."
+#simReadme(adult_a, agent_a, bumpVar, effortVar, initialStock, k, path, userInput)
 
-adb = simulate(k, effortVar, bumpVar, initialStock, enviro_a, adult_a, agent_a)
+adb = simulate(k, effortVar, bumpVar, initialStock, enviro_a, adult_a, agent_a, true, 50000000, false)
