@@ -35,6 +35,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
   popDataFrame = DataFrame(Week = 0, Stage1 = initStock[1], Stage2 = initStock[2], Stage3 = initStock[3],Stage4 = initStock[4], Total = sum(initStock))
   harvestDataFrame = DataFrame(Week = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
   spawnDataFrame = DataFrame(Week = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
+  killedDataFrame = DataFrame(Week = 0, Natural = 0, Extra = 0, Total = 0)
 
   spawn!(a_db, adult_a, age_a, e_a, 1, carrying_capacity[1], spawnDataFrame)
 
@@ -77,7 +78,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
       end
 
       #Agents are killed and moved weekly
-      kill!(a_db, e_a, age_a, totalWeek)
+      kill!(a_db, e_a, age_a, totalWeek, killedDataFrame)
       move!(a_db, age_a, e_a, totalWeek)
 
       #update population information
@@ -101,7 +102,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
       if totalPopulation == 0 || totalPopulation > limit
         removeEmptyClass!(a_db)
         description = "Simulation was stopped in year $y, week $w due to population failure (total population = $totalPopulation, population limit = $limit)."
-        simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity, popDataFrame, harvestDataFrame, spawnDataFrame, description)
+        simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity, popDataFrame, harvestDataFrame, spawnDataFrame, killedDataFrame, description)
         return a_db
       end
 
@@ -111,6 +112,6 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
   end #end for year
 
   description = "Simulation was successfully completed."
-  simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity, popDataFrame, harvestDataFrame, spawnDataFrame, description)
+  simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity, popDataFrame, harvestDataFrame, spawnDataFrame, killedDataFrame, description)
   return a_db
 end

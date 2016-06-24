@@ -339,8 +339,10 @@ end
 
   Last update: June 2016
 """
-function kill!(agent_db::Vector, e_a::EnvironmentAssumptions, a_a::AgentAssumptions, current_week::Int64)
+function kill!(agent_db::Vector, e_a::EnvironmentAssumptions, a_a::AgentAssumptions, current_week::Int64, kdf::DataFrame)
   classLength = length((agent_db[1]).weekNum)
+  totalNatural = 0
+  totalExtra = 0
 
   for i = 1:length(agent_db)
     #Check if class is empty. If not empty, continue with kill function. Otherwise skip to next agent
@@ -356,11 +358,13 @@ function kill!(agent_db::Vector, e_a::EnvironmentAssumptions, a_a::AgentAssumpti
           #and natural mortality in the form of a probability
           killedNatural = rand(Binomial(agent_db[i].alive[j], a_a.naturalmortality[habitat, stage]))
           agent_db[i].killedNatural[stage] += killedNatural
+          totalNatural += killedNatural
           agent_db[i].alive[j] -= killedNatural
           if agent_db[i].alive[j] > 0
             if in(agent_db[i].locationID, e_a.risk) #Check if this particular locationID is in risk zone
               killedExtra = rand(Binomial(agent_db[i].alive[j], a_a.extramortality[stage]))
               agent_db[i].killedExtra[stage] += killedExtra
+              totalExtra += killedExtra
               agent_db[i].alive[j] -= killedExtra
             end #if risk
           end #if agent_db[i].alive (inner)
@@ -368,6 +372,10 @@ function kill!(agent_db::Vector, e_a::EnvironmentAssumptions, a_a::AgentAssumpti
       end #for j=1:classLength
     end #if isEmpty
   end #for i=1:length(agent_db)
+
+  total = totalNatural + totalExtra
+
+  push!(kdf, (current_week, totalNatural, totalExtra, total))
 
   return agent_db
 end

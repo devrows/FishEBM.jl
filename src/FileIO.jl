@@ -268,6 +268,19 @@ end
 
 
 """
+  INPUT: final_week = final week from simulate's "current_week" IE. the last
+    week of the simulation.
+  OUTPUT: simSUMMARY.csv: file containing weekly population levels.
+
+  Last update: June 2016
+"""
+function killedData(kdf::DataFrame, path::ASCIIString)
+  file = string(path,"\\killedSUMMARY.csv")
+  writetable(file, kdf)
+end
+
+
+"""
   INPUT: See: aliveData() & simReadme().
 
   Description: General function for FishEBM.jl to automatically generate summary
@@ -278,11 +291,12 @@ end
   Last update: June 2016
 """
 function simSummary(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumptions, agentDB::Vector, bump::Vector, effort::Vector, finalWeek::Int64, initStock::Vector,
-  carryingCap::Vector, popDataFrame::DataFrame, harvestDataFrame::DataFrame, spawnDataFrame::DataFrame, userInput::ASCIIString)
+  carryingCap::Vector, popDataFrame::DataFrame, harvestDataFrame::DataFrame, spawnDataFrame::DataFrame, killedDataFrame::DataFrame, userInput::ASCIIString)
   simDir()
   path = runDir(dateDir(resultsDir(setProjPath())[1])[1])[2]
   aliveData(popDataFrame, path)
   harvestData(harvestDataFrame, path)
   spawnData(spawnDataFrame, path)
+  killedData(killedDataFrame, path)
   simReadme(adultAssumpt, agentAssumpt, bump, effort, initStock, carryingCap, path, userInput)
 end
