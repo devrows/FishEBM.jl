@@ -33,6 +33,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
   end
 
   popDataFrame = DataFrame(Week = 0, Stage1 = initStock[1], Stage2 = initStock[2], Stage3 = initStock[3],Stage4 = initStock[4], Total = sum(initStock))
+  harvestDataFrame = DataFrame(Week = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
 
   spawn!(a_db, adult_a, age_a, e_a, 1, carrying_capacity[1])
 
@@ -63,7 +64,9 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
       #harvest and spawn can be set to any week(s)
       if w > harvestMin
         #harvest can be set to any week(s)
-        harvest!(harvest_effort[y], totalWeek, a_db, e_a, adult_a, age_a)
+        harvest!(harvest_effort[y], totalWeek, a_db, e_a, adult_a, age_a, harvestDataFrame)
+      else
+        push!(harvestDataFrame, (totalWeek, 0, 0, 0, 0, 0, 0, 0, 0))
       end
 
       if w > spawnMin
@@ -95,7 +98,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
       if totalPopulation == 0 || totalPopulation > limit
         removeEmptyClass!(a_db)
         description = "Simulation was stopped in year $y, week $w due to population failure (total population = $totalPopulation, population limit = $limit)."
-        simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity, popDataFrame, description)
+        simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity, popDataFrame, harvestDataFrame, description)
         return a_db
       end
 
@@ -105,6 +108,6 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
   end #end for year
 
   description = "Simulation was successfully completed."
-  simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity, popDataFrame, description)
+  simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity, popDataFrame, harvestDataFrame, description)
   return a_db
 end

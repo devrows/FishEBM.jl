@@ -250,7 +250,7 @@ end
 
   Last Update: June 2016
 """
-function harvest!(effort::Float64, week::Int64, agent_db::Vector, enviro_a::EnvironmentAssumptions, adult_a::AdultAssumptions, a_a::AgentAssumptions)
+function harvest!(effort::Float64, week::Int64, agent_db::Vector, enviro_a::EnvironmentAssumptions, adult_a::AdultAssumptions, a_a::AgentAssumptions, hdf::DataFrame)
 
   harvest_size = fill(0, size(adult_a.catchability))
   ageSpecificPop = fill(0, size(adult_a.catchability))
@@ -266,6 +266,8 @@ function harvest!(effort::Float64, week::Int64, agent_db::Vector, enviro_a::Envi
   for i = 1:length(harvest_size)
     harvest_size[i] = rand(Poisson(ageSpecificPop[i]*adult_a.catchability[i]*effort))
   end
+
+  push!(hdf, (vcat(week, harvest_size..., sum(harvest_size)))) #Add each age specific harvest size to dataframe
 
   harvest_loc = sample(find(enviro_a.spawningHash), rand(1:10)) #generate random harvest locations
 
