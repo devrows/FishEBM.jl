@@ -43,6 +43,7 @@ module FishEBM
     simReadme,
     aliveData,
     harvestData,
+    spawnData,
     simSummary,
 
     # simulationResults.jl functions
