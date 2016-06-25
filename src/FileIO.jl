@@ -229,8 +229,7 @@ end
 
 
 """
-  INPUT: final_week = final week from simulate's "current_week" IE. the last
-    week of the simulation.
+  INPUT: popDataFrame = DataFrame of weekly stage population.
   OUTPUT: simSUMMARY.csv: file containing weekly population levels.
 
   Last update: June 2016
@@ -238,6 +237,42 @@ end
 function aliveData(popDataFrame::DataFrame, path::ASCIIString)
   file = string(path,"\\simSUMMARY.csv")
   writetable(file, popDataFrame)
+end
+
+
+"""
+  INPUT: hdf = DataFrame of weekly age-specific harvest levels and total harvest.
+  OUTPUT: harvestSUMMARY.csv: file containing weekly harvest levels.
+
+  Last update: June 2016
+"""
+function harvestData(hdf::DataFrame, path::ASCIIString)
+  file = string(path,"\\harvestSUMMARY.csv")
+  writetable(file, hdf)
+end
+
+
+"""
+  INPUT: sdf = DataFrame of weekly age-specific spawn levels and total spawn size.
+  OUTPUT: spawnSUMMARY.csv: file containing weekly spawn levels.
+
+  Last update: June 2016
+"""
+function spawnData(sdf::DataFrame, path::ASCIIString)
+  file = string(path,"\\spawnSUMMARY.csv")
+  writetable(file, sdf)
+end
+
+
+"""
+  INPUT: kdf = DataFrame of weekly killed data by natural and extra mortality.
+  OUTPUT: killedSUMMARY.csv: file containing weekly mortality levels.
+
+  Last update: June 2016
+"""
+function killedData(kdf::DataFrame, path::ASCIIString)
+  file = string(path,"\\killedSUMMARY.csv")
+  writetable(file, kdf)
 end
 
 
@@ -251,9 +286,13 @@ end
 
   Last update: June 2016
 """
-function simSummary(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumptions, agentDB::Vector, bump::Vector, effort::Vector, finalWeek::Int64, initStock::Vector, carryingCap::Vector, popDataFrame::DataFrame, userInput::ASCIIString)
+function simSummary(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumptions, agentDB::Vector, bump::Vector, effort::Vector, finalWeek::Int64, initStock::Vector,
+  carryingCap::Vector, popDataFrame::DataFrame, harvestDataFrame::DataFrame, spawnDataFrame::DataFrame, killedDataFrame::DataFrame, userInput::ASCIIString)
   simDir()
   path = runDir(dateDir(resultsDir(setProjPath())[1])[1])[2]
   aliveData(popDataFrame, path)
+  harvestData(harvestDataFrame, path)
+  spawnData(spawnDataFrame, path)
+  killedData(killedDataFrame, path)
   simReadme(adultAssumpt, agentAssumpt, bump, effort, initStock, carryingCap, path, userInput)
 end

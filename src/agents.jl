@@ -129,7 +129,7 @@ end
 
   Last Update: June 2016
 """
-function spawn!(agent_db::Vector, adult_a::AdultAssumptions, age_assumpt::AgentAssumptions, enviro_a::EnvironmentAssumptions, week::Int64, carryingcapacity::Float64)
+function spawn!(agent_db::Vector, adult_a::AdultAssumptions, age_assumpt::AgentAssumptions, enviro_a::EnvironmentAssumptions, week::Int64, carryingcapacity::Float64, sdf::DataFrame)
 
   adult_pop = getStagePopulation(4, week, agent_db, age_assumpt)
 
@@ -161,6 +161,7 @@ function spawn!(agent_db::Vector, adult_a::AdultAssumptions, age_assumpt::AgentA
     newClass += 1
   end
 
+  brood_size = fill(0, size(adult_a.broodsize))
 
   for i = 1:length(enviro_a.spawningHash)
     if isEmpty(agent_db[enviro_a.spawningHash[i]]) == false
@@ -173,12 +174,16 @@ function spawn!(agent_db::Vector, adult_a::AdultAssumptions, age_assumpt::AgentA
             brood = rand(Poisson(compensation_factor_a*adult_a.broodsize[age - 1]), rand(Binomial(ageSpecificPop, cdf(Binomial(length(adult_a.broodsize)+2, min(1, compensation_factor_b*adult_a.halfmature/(length(adult_a.broodsize)+2))), age)*0.5)))
             for k = 1:length(brood)
               agent_db[enviro_a.spawningHash[i]].alive[newClass] += brood[k]
+              brood_size[age - 1] += brood[k]
             end #for k=1:brood
           end #for j = 1:numSpawningAdults
         end #if ageSpecificPop
       end #for ages
     end #if isEmpty
   end #for i=1:length spawningHash
+
+  push!(sdf, (vcat(week, brood_size..., sum(brood_size))))
+
 end
 
 
@@ -250,7 +255,7 @@ end
 
   Last Update: June 2016
 """
-function harvest!(effort::Float64, week::Int64, agent_db::Vector, enviro_a::EnvironmentAssumptions, adult_a::AdultAssumptions, a_a::AgentAssumptions)
+function harvest!(effort::Float64, week::Int64, agent_db::Vector, enviro_a::EnvironmentAssumptions, adult_a::AdultAssumptions, a_a::AgentAssumptions, hdf::DataFrame)
 
   harvest_size = fill(0, size(adult_a.catchability))
   ageSpecificPop = fill(0, size(adult_a.catchability))
@@ -266,6 +271,8 @@ function harvest!(effort::Float64, week::Int64, agent_db::Vector, enviro_a::Envi
   for i = 1:length(harvest_size)
     harvest_size[i] = rand(Poisson(ageSpecificPop[i]*adult_a.catchability[i]*effort))
   end
+
+  push!(hdf, (vcat(week, harvest_size..., sum(harvest_size)))) #Add each age specific harvest size to dataframe
 
   harvest_loc = sample(find(enviro_a.spawningHash), rand(1:10)) #generate random harvest locations
 
@@ -332,8 +339,10 @@ end
 
   Last update: June 2016
 """
-function kill!(agent_db::Vector, e_a::EnvironmentAssumptions, a_a::AgentAssumptions, current_week::Int64)
+function kill!(agent_db::Vector, e_a::EnvironmentAssumptions, a_a::AgentAssumptions, current_week::Int64, kdf::DataFrame)
   classLength = length((agent_db[1]).weekNum)
+  totalNatural = 0
+  totalExtra = 0
 
   for i = 1:length(agent_db)
     #Check if class is empty. If not empty, continue with kill function. Otherwise skip to next agent
@@ -349,11 +358,13 @@ function kill!(agent_db::Vector, e_a::EnvironmentAssumptions, a_a::AgentAssumpti
           #and natural mortality in the form of a probability
           killedNatural = rand(Binomial(agent_db[i].alive[j], a_a.naturalmortality[habitat, stage]))
           agent_db[i].killedNatural[stage] += killedNatural
+          totalNatural += killedNatural
           agent_db[i].alive[j] -= killedNatural
           if agent_db[i].alive[j] > 0
             if in(agent_db[i].locationID, e_a.risk) #Check if this particular locationID is in risk zone
               killedExtra = rand(Binomial(agent_db[i].alive[j], a_a.extramortality[stage]))
               agent_db[i].killedExtra[stage] += killedExtra
+              totalExtra += killedExtra
               agent_db[i].alive[j] -= killedExtra
             end #if risk
           end #if agent_db[i].alive (inner)
@@ -361,6 +372,10 @@ function kill!(agent_db::Vector, e_a::EnvironmentAssumptions, a_a::AgentAssumpti
       end #for j=1:classLength
     end #if isEmpty
   end #for i=1:length(agent_db)
+
+  total = totalNatural + totalExtra
+
+  push!(kdf, (current_week, totalNatural, totalExtra, total))
 
   return agent_db
 end
