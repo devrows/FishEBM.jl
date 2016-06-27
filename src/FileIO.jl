@@ -134,16 +134,16 @@ end
 """
 function setProjPath()
     @assert(OS_NAME == :Windows, "There is currently no functionality for the operating system :$OS_NAME, now aborting.")
-    projPath = Base.source_path()
+    projPath = Base.source_path() #returns full path to current file (FileIO.jl in this case)
     #add if statement here
-    pathEndSearch = rsearch(projPath, "\\")[1]
-    endOfDirPath = projPath[pathEndSearch:length(projPath)]
-    projPath = split(projPath, endOfDirPath)[1]
-    pathEndSearch = rsearch(projPath, "\\")[1]
-    endOfDirPath = projPath[pathEndSearch:length(projPath)]
-    projPath = split(projPath, endOfDirPath)[1]
+    pathEndSearch = rsearch(projPath, "\\")[1] #returns last occurance of a "\\" character
+    endOfDirPath = projPath[pathEndSearch:length(projPath)] #returns current file WITHOUT the path (FileIO.jl)
+    projPath = split(projPath, endOfDirPath)[1] #splits the projPath at the endOfDirPath, so it truncates the file name
+    pathEndSearch = rsearch(projPath, "\\")[1] #returns last occurance of a "\\" character in the new truncated file name
+    endOfDirPath = projPath[pathEndSearch:length(projPath)] #returns the name of the current directory (src in this case)
+    projPath = split(projPath, endOfDirPath)[1] #splits the projPath at the endOfDirPath, so it now truncates the file name
 
-    return ascii(projPath)
+    return ascii(projPath) #returns the path to FishEBM.jl
 end
 
 
