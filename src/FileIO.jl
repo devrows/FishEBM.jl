@@ -22,6 +22,20 @@ end
 
 
 """
+  INPUT: ageDataFrame = DataFrame of yearly adult age-specific population.
+  OUTPUT: ageSUMMARY.csv: file containing yearly age-specific population levels.
+
+  Last update: June 2016
+"""
+function ageData(adf::DataFrame, path::ASCIIString)
+  separateDirChar = getDirChar()
+
+  file = string(path,"$(separateDirChar)ageSUMMARY.csv")
+  writetable(file, adf)
+end
+
+
+"""
   Description: Creates a directory based on the user defined path and has
     dependency on exists. It is reconmended that one passes isdir(path) into
     exists.
@@ -300,7 +314,7 @@ end
 function simSummary(adultAssumpt::AdultAssumptions,
   agentAssumpt::AgentAssumptions, agentDB::Vector, bump::Vector, effort::Vector,
   finalWeek::Int64, initStock::Vector, carryingCap::Vector,
-  popDataFrame::DataFrame, harvestDataFrame::DataFrame,
+  popDataFrame::DataFrame, ageDataFrame::DataFrame, harvestDataFrame::DataFrame,
   spawnDataFrame::DataFrame, killedDataFrame::DataFrame, userInput::ASCIIString)
 
   @assert(OS_NAME == :Windows || OS_NAME == :Darwin, "There is currently no
@@ -309,6 +323,7 @@ function simSummary(adultAssumpt::AdultAssumptions,
   simDir()
   path = runDir(dateDir(resultsDir(setProjPath())[1])[1])[2]
   aliveData(popDataFrame, path)
+  ageData(ageDataFrame, path)
   harvestData(harvestDataFrame, path)
   spawnData(spawnDataFrame, path)
   killedData(killedDataFrame, path)

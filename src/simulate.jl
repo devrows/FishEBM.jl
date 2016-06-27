@@ -37,6 +37,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
   end
 
   popDataFrame = DataFrame(Week = 0, Stage1 = initStock[1], Stage2 = initStock[2], Stage3 = initStock[3],Stage4 = initStock[4], Total = sum(initStock))
+  ageDataFrame = DataFrame(Year = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
   harvestDataFrame = DataFrame(Week = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
   spawnDataFrame = DataFrame(Week = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
   killedDataFrame = DataFrame(Week = 0, Natural = 0, Extra = 0, Total = 0)
@@ -58,6 +59,14 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
   spawnMin = 39; harvestMin = 39;
 
   for y = 1:years
+    ageSpecificPop = fill(0, 7)
+    for i = 1:length(a_db)
+      for age = 2:8
+        ageSpecificPop[age - 1] += getAgeSpecificPop(age, ((y-1)*52)+1, a_db[i].alive, a_db[i].weekNum, age_a)
+      end #for age
+    end #for i
+    push!(ageDataFrame, vcat(y, ageSpecificPop..., sum(ageSpecificPop)))
+
     for w = 1:52
 
       if progress
@@ -66,13 +75,6 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
       end
 
       totalWeek = ((y-1)*52)+w
-
-      ageSpecificPop = fill(0, 7)
-      for i = 1:length(a_db)
-        for age = 2:8
-          ageSpecificPop[age - 1] += getAgeSpecificPop(age, totalWeek, a_db[i].alive, a_db[i].weekNum, age_a)
-        end #for age
-      end #for i
 
       #harvest and spawn can be set to any week(s)
       if w > harvestMin
@@ -122,7 +124,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
       if totalPopulation == 0 || totalPopulation > limit
         removeEmptyClass!(a_db)
         description = "Simulation was stopped in year $y, week $w due to population failure (total population = $totalPopulation, population limit = $limit)."
-        simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity, popDataFrame, harvestDataFrame, spawnDataFrame, killedDataFrame, description)
+        simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity, popDataFrame, ageDataFrame, harvestDataFrame, spawnDataFrame, killedDataFrame, description)
         return a_db
       end
 
@@ -132,6 +134,6 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
   end #end for year
 
   description = "Simulation was successfully completed."
-  simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity, popDataFrame, harvestDataFrame, spawnDataFrame, killedDataFrame, description)
+  simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity, popDataFrame, ageDataFrame, harvestDataFrame, spawnDataFrame, killedDataFrame, description)
   return a_db
 end

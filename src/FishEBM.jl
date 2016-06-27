@@ -29,6 +29,7 @@ module FishEBM
 
     # FileIO.jl functions
     aliveData,
+    ageData,
     createDir,
     dateDir,
     getDirChar,
