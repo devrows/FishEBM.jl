@@ -12,19 +12,13 @@ module FishEBM
   using DataArrays, DataFrames, Distributions, Gadfly, ProgressMeter
 
   export
-    # agent_stock_interaction.jl functions
-
     # agents.jl functions
     AgentDB,
     findCurrentStage,
     injectAgents!,
-    spawn!,
     getAgeSpecificPop,
     getStagePopulation,
-    harvest!,
     getCohortNumber,
-    kill!,
-    move!,
     removeEmptyClass!,
 
     # environment.jl functions
@@ -47,12 +41,18 @@ module FishEBM
     killedData,
     simSummary,
 
-    # simulationResults.jl functions
+    # mortality.jl
+    harvest!,
+    kill!,
+
+    # move.jl
+    move!,
 
     # simulate.jl functions
     simulate,
 
-    # stock.jl functions
+    #spawn.jl
+    spawn!,
 
     # types.jl
     AdultAssumptions,
@@ -69,7 +69,10 @@ module FishEBM
     include("types.jl")
     include("agents.jl")
     include("environment.jl")
+    include("mortality.jl")
+    include("move.jl")
     include("simulate.jl")
+    include("spawn.jl")
     include("utilities.jl")
     include("FileIO.jl")
 end
