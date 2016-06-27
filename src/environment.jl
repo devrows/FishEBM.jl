@@ -9,28 +9,35 @@
 
 
 """
-  Description: Checks all cohorts within an enviro-agent to determine whether or
-    not the enviroment location contains any agents.
+  Description: Generates a hash map to reference agent numbers from known
+    spawning and risk spatial locations. i.e. e_a.spawning[someNum] =
+    (a_db[e_a.spawningHash[sumNum]]).locationID
 
-  Returns: Boolean
+  Returns: Operates directly on enviro
 
   Last update: May 2016
 """
-function isEmpty(empty_check::EnviroAgent)
-  #check length of vector
-  for i = 1:length(empty_check.alive)
-    #if agents are in the location
-    if empty_check.alive[i] != 0
-      return false
+function hashEnvironment!(a_db::Vector, enviro::EnvironmentAssumptions)
+  #Initialize required variables
+  totalAgents = length(a_db)
+  enviro.spawningHash = Array(Int64, length(enviro.spawning))
+  enviro.riskHash = Array(Int64, length(enviro.risk))
+
+  #map spawning and risk identities to agent numbers
+  for agent = 1:totalAgents
+    riskNum = findfirst(enviro.risk, (a_db[agent]).locationID)
+    if riskNum != 0
+      enviro.riskHash[riskNum] = agent
+    end
+
+    spawnNum = findfirst(enviro.spawning, (a_db[agent]).locationID)
+    if spawnNum != 0
+      enviro.spawningHash[spawnNum] = agent
     end
   end
-
-  #if no agents are found, function returns true
-  return true
 end
 
 
-#Return: EnvironmentAssumptions
 """
   Description: Generates an environment for the simulation. Both the risk
     assessment and spawning environments are abstracted to a list of integer
@@ -99,32 +106,24 @@ end
 
 
 """
-  Description: Generates a hash map to reference agent numbers from known
-    spawning and risk spatial locations. i.e. e_a.spawning[someNum] =
-    (a_db[e_a.spawningHash[sumNum]]).locationID
+  Description: Checks all cohorts within an enviro-agent to determine whether or
+    not the enviroment location contains any agents.
 
-  Returns: Operates directly on enviro
+  Returns: Boolean
 
   Last update: May 2016
 """
-function hashEnvironment!(a_db::Vector, enviro::EnvironmentAssumptions)
-  #Initialize required variables
-  totalAgents = length(a_db)
-  enviro.spawningHash = Array(Int64, length(enviro.spawning))
-  enviro.riskHash = Array(Int64, length(enviro.risk))
-
-  #map spawning and risk identities to agent numbers
-  for agent = 1:totalAgents
-    riskNum = findfirst(enviro.risk, (a_db[agent]).locationID)
-    if riskNum != 0
-      enviro.riskHash[riskNum] = agent
-    end
-
-    spawnNum = findfirst(enviro.spawning, (a_db[agent]).locationID)
-    if spawnNum != 0
-      enviro.spawningHash[spawnNum] = agent
+function isEmpty(empty_check::EnviroAgent)
+  #check length of vector
+  for i = 1:length(empty_check.alive)
+    #if agents are in the location
+    if empty_check.alive[i] != 0
+      return false
     end
   end
+
+  #if no agents are found, function returns true
+  return true
 end
 
 

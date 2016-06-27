@@ -61,6 +61,86 @@ end
 
 
 """
+  Description: Returns population of a specific age in an environment agent.
+    Used for functions that requires age-specific population to be taken into
+    account (such as spawning or harvest).
+
+    Returns: Int64
+
+  Last Update: June 2016
+"""
+function getAgeSpecificPop(age::Int64, current_week::Int64, alive::Array, weekNum::Array, a_a::AgentAssumptions)
+  @assert(2 <= age <= 8, "Age argument must be between 2 and 8, inclusive (age = $age was passed).")
+  classLength = length(weekNum)
+  pop = 0
+  for i = 1:classLength
+    if findCurrentStage(current_week, weekNum[i], a_a.growth) == 4
+      if age == 8
+        if floor((current_week - weekNum[i]) / 52) >= age
+          pop += alive[i]
+        end
+      else
+        if floor((current_week - weekNum[i]) / 52) == age
+          pop += alive[i]
+        end #if floor
+      end #if age == 8 else
+    end #findCurrentStage
+  end #for i = 1:classLength
+
+  return pop
+end
+
+
+"""
+  Description: Returns index of cohort of specified age. Used in harvest! to
+    determine which cohort to subtract the harvest size from. If no cohort exist
+    for the specified age, function will return 0 and so calling function should
+    check if this function returns 0.
+
+  Returns: Int64
+
+  Last Update: June 2016
+"""
+function getCohortNumber(age::Int64, current_week::Int64, weekNum::Array)
+  classLength = length(weekNum)
+  for i = 1:classLength
+    if floor((current_week - weekNum[i]) / 52) == age
+      return i
+    end #if floor
+  end #for i
+
+  return 0
+end
+
+
+"""
+  Description:  Used to get population of any of the stages (egg, larva,
+    juvenile, adult). Will only return population of one stage at a time. To
+    get total population of fish, loop through for i = 1:4.
+
+  Returns: Int64
+
+  Last update: June 2016
+"""
+function getStagePopulation(stage::Int64, current_week::Int64, agent_db::Vector, a_a::AgentAssumptions)
+
+  classLength = length((agent_db[1]).weekNum)
+  pop = 0
+  for i = 1:length(agent_db)
+    if (isEmpty(agent_db[i]) == false)
+      for j = 1:classLength
+        if findCurrentStage(current_week, agent_db[i].weekNum[j], a_a.growth) == stage
+          pop += agent_db[i].alive[j]
+        end #findCurrentStage
+      end #for j=1:classLength
+    end #if isEmpty
+  end #for i=1:length
+
+  return pop
+end
+
+
+"""
   Description: This function is used for efficiently finding the Agent number
     from a known environment id.
 
@@ -116,86 +196,6 @@ function injectAgents!(agent_db::Vector, spawn_agents::Vector, new_stock::Int64,
 
     (agent_db[spawn_agents[agentNum]]).alive[classLength] = addToAgent
   end
-end
-
-
-"""
-  Description: Returns population of a specific age in an environment agent.
-    Used for functions that requires age-specific population to be taken into
-    account (such as spawning or harvest).
-
-    Returns: Int64
-
-  Last Update: June 2016
-"""
-function getAgeSpecificPop(age::Int64, current_week::Int64, alive::Array, weekNum::Array, a_a::AgentAssumptions)
-  @assert(2 <= age <= 8, "Age argument must be between 2 and 8, inclusive (age = $age was passed).")
-  classLength = length(weekNum)
-  pop = 0
-  for i = 1:classLength
-    if findCurrentStage(current_week, weekNum[i], a_a.growth) == 4
-      if age == 8
-        if floor((current_week - weekNum[i]) / 52) >= age
-          pop += alive[i]
-        end
-      else
-        if floor((current_week - weekNum[i]) / 52) == age
-          pop += alive[i]
-        end #if floor
-      end #if age == 8 else
-    end #findCurrentStage
-  end #for i = 1:classLength
-
-  return pop
-end
-
-
-"""
-  Description:  Used to get population of any of the stages (egg, larva,
-    juvenile, adult). Will only return population of one stage at a time. To
-    get total population of fish, loop through for i = 1:4.
-
-  Returns: Int64
-
-  Last update: June 2016
-"""
-function getStagePopulation(stage::Int64, current_week::Int64, agent_db::Vector, a_a::AgentAssumptions)
-
-  classLength = length((agent_db[1]).weekNum)
-  pop = 0
-  for i = 1:length(agent_db)
-    if (isEmpty(agent_db[i]) == false)
-      for j = 1:classLength
-        if findCurrentStage(current_week, agent_db[i].weekNum[j], a_a.growth) == stage
-          pop += agent_db[i].alive[j]
-        end #findCurrentStage
-      end #for j=1:classLength
-    end #if isEmpty
-  end #for i=1:length
-
-  return pop
-end
-
-
-"""
-  Description: Returns index of cohort of specified age. Used in harvest! to
-    determine which cohort to subtract the harvest size from. If no cohort exist
-    for the specified age, function will return 0 and so calling function should
-    check if this function returns 0.
-
-  Returns: Int64
-
-  Last Update: June 2016
-"""
-function getCohortNumber(age::Int64, current_week::Int64, weekNum::Array)
-  classLength = length(weekNum)
-  for i = 1:classLength
-    if floor((current_week - weekNum[i]) / 52) == age
-      return i
-    end #if floor
-  end #for i
-
-  return 0
 end
 
 

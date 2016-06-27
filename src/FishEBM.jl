@@ -15,31 +15,31 @@ module FishEBM
     # agents.jl functions
     AgentDB,
     findCurrentStage,
-    injectAgents!,
     getAgeSpecificPop,
-    getStagePopulation,
     getCohortNumber,
+    getStagePopulation,
+    injectAgents!,
     removeEmptyClass!,
 
     # environment.jl functions
-    isEmpty,
     hashEnvironment!,
     initEnvironment,
+    isEmpty,
     pad_environment!,
 
     # FileIO.jl functions
-    setProjPath,
-    resultsDir,
-    dateDir,
-    runDir,
+    aliveData,
     createDir,
+    dateDir,
+    harvestData,
+    killedData,
+    resultsDir,
+    runDir,
+    setProjPath,
     simDir,
     simReadme,
-    aliveData,
-    harvestData,
-    spawnData,
-    killedData,
     simSummary,
+    spawnData,
 
     # mortality.jl
     harvest!,
