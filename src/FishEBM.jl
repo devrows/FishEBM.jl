@@ -31,6 +31,7 @@ module FishEBM
     aliveData,
     createDir,
     dateDir,
+    getDirChar,
     harvestData,
     killedData,
     resultsDir,
@@ -69,10 +70,10 @@ module FishEBM
     include("types.jl")
     include("agents.jl")
     include("environment.jl")
+    include("FileIO.jl")
     include("mortality.jl")
     include("move.jl")
     include("simulate.jl")
     include("spawn.jl")
     include("utilities.jl")
-    include("FileIO.jl")
 end

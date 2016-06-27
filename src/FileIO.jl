@@ -14,7 +14,9 @@
   Last update: June 2016
 """
 function aliveData(popDataFrame::DataFrame, path::ASCIIString)
-  file = string(path,"\\simSUMMARY.csv")
+  separateDirChar = getDirChar()
+
+  file = string(path,"$(separateDirChar)simSUMMARY.csv")
   writetable(file, popDataFrame)
 end
 
@@ -30,7 +32,7 @@ end
 """
 function createDir(path::ASCIIString, exists::Bool)
   if exists == true
-    print("This directory already exists.\n")
+    print("A directory already exists in the path $path.\n")
   else
     mkdir(path)
   end
@@ -44,10 +46,26 @@ end
 """
 function dateDir(path::ASCIIString)
   currentDate = string(Dates.today())
-  datePath =string(path,string("\\",currentDate))
+  datePath = string(path,string(getDirChar(), currentDate))
   dirExist = isdir(datePath)
 
   return (datePath,dirExist)
+end
+
+
+"""
+  Description: Finds the character used to separate the path based on current OS
+
+  Returns: ASCIIString
+
+  Last update: June 2016
+"""
+function getDirChar()
+  if OS_NAME == :Windows
+    return "\\"
+  elseif OS_NAME == :Darwin
+    return "/"
+  end
 end
 
 
@@ -58,7 +76,7 @@ end
   Last update: June 2016
 """
 function harvestData(hdf::DataFrame, path::ASCIIString)
-  file = string(path,"\\harvestSUMMARY.csv")
+  file = string(path,"$(getDirChar())harvestSUMMARY.csv")
   writetable(file, hdf)
 end
 
@@ -70,7 +88,7 @@ end
   Last update: June 2016
 """
 function killedData(kdf::DataFrame, path::ASCIIString)
-  file = string(path,"\\killedSUMMARY.csv")
+  file = string(path,"$(getDirChar())killedSUMMARY.csv")
   writetable(file, kdf)
 end
 
@@ -82,7 +100,7 @@ end
     & dirExist = True/False.
 """
 function resultsDir(path::ASCIIString)
-    resultsPath = string(path, "\\results")
+    resultsPath = string(path, "$(getDirChar())results")
     dirExist = isdir(resultsPath)
 
     return (resultsPath,dirExist)
@@ -100,7 +118,7 @@ function runDir(path::ASCIIString)
   stopCriteria = 0
 
   while (stopCriteria == 0)
-    newRunPath = string(path,string("\\run_", dirCounter))
+    newRunPath = string(path,string("$(getDirChar())run_", dirCounter))
     dirExist = isdir(newRunPath)
 
     if dirExist == false
@@ -111,12 +129,12 @@ function runDir(path::ASCIIString)
   end
 
   if dirCounter == 0
-    currentRunPath = string(path,string("\\run_", dirCounter))
+    currentRunPath = string(path,string("$(getDirChar())run_", dirCounter))
   else
-    currentRunPath = string(path,string("\\run_", dirCounter-1))
+    currentRunPath = string(path,string("$(getDirChar())run_", dirCounter-1))
   end
 
-  newRunPath = string(path,string("\\run_", dirCounter))
+  newRunPath = string(path,string("$(getDirChar())run_", dirCounter))
   dirExist = isdir(newRunPath)
 
   return (newRunPath, currentRunPath, dirExist)
@@ -133,17 +151,16 @@ end
     Last update: June 2016
 """
 function setProjPath()
-    @assert(OS_NAME == :Windows, "There is currently no functionality for the operating system :$OS_NAME, now aborting.")
-    projPath = Base.source_path() #returns full path to current file (FileIO.jl in this case)
-    #add if statement here
-    pathEndSearch = rsearch(projPath, "\\")[1] #returns last occurance of a "\\" character
-    endOfDirPath = projPath[pathEndSearch:length(projPath)] #returns current file WITHOUT the path (FileIO.jl)
-    projPath = split(projPath, endOfDirPath)[1] #splits the projPath at the endOfDirPath, so it truncates the file name
-    pathEndSearch = rsearch(projPath, "\\")[1] #returns last occurance of a "\\" character in the new truncated file name
-    endOfDirPath = projPath[pathEndSearch:length(projPath)] #returns the name of the current directory (src in this case)
-    projPath = split(projPath, endOfDirPath)[1] #splits the projPath at the endOfDirPath, so it now truncates the file name
+  projPath = Base.source_path() #find current project path
+  separateDirChar = getDirChar()
+  pathEndSearch = rsearch(projPath, separateDirChar)[1]
+  endOfDirPath = projPath[pathEndSearch:length(projPath)]
+  projPath = split(projPath, endOfDirPath)[1]
+  pathEndSearch = rsearch(projPath, separateDirChar)[1]
+  endOfDirPath = projPath[pathEndSearch:length(projPath)]
+  projPath = string(split(projPath, endOfDirPath)[1], "$(getDirChar())simulations")
 
-    return ascii(projPath) #returns the path to FishEBM.jl
+  return ascii(projPath) #returns the path to FishEBM.jl
 end
 
 
@@ -182,7 +199,7 @@ end
 """
 function simReadme(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumptions, bump::Vector, effort::Vector, initStock::Vector, carryingCap::Vector, path::ASCIIString, userInput::ASCIIString)
 
-  file_name = string(path,"\\simREADME.txt")
+  file_name = string(path,"$(getDirChar())simREADME.txt")
   output_file = open(file_name, "w")
 
   write(output_file,"-------------------------\n")
@@ -280,8 +297,15 @@ end
 
   Last update: June 2016
 """
-function simSummary(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumptions, agentDB::Vector, bump::Vector, effort::Vector, finalWeek::Int64, initStock::Vector,
-  carryingCap::Vector, popDataFrame::DataFrame, harvestDataFrame::DataFrame, spawnDataFrame::DataFrame, killedDataFrame::DataFrame, userInput::ASCIIString)
+function simSummary(adultAssumpt::AdultAssumptions,
+  agentAssumpt::AgentAssumptions, agentDB::Vector, bump::Vector, effort::Vector,
+  finalWeek::Int64, initStock::Vector, carryingCap::Vector,
+  popDataFrame::DataFrame, harvestDataFrame::DataFrame,
+  spawnDataFrame::DataFrame, killedDataFrame::DataFrame, userInput::ASCIIString)
+
+  @assert(OS_NAME == :Windows || OS_NAME == :Darwin, "There is currently no
+    functionality for the operating system :$OS_NAME, now aborting.")
+
   simDir()
   path = runDir(dateDir(resultsDir(setProjPath())[1])[1])[2]
   aliveData(popDataFrame, path)
@@ -299,6 +323,6 @@ end
   Last update: June 2016
 """
 function spawnData(sdf::DataFrame, path::ASCIIString)
-  file = string(path,"\\spawnSUMMARY.csv")
+  file = string(path,"$(getDirChar())spawnSUMMARY.csv")
   writetable(file, sdf)
 end

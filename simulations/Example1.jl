@@ -63,15 +63,14 @@ agent_a = AgentAssumptions([[0.15 0.10 0.05 0.002]
 # * Population bump
 
 
-k = rand(Normal(500000, 50000), 100)
+k = rand(Normal(500000, 50000), 1)
 effortVar = [0]
 bumpVar = [100000]
 initialStock = [5000, 10000, 12500, 15000]
-plotPopDensity=false
 
 #simDir()
 #path = runDir(dateDir(resultsDir(setProjPath())[1])[1])[2]
 #userInput = "First real simulation, searching for stable populations. See the file attributes for information on the simulation variable choices."
 #simReadme(adult_a, agent_a, bumpVar, effortVar, initialStock, k, path, userInput)
 
-adb = simulate(k, effortVar, bumpVar, initialStock, enviro_a, adult_a, agent_a, true, 50000000, false)
+adb = simulate(k, effortVar, bumpVar, initialStock, enviro_a, adult_a, agent_a)
