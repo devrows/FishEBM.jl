@@ -15,13 +15,17 @@
 
 function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
   initStock::Vector, e_a::EnvironmentAssumptions, adult_a::AdultAssumptions,
-  age_a::AgentAssumptions, progress=true::Bool, limit=50000000::Int64,
-  plotPopDensity=true::Bool)
+  age_a::AgentAssumptions, progress=true::Bool, plotPopDensity=false::Bool,
+  plotPopDistribution=false::Bool, limit=50000000::Int64)
 
-  @assert(all(carrying_capacity .> 0.), "There is at least one negative carrying capacity")
-  years = length(carrying_capacity)
+  #preconditions
+  @assert(all(carrying_capacity .> 0.), "There is at least one negative carrying
+    capacity")
+  @assert(plotPopDensity == false || plotPopDistribution == false, "Only one
+    plot can be run during a simulation")
 
   #initialize the agent database and hash the enviro
+  years = length(carrying_capacity)
   a_db = AgentDB(e_a); hashEnvironment!(a_db, e_a);
   if plotPopDensity
     popDensity = initPopulationDensity(e_a)
@@ -72,7 +76,6 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
 
       #harvest and spawn can be set to any week(s)
       if w > harvestMin
-        #harvest can be set to any week(s)
         harvest!(harvest_effort[y], totalWeek, a_db, e_a, adult_a, age_a, harvestDataFrame)
       else
         push!(harvestDataFrame, (totalWeek, 0, 0, 0, 0, 0, 0, 0, 0))
@@ -102,6 +105,16 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
           updatePopulationDensity!(a_db, popDensity)
           popPlot = spy(popDensity, Guide.title("Year = $y, week = $w, totalPopulation = $totalPopulation"))
           display(popPlot)
+        end
+      end
+
+      if plotPopDistribution
+        if w ==1 || w%10 == 0
+          adultAge = [2,3,4,5,6,7,8]
+          ageDistPlot = Gadfly.plot(x=adultAge, y=ageSpecificPop, Geom.point,
+            Guide.xlabel("Adult age in years"), Guide.ylabel("Adult population"),
+            Guide.title("Age Distribution Plot of Adult fish by age,\n y = $y, w = $w, totalPopulation = $totalPopulation"))
+          display(ageDistPlot)
         end
       end
 
