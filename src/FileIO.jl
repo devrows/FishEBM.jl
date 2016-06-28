@@ -83,6 +83,8 @@ end
   Last update: June 2016
 """
 function getDirChar()
+  @assert(OS_NAME == :Windows || OS_NAME == :Darwin, "There is currently no
+    functionality for the operating system :$OS_NAME, now aborting.")
   if OS_NAME == :Windows
     return "\\"
   elseif OS_NAME == :Darwin
@@ -328,9 +330,6 @@ function simSummary(adultAssumpt::AdultAssumptions,
   finalWeek::Int64, initStock::Vector, carryingCap::Vector,
   popDataFrame::DataFrame, ageDataFrame::DataFrame, harvestDataFrame::DataFrame,
   spawnDataFrame::DataFrame, killedDataFrame::DataFrame, userInput::ASCIIString)
-
-  @assert(OS_NAME == :Windows || OS_NAME == :Darwin, "There is currently no
-    functionality for the operating system :$OS_NAME, now aborting.")
 
   simDir()
   path = runDir(dateDir(resultsDir(setProjPath())[1])[1])[2]
