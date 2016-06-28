@@ -8,6 +8,24 @@
 
 
 """
+  INPUT: ageDataFrame = DataFrame of yearly adult age-specific population.
+  OUTPUT: ageSUMMARY.csv: file containing yearly age-specific population levels.
+
+  Last update: June 2016
+"""
+function ageData(adf::DataFrame, path::ASCIIString)
+  separateDirChar = getDirChar()
+
+  file = string(path,"$(separateDirChar)ageSUMMARY.csv")
+  f = open(file, "w")
+  adfOut = convert(Array, adf)
+  writedlm(f, names(adf)', " ,")
+  writedlm(f, adfOut,  " ,")
+  close(f)
+end
+
+
+"""
   INPUT: popDataFrame = DataFrame of weekly stage population.
   OUTPUT: simSUMMARY.csv: file containing weekly population levels.
 
@@ -17,7 +35,11 @@ function aliveData(popDataFrame::DataFrame, path::ASCIIString)
   separateDirChar = getDirChar()
 
   file = string(path,"$(separateDirChar)simSUMMARY.csv")
-  writetable(file, popDataFrame)
+  f = open(file, "w")
+  popDataOutput = convert(Array, popDataFrame)
+  writedlm(f, names(popDataFrame)', " ,")
+  writedlm(f, popDataOutput,  " ,")
+  close(f)
 end
 
 
@@ -89,7 +111,11 @@ end
 """
 function killedData(kdf::DataFrame, path::ASCIIString)
   file = string(path,"$(getDirChar())killedSUMMARY.csv")
-  writetable(file, kdf)
+  f = open(file, "w")
+  kdfOut = convert(Array, kdf)
+  writedlm(f, names(kdf)', " ,")
+  writedlm(f, kdfOut,  " ,")
+  close(f)
 end
 
 
@@ -300,7 +326,7 @@ end
 function simSummary(adultAssumpt::AdultAssumptions,
   agentAssumpt::AgentAssumptions, agentDB::Vector, bump::Vector, effort::Vector,
   finalWeek::Int64, initStock::Vector, carryingCap::Vector,
-  popDataFrame::DataFrame, harvestDataFrame::DataFrame,
+  popDataFrame::DataFrame, ageDataFrame::DataFrame, harvestDataFrame::DataFrame,
   spawnDataFrame::DataFrame, killedDataFrame::DataFrame, userInput::ASCIIString)
 
   @assert(OS_NAME == :Windows || OS_NAME == :Darwin, "There is currently no
@@ -309,6 +335,7 @@ function simSummary(adultAssumpt::AdultAssumptions,
   simDir()
   path = runDir(dateDir(resultsDir(setProjPath())[1])[1])[2]
   aliveData(popDataFrame, path)
+  ageData(ageDataFrame, path)
   harvestData(harvestDataFrame, path)
   spawnData(spawnDataFrame, path)
   killedData(killedDataFrame, path)
@@ -324,5 +351,9 @@ end
 """
 function spawnData(sdf::DataFrame, path::ASCIIString)
   file = string(path,"$(getDirChar())spawnSUMMARY.csv")
-  writetable(file, sdf)
+  f = open(file, "w")
+  sdfOut = convert(Array, sdf)
+  writedlm(f, names(sdf)', " ,")
+  writedlm(f, sdfOut,  " ,")
+  close(f)
 end
