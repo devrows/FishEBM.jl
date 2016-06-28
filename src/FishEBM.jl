@@ -28,8 +28,8 @@ module FishEBM
     pad_environment!,
 
     # FileIO.jl functions
-    aliveData,
     ageData,
+    aliveData,
     createDir,
     dateDir,
     getDirChar,
