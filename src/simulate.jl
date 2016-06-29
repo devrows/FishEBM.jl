@@ -15,7 +15,7 @@
 
 function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
   initStock::Vector, e_a::EnvironmentAssumptions, adult_a::AdultAssumptions,
-  age_a::AgentAssumptions, progress=true::Bool, plotPopDensity=false::Bool,
+  age_a::AgentAssumptions; progress=true::Bool, plotPopDensity=false::Bool,
   plotPopDistribution=false::Bool, limit=50000000::Int64)
 
   #preconditions
