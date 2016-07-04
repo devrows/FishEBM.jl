@@ -59,6 +59,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
   spawnMin = 39; harvestMin = 39;
 
   for y = 1:years
+    # age specific population
     ageSpecificPop = fill(0, 7)
     for i = 1:length(a_db)
       for age = 2:8
