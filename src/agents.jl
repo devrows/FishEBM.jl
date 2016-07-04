@@ -61,6 +61,25 @@ end
 
 
 """
+  Description: Returns age of cohort. If cohort is not adult, returns 0.
+
+    Returns: Int64
+
+  Last Update: July 2016
+"""
+function getAge(current_week::Int64, spawn_week::Int64)
+  age = floor((current_week - spawn_week)/52)
+  if age < 2
+    return 0
+  elseif age > 8
+    return 8
+  else
+    return Int(age)
+  end
+end
+
+
+"""
   Description: Returns population of a specific age in an environment agent.
     Used for functions that requires age-specific population to be taken into
     account (such as spawning or harvest).
