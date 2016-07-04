@@ -116,9 +116,12 @@ function kill!(agent_db::Vector, e_a::EnvironmentAssumptions, a_a::AgentAssumpti
     end #if isEmpty
   end #for i=1:length(agent_db)
 
-  total = totalNatural + totalExtra
+  #total = totalNatural + totalExtra
 
-  push!(kdf, (current_week, totalNatural, totalExtra, total))
+  #push!(kdf, (current_week, totalNatural, totalExtra, total))
+
+  kdf[size(kdf)[1], 2] = totalNatural
+  kdf[size(kdf)[1], 3] = totalExtra
 
   return agent_db
 end
@@ -133,7 +136,9 @@ end
   Last update: June 2016
 """
 function killAgeSpecific!(agent_db::Vector, adult_a::AdultAssumptions,
-  age_specific_pop::Vector, year_specific_cc::Float64, current_week::Int64)
+  age_specific_pop::Vector, year_specific_cc::Float64, current_week::Int64, kdf::DataFrame)
+
+  totalKilled = 0
 
   stockSize = fill(0, size(adult_a.naturalmortality))
   ageVector = fill(0, length(agent_db[1].weekNum))
@@ -171,10 +176,13 @@ function killAgeSpecific!(agent_db::Vector, adult_a::AdultAssumptions,
         killedAdult = rand(Binomial(agent_db[j].alive[k], adult_a.naturalmortality[ageVector[k]-1]))
         agent_db[j].alive[k] -= killedAdult
 
-        #add code here for story the compensatory adult mortalities
+        totalKilled += 0
 
         k+=1
       end # while adult cohort
     end # if empty
   end # for agent_db
+
+  kdf[size(kdf)[1], 4] = totalKilled
+
 end
