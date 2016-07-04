@@ -36,6 +36,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
     injectAgents!(a_db, e_a.spawningHash, initStock[5-i], -age_a.growth[((7-i)%4)+1])
   end
 
+  #Memory allocation for required data storage
   popDataFrame = DataFrame(Week = 0, Stage1 = initStock[1], Stage2 = initStock[2], Stage3 = initStock[3],Stage4 = initStock[4], Total = sum(initStock))
   ageDataFrame = DataFrame(Year = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
   harvestDataFrame = DataFrame(Week = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
@@ -91,6 +92,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
       end
 
       #Agents are killed and moved weekly
+      killAgeSpecific(a_db, adult_a, ageSpecificPop, carrying_capacity[y], totalWeek)
       kill!(a_db, e_a, age_a, totalWeek, killedDataFrame)
       move!(a_db, age_a, e_a, totalWeek)
 
@@ -102,7 +104,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
       totalPopulation = sum(stagePopulation)
       push!(popDataFrame,(totalWeek,stagePopulation[1],stagePopulation[2],stagePopulation[3],stagePopulation[4], totalPopulation))
 
-      #show a real time plot (weekly) of agent movement
+      #show a real time plot (every 10 weeks) of agent movement
       if plotPopDensity
         if w == 1 || w%10 == 0
           updatePopulationDensity!(a_db, popDensity)
@@ -111,6 +113,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
         end
       end
 
+      #show a real time plot (every 10 weeks) of adult age distribution
       if plotPopDistribution
         if w ==1 || w%10 == 0
           adultAge = [2,3,4,5,6,7,8]

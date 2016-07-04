@@ -78,7 +78,7 @@ end
     fish and its corresponding natural mortality and its location within the
     habitat as described in EnvironmentAssumptions.
 
-  Returns: Operates directly on agent_db
+  Returns: Operates directly on agent_db and kdf
 
   Last update: June 2016
 """
@@ -121,4 +121,60 @@ function kill!(agent_db::Vector, e_a::EnvironmentAssumptions, a_a::AgentAssumpti
   push!(kdf, (current_week, totalNatural, totalExtra, total))
 
   return agent_db
+end
+
+
+"""
+  Description: This function applies transition probabilities to the adult fish
+    population to regulate the adult age distribtion.
+
+  Returns: Operates directly on agent_db
+
+  Last update: June 2016
+"""
+function killAgeSpecific!(agent_db::Vector, adult_a::AdultAssumptions,
+  age_specific_pop::Vector, year_specific_cc::Float64, current_week::Int64)
+
+  stockSize = fill(0, size(adult_a.naturalmortality))
+  ageVector = fill(0, length(agent_db[1].weekNum))
+  mortalityRate = fill(0., length(age_specific_pop))
+
+  if isnan(adult_a.mortalitycompensation)
+    compensation_factor = 1
+  else
+    compFactor = 2*(cdf(Normal(year_specific_cc, year_specific_cc/adult_a.mortalitycompensation), sum(age_specific_pop)))
+  end
+
+  @assert(0.01 < compFactor < 1.99, "Population regulation has failed, respecify simulation parameters")
+
+  #find dynamic stock sizes
+  for i = 1:(length(adult_a.naturalmortality))
+    stockSize[i] = rand(Binomial(age_specific_pop[i], 1-adult_a.naturalmortality[i]*compFactor))
+  end
+
+  #Find desired mortality rates for dynamic stock sizes
+  for j = 1:length(age_specific_pop)
+    if age_specific_pop[j] != 0
+      mortalityRate[j] = 1-(stockSize[j]/age_specific_pop[j])
+    end
+  end
+
+  #Find the age (in years) of each adult cohort
+  for i = 1:length(ageVector)
+    ageVector[i] = getAge(current_week, agent_db[1].weekNum[i])
+  end
+
+  for j = 1:length(agent_db)
+    if (isEmpty(agent_db[j]) == false)
+      k = 1
+      while ageVector[k] > 1 && k < length(ageVector)
+        killedAdult = rand(Binomial(agent_db[j].alive[k], adult_a.naturalmortality[ageVector[k]-1]))
+        agent_db[j].alive[k] -= killedAdult
+
+        #add code here for story the compensatory adult mortalities
+
+        k+=1
+      end # while adult cohort
+    end # if empty
+  end # for agent_db
 end

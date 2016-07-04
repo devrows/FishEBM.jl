@@ -15,6 +15,7 @@ module FishEBM
     # agents.jl functions
     AgentDB,
     findCurrentStage,
+    getAge,
     getAgeSpecificPop,
     getCohortNumber,
     getStagePopulation,
@@ -46,6 +47,7 @@ module FishEBM
     # mortality.jl
     harvest!,
     kill!,
+    killAgeSpecific!,
 
     # move.jl
     move!,
