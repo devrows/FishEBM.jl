@@ -92,7 +92,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
       end
 
       #Agents are killed and moved weekly
-      killAgeSpecific(a_db, adult_a, ageSpecificPop, carrying_capacity[y], totalWeek)
+      killAgeSpecific!(a_db, adult_a, ageSpecificPop, carrying_capacity[y], totalWeek)
       kill!(a_db, e_a, age_a, totalWeek, killedDataFrame)
       move!(a_db, age_a, e_a, totalWeek)
 
