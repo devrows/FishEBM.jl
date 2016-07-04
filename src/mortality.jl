@@ -116,10 +116,6 @@ function kill!(agent_db::Vector, e_a::EnvironmentAssumptions, a_a::AgentAssumpti
     end #if isEmpty
   end #for i=1:length(agent_db)
 
-  #total = totalNatural + totalExtra
-
-  #push!(kdf, (current_week, totalNatural, totalExtra, total))
-
   kdf[size(kdf)[1], 2] = totalNatural
   kdf[size(kdf)[1], 3] = totalExtra
 
