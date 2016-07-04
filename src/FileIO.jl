@@ -114,6 +114,16 @@ end
 function killedData(kdf::DataFrame, path::ASCIIString)
   file = string(path,"$(getDirChar())killedSUMMARY.csv")
   f = open(file, "w")
+
+  #Sum natural, extra, and Compensatory mortalities before outputting to .csv
+  for i = 1:size(kdf)[1]
+    totalKill = 0
+    for j = 2:4
+      totalKill += kdf[i,j]
+    end #for j
+    kdf[i,5] = totalKill
+  end #for i
+
   kdfOut = convert(Array, kdf)
   writedlm(f, names(kdf)', " ,")
   writedlm(f, kdfOut,  " ,")

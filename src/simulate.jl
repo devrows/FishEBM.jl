@@ -41,7 +41,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
   ageDataFrame = DataFrame(Year = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
   harvestDataFrame = DataFrame(Week = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
   spawnDataFrame = DataFrame(Week = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
-  killedDataFrame = DataFrame(Week = 0, Natural = 0, Extra = 0, Total = 0)
+  killedDataFrame = DataFrame(Week = 0, Natural = 0, Extra = 0, Compensatory = 0, Total = 0)
 
   spawn!(a_db, adult_a, age_a, e_a, 1, carrying_capacity[1], spawnDataFrame)
 
@@ -92,7 +92,8 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
       end
 
       #Agents are killed and moved weekly
-      killAgeSpecific(a_db, adult_a, ageSpecificPop, carrying_capacity[y], totalWeek)
+      push!(killedDataFrame, (totalWeek, 0, 0, 0, 0))
+      killAgeSpecific!(a_db, adult_a, ageSpecificPop, carrying_capacity[y], totalWeek, killedDataFrame)
       kill!(a_db, e_a, age_a, totalWeek, killedDataFrame)
       move!(a_db, age_a, e_a, totalWeek)
 
