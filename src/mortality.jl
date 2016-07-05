@@ -172,7 +172,7 @@ function killAgeSpecific!(agent_db::Vector, adult_a::AdultAssumptions,
         killedAdult = rand(Binomial(agent_db[j].alive[k], adult_a.naturalmortality[ageVector[k]-1]))
         agent_db[j].alive[k] -= killedAdult
 
-        totalKilled += 0
+        totalKilled += killedAdult
 
         k+=1
       end # while adult cohort
