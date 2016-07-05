@@ -60,15 +60,6 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
   spawnMin = 39; harvestMin = 39;
 
   for y = 1:years
-    # age specific population
-    ageSpecificPop = fill(0, 7)
-    for i = 1:length(a_db)
-      for age = 2:8
-        ageSpecificPop[age - 1] += getAgeSpecificPop(age, ((y-1)*52)+1, a_db[i].alive, a_db[i].weekNum, age_a)
-      end #for age
-    end #for i
-    push!(ageDataFrame, vcat(y, ageSpecificPop..., sum(ageSpecificPop)))
-
     for w = 1:52
 
       if progress
@@ -77,6 +68,17 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
       end
 
       totalWeek = ((y-1)*52)+w
+
+      # age specific population
+      ageSpecificPop = fill(0, 7)
+      for i = 1:length(a_db)
+        for age = 2:8
+          ageSpecificPop[age - 1] += getAgeSpecificPop(age, totalWeek, a_db[i].alive, a_db[i].weekNum, age_a)
+        end #for age
+      end #for i
+      if w == 1
+        push!(ageDataFrame, vcat(y, ageSpecificPop..., sum(ageSpecificPop)))
+      end
 
       #harvest and spawn can be set to any week(s)
       if w > harvestMin
