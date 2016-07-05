@@ -41,7 +41,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
   ageDataFrame = DataFrame(Year = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
   harvestDataFrame = DataFrame(Week = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
   spawnDataFrame = DataFrame(Week = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
-  killedDataFrame = DataFrame(Week = 0, Natural = 0, Extra = 0, Total = 0)
+  killedDataFrame = DataFrame(Week = 0, Natural = 0, Extra = 0, Compensatory = 0, Total = 0)
 
   spawn!(a_db, adult_a, age_a, e_a, 1, carrying_capacity[1], spawnDataFrame)
 
@@ -60,15 +60,6 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
   spawnMin = 39; harvestMin = 39;
 
   for y = 1:years
-    # age specific population
-    ageSpecificPop = fill(0, 7)
-    for i = 1:length(a_db)
-      for age = 2:8
-        ageSpecificPop[age - 1] += getAgeSpecificPop(age, ((y-1)*52)+1, a_db[i].alive, a_db[i].weekNum, age_a)
-      end #for age
-    end #for i
-    push!(ageDataFrame, vcat(y, ageSpecificPop..., sum(ageSpecificPop)))
-
     for w = 1:52
 
       if progress
@@ -77,6 +68,17 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
       end
 
       totalWeek = ((y-1)*52)+w
+
+      # age specific population
+      ageSpecificPop = fill(0, 7)
+      for i = 1:length(a_db)
+        for age = 2:8
+          ageSpecificPop[age - 1] += getAgeSpecificPop(age, totalWeek, a_db[i].alive, a_db[i].weekNum, age_a)
+        end #for age
+      end #for i
+      if w == 1
+        push!(ageDataFrame, vcat(y, ageSpecificPop..., sum(ageSpecificPop)))
+      end
 
       #harvest and spawn can be set to any week(s)
       if w > harvestMin
@@ -92,7 +94,8 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
       end
 
       #Agents are killed and moved weekly
-      killAgeSpecific(a_db, adult_a, ageSpecificPop, carrying_capacity[y], totalWeek)
+      push!(killedDataFrame, (totalWeek, 0, 0, 0, 0))
+      killAgeSpecific!(a_db, adult_a, ageSpecificPop, carrying_capacity[y], totalWeek, killedDataFrame)
       kill!(a_db, e_a, age_a, totalWeek, killedDataFrame)
       move!(a_db, age_a, e_a, totalWeek)
 
