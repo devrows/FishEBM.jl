@@ -10,7 +10,7 @@ using FishEBM, Distributions
 # * s_a.maturitycompensation = Compensatory strength - age at 50% maturity
 # * s_a.mortalitycompensation = Compensatory strength - adult natural mortality
 # * s_a.catchability = Age specific catchability
-adult_a = AdultAssumptions([0.35, 0.40, 0.45, 0.50, 0.55, 0.60, 0.65],
+adult_a = AdultAssumptions([0.0045, 0.0055, 0.0065, 0.0075, 0.0085, 0.0095, 0.0105],
                        5,
                        [2500, 7500, 15000, 20000, 22500, 27500, 32500],
                        2,
@@ -37,13 +37,13 @@ enviro_a = initEnvironment(spawnPath, habitatPath, riskPath)
 # * a_a.movement = Movement weight matrices
 # * a_a.autonomy =  Movement autonomy
 
-agent_a = AgentAssumptions([[0.15 0.10 0.05 0.002]
-                        [0.132 0.066 0.033 0.005]
-                        [0.40 0.20 0.10 0.004]
-                        [0.60 0.30 0.15 0.006]
-                        [0.80 0.40 0.20 0.008]
-                        [0.90 0.50 0.25 0.03]],
-                       [0.0, 0.0, 0.0, 0.0],
+agent_a = AgentAssumptions([[0.15 0.10 0.05 0.0015]
+                          [0.132 0.066 0.033 0.001]
+                          [0.40 0.20 0.10 0.002]
+                          [0.60 0.30 0.15 0.004]
+                          [0.80 0.40 0.20 0.006]
+                          [0.90 0.50 0.25 0.0095]],
+                        [0.0, 0.0, 0.0, 0.0],
                        [19, 52, 104, 0],
                        Array[[[0. 0. 0.]
                               [0. 1. 0.]
@@ -66,11 +66,19 @@ agent_a = AgentAssumptions([[0.15 0.10 0.05 0.002]
 k = rand(Normal(500000, 50000), 100)
 effortVar = [0]
 bumpVar = [100000]
-initialStock = [5000, 10000, 12500, 15000]
+
+#= stock = [stage 1 (0 weeks old), stage 2 (first week of stage 2),
+  stage 3 (first week of stage 3), stage 4 (2 years), stage 4 (4 years),
+  stage 4 (8 years)] =#
+initialStock = [5000, 10000, 12500, 8000, 7000, 2000]
+stockAge = [0, -agent_a.growth[1], -agent_a.growth[2], -agent_a.growth[3],
+  -210, -420] # In weeks
+
+
 
 #simDir()
 #path = runDir(dateDir(resultsDir(setProjPath())[1])[1])[2]
 #userInput = "First real simulation, searching for stable populations. See the file attributes for information on the simulation variable choices."
 #simReadme(adult_a, agent_a, bumpVar, effortVar, initialStock, k, path, userInput)
 
-adb = simulate(k, effortVar, bumpVar, initialStock, enviro_a, adult_a, agent_a, progress=true, plotPopDistribution=true)
+adb = simulate(k, effortVar, bumpVar, initialStock, stockAge, enviro_a, adult_a, agent_a)

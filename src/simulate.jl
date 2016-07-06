@@ -14,7 +14,7 @@
 
 
 function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
-  initStock::Vector, e_a::EnvironmentAssumptions, adult_a::AdultAssumptions,
+  initStock::Vector, stock_age::Vector, e_a::EnvironmentAssumptions, adult_a::AdultAssumptions,
   age_a::AgentAssumptions; progress=true::Bool, plotPopDensity=false::Bool,
   plotPopDistribution=false::Bool, limit=50000000::Int64)
 
@@ -23,6 +23,9 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
     capacity")
   @assert(plotPopDensity == false || plotPopDistribution == false, "Only one
     plot can be run during a simulation")
+  @assert(length(initStock) == length(stock_age), "Unmatching vector length for
+    initializing the population, stock length = $(length(initStock)) &
+    $(length(stock_age))")
 
   #initialize the agent database and hash the enviro
   years = length(carrying_capacity)
@@ -32,8 +35,8 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
   end
 
   #initialize the stock with a spawn
-  for i = 1:4
-    injectAgents!(a_db, e_a.spawningHash, initStock[5-i], -age_a.growth[((7-i)%4)+1])
+  for i = 1:length(initStock)
+    injectAgents!(a_db, e_a.spawningHash, initStock[length(initStock)+1-i], stock_age[length(initStock)+1-i])
   end
 
   #Memory allocation for required data storage
@@ -67,7 +70,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
         next!(progressBar)
       end
 
-      totalWeek = ((y-1)*52)+w
+      totalWeek = ((y-1)*52)+w #get total number of weeks in simulation
 
       # age specific population
       ageSpecificPop = fill(0, 7)
@@ -130,11 +133,10 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
       #if simulation fails
       if totalPopulation == 0 || totalPopulation > limit
         removeEmptyClass!(a_db)
-        description = "Simulation was stopped in year $y, week $w due to population failure (total population = $totalPopulation, population limit = $limit)."
+        description = "\n Simulation was stopped in year $y, week $w due to population failure (total population = $totalPopulation, population limit = $limit).\n"
         simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity, popDataFrame, ageDataFrame, harvestDataFrame, spawnDataFrame, killedDataFrame, description)
         return a_db
       end
-
     end #end for week
     #Remove empty cohorts annually
     removeEmptyClass!(a_db)
