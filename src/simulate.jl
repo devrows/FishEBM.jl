@@ -14,11 +14,12 @@
 
 
 function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
-  initStock::Vector, stock_age::Vector, e_a::EnvironmentAssumptions, adult_a::AdultAssumptions,
-  age_a::AgentAssumptions; progress=true::Bool, plotPopDensity=false::Bool,
-  plotPopDistribution=false::Bool, limit=50000000::Int64)
+  initStock::Vector, stock_age::Vector, e_a::EnvironmentAssumptions,
+  adult_a::AdultAssumptions, age_a::AgentAssumptions; progress=true::Bool,
+  plotPopDensity=false::Bool, plotPopDistribution=false::Bool,
+  limit=50000000::Int64)
 
-  #preconditions
+  # preconditions
   @assert(all(carrying_capacity .> 0.), "There is at least one negative carrying
     capacity")
   @assert(plotPopDensity == false || plotPopDistribution == false, "Only one
@@ -27,14 +28,14 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
     initializing the population, stock length = $(length(initStock)) &
     $(length(stock_age))")
 
-  #initialize the agent database and hash the enviro
+  # initialize the agent database and hash the enviro
   years = length(carrying_capacity)
   a_db = AgentDB(e_a); hashEnvironment!(a_db, e_a);
   if plotPopDensity
     popDensity = initPopulationDensity(e_a)
   end
 
-  #initialize the stock with a spawn
+  #initialize the stock with incoming paramaters
   for i = 1:length(initStock)
     injectAgents!(a_db, e_a.spawningHash, initStock[length(initStock)+1-i], stock_age[length(initStock)+1-i])
   end
@@ -46,6 +47,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
   spawnDataFrame = DataFrame(Week = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
   killedDataFrame = DataFrame(Week = 0, Natural = 0, Extra = 0, Compensatory = 0, Total = 0)
 
+  # help initialize stock with a spawn in week 1
   spawn!(a_db, adult_a, age_a, e_a, 1, carrying_capacity[1], spawnDataFrame)
 
   bumpvec = fill(0, years)

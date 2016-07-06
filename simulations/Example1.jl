@@ -70,9 +70,8 @@ bumpVar = [100000]
 #= stock = [stage 1 (0 weeks old), stage 2 (first week of stage 2),
   stage 3 (first week of stage 3), stage 4 (2 years), stage 4 (4 years),
   stage 4 (8 years)] =#
-initialStock = [5000, 10000, 12500, 8000, 7000, 2000]
-stockAge = [0, -agent_a.growth[1], -agent_a.growth[2], -agent_a.growth[3],
-  -210, -420] # In weeks
+initialStock = [5000, 10000, 12500, 8000, 7000]
+stockAge = [0, -agent_a.growth[1], -agent_a.growth[2], -agent_a.growth[3],-210] # In weeks
 
 
 
