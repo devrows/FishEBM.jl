@@ -70,14 +70,8 @@ bumpVar = [100000]
 #= stock = [stage 1 (0 weeks old), stage 2 (first week of stage 2),
   stage 3 (first week of stage 3), stage 4 (2 years), stage 4 (4 years),
   stage 4 (8 years)] =#
-initialStock = [5000, 10000, 12500, 8000, 7000]
-stockAge = [0, -agent_a.growth[1], -agent_a.growth[2], -agent_a.growth[3],-210] # In weeks
+initialStock = [5000, 10000, 12500, 7000, 5000, 2000]
+stockAge = [0, -agent_a.growth[1], -agent_a.growth[2], -agent_a.growth[3],-210,-420] # In weeks
 
-
-
-#simDir()
-#path = runDir(dateDir(resultsDir(setProjPath())[1])[1])[2]
-#userInput = "First real simulation, searching for stable populations. See the file attributes for information on the simulation variable choices."
-#simReadme(adult_a, agent_a, bumpVar, effortVar, initialStock, k, path, userInput)
-
+# simulate
 adb = simulate(k, effortVar, bumpVar, initialStock, stockAge, enviro_a, adult_a, agent_a)

@@ -52,9 +52,6 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
   spawnDataFrame = DataFrame(Week = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
   killedDataFrame = DataFrame(Week = 0, Natural = 0, Extra = 0, Compensatory = 0, Total = 0)
 
-  # help initialize stock with a spawn in week 1
-  spawn!(a_db, adult_a, age_a, e_a, 1, carrying_capacity[1], spawnDataFrame)
-
   bumpvec = fill(0, years)
   bumpvec[1:length(bump)] = bump
   harvest_effort = fill(0., years)
