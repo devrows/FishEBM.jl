@@ -9,7 +9,7 @@
 
   Contributors: Justin Angevaare, Devin Rose
 
-  Last update: June 2016
+  Last update: July 2016
 """
 
 
