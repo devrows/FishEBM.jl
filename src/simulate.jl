@@ -40,8 +40,13 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
     injectAgents!(a_db, e_a.spawningHash, initStock[length(initStock)+1-i], stock_age[length(initStock)+1-i])
   end
 
+  stagePopulation = [0,0,0,0]; totalPopulation = 0;
+  for j = 1:4
+    stagePopulation[j] = getStagePopulation(j, 0, a_db, age_a)
+  end
+
   #Memory allocation for required data storage
-  popDataFrame = DataFrame(Week = 0, Stage1 = initStock[1], Stage2 = initStock[2], Stage3 = initStock[3],Stage4 = initStock[4], Total = sum(initStock))
+  popDataFrame = DataFrame(Week = 0, Stage1 = stagePopulation[1], Stage2 = stagePopulation[2], Stage3 = stagePopulation[3],Stage4 = stagePopulation[4], Total = sum(stagePopulation))
   ageDataFrame = DataFrame(Year = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
   harvestDataFrame = DataFrame(Week = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
   spawnDataFrame = DataFrame(Week = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
