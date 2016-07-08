@@ -23,6 +23,7 @@ function move!(agent_db::Vector, agent_a::AgentAssumptions,
 
   lifeStages = Array(Int64, length(agent_db[1].alive)); lifeStages[:] = 0;
   totalHeight = size(enviro_a.habitat)[1]
+  totalEnviroSize = size(enviro_a.habitat)[1]* size(enviro_a.habitat)[2]
 
   stageWeeks = [agent_a.growth[4], agent_a.growth[3], agent_a.growth[2], agent_a.growth[1]]
 
@@ -49,6 +50,7 @@ function move!(agent_db::Vector, agent_a::AgentAssumptions,
 
       #remove all non water and out of enviro choices
       moveChoices = moveChoices[moveChoices[:,1] .> 0, :]
+      moveChoices = moveChoices[moveChoices[:,1] .< totalEnviroSize+1, :]
       moveChoices = moveChoices[enviro_a.habitat[moveChoices[:,1]] .> 0, :]
 
       #for each cohort in the agent database
