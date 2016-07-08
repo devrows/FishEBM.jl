@@ -47,7 +47,8 @@ function move!(agent_db::Vector, agent_a::AgentAssumptions,
 
       moveChoices = hcat(moveChoices,[1,2,3,4,5,6,7,8,9])
 
-      #remove all non water choices
+      #remove all non water and out of enviro choices
+      moveChoices = moveChoices[moveChoices[:,1] .> 0, :]
       moveChoices = moveChoices[enviro_a.habitat[moveChoices[:,1]] .> 0, :]
 
       #for each cohort in the agent database
