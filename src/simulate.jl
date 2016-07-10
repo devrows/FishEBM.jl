@@ -60,7 +60,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
 
   #initialize the progress meter
   if progress
-    progressBar = Progress(years*52, 30, " Year 1 (of $years), week 1 of simulation ($totalPopulation adults)) \n", 30)
+    progressBar = Progress(years*52, 30, " $totalPopulation total agents, Year 1 (of $years), week 1 of simulation \n", 30)
   end
 
   spawnMin = 39; harvestMin = 39;
@@ -69,7 +69,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
     for w = 1:52
 
       if progress
-        progressBar.desc = " Year $y (of $years), week $w of simulation ($totalPopulation agents) "
+        progressBar.desc = " $totalPopulation total agents, Year $y (of $years), week $w of simulation "
         next!(progressBar)
       end
 
