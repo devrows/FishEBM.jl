@@ -16,7 +16,7 @@
 function ageData(adf::DataFrame, path::ASCIIString)
   separateDirChar = getDirChar()
 
-  file = string(path,"$(separateDirChar)ageSUMMARY.csv")
+  file = string(path,"$(separateDirChar)ageSpecificSUMMARY.csv")
   f = open(file, "w")
   adfOut = convert(Array, adf)
   writedlm(f, names(adf)', " ,")
@@ -34,7 +34,7 @@ end
 function aliveData(popDataFrame::DataFrame, path::ASCIIString)
   separateDirChar = getDirChar()
 
-  file = string(path,"$(separateDirChar)simSUMMARY.csv")
+  file = string(path,"$(separateDirChar)stageSUMMARY.csv")
   f = open(file, "w")
   popDataOutput = convert(Array, popDataFrame)
   writedlm(f, names(popDataFrame)', " ,")
