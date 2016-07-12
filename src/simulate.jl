@@ -141,9 +141,10 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
             for week = 1:52
               progressBar.desc = " $totalPopulation total agents, Year $year (of $years), week $week of simulation "
               next!(progressBar)
+            end
           end
         end
-
+        
         removeEmptyClass!(a_db)
         description = "\n Simulation was stopped in year $y, week $w due to population failure (total population = $totalPopulation, population limit = $limit).\n"
         simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity, popDataFrame, ageDataFrame, harvestDataFrame, spawnDataFrame, killedDataFrame, description)
