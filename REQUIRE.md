@@ -1,0 +1,5 @@
+DataArrays
+DataFrames
+Distributions
+Gadfly
+ProgressMeter
