@@ -16,7 +16,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
   initStock::Vector, stock_age::Vector, e_a::EnvironmentAssumptions,
   adult_a::AdultAssumptions, age_a::AgentAssumptions; progress=true::Bool,
   plotPopDensity=false::Bool, plotPopDistribution=false::Bool,
-  limit=50000000::Int64, simDescription=""::ASCIIString)
+  limit=60000000::Int64, simDescription=""::ASCIIString)
 
   # preconditions
   @assert(all(carrying_capacity .> 0.), "There is at least one negative carrying
@@ -133,13 +133,22 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
         end
       end
 
-      #if simulation fails
+      #simulation failure protocol
       if totalPopulation == 0 || totalPopulation > limit
+        #simply for finishing the progress meter loops
+        if progress
+          for year = y:years
+            for week = 1:52
+              progressBar.desc = " $totalPopulation total agents, Year $year (of $years), week $week of simulation "
+              next!(progressBar)
+          end
+        end
+
         removeEmptyClass!(a_db)
         description = "\n Simulation was stopped in year $y, week $w due to population failure (total population = $totalPopulation, population limit = $limit).\n"
         simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity, popDataFrame, ageDataFrame, harvestDataFrame, spawnDataFrame, killedDataFrame, description)
         return a_db
-      end
+      end #population regulation failure
     end #end for week
     #Remove empty cohorts annually
     removeEmptyClass!(a_db)
