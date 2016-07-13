@@ -16,7 +16,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
   initStock::Vector, stock_age::Vector, e_a::EnvironmentAssumptions,
   adult_a::AdultAssumptions, age_a::AgentAssumptions; progress=true::Bool,
   plotPopDensity=false::Bool, plotPopDistribution=false::Bool,
-  limit=60000000::Int64, simDescription=""::ASCIIString)
+  limit=1000000::Int64, simDescription=""::ASCIIString)
 
   # preconditions
   @assert(all(carrying_capacity .> 0.), "There is at least one negative carrying
@@ -68,12 +68,8 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
   for y = 1:years
     for w = 1:52
 
-      if progress
-        progressBar.desc = " $totalPopulation total agents, Year $y (of $years), week $w of simulation "
-        next!(progressBar)
-      end
-
-      totalWeek = ((y-1)*52)+w #get total number of weeks in simulation
+      #get total number of weeks in simulation
+      totalWeek = ((y-1)*52)+w
 
       # age specific population
       ageSpecificPop = fill(0, 7)
@@ -82,8 +78,17 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
           ageSpecificPop[age - 1] += getAgeSpecificPop(age, totalWeek, a_db[i].alive, a_db[i].weekNum, age_a)
         end #for age
       end #for i
+
+      totalAdults = sum(ageSpecificPop)
+
+      #update annually
       if w == 1
         push!(ageDataFrame, vcat(y, ageSpecificPop..., sum(ageSpecificPop)))
+      end
+
+      if progress
+        progressBar.desc = " $totalAdults adults, $totalPopulation total, Year $y (of $years), week $w of simulation "
+        next!(progressBar)
       end
 
       #harvest and spawn can be set to any week(s)
@@ -117,7 +122,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
       if plotPopDensity
         if w == 1 || w%10 == 0
           updatePopulationDensity!(a_db, popDensity)
-          popPlot = spy(popDensity, Guide.title("Year = $y, week = $w, totalPopulation = $totalPopulation"))
+          popPlot = spy(popDensity, Guide.title("Year = $y, week = $w, totalPop=$totalPopulation, totalAdult=$totalAdults"))
           display(popPlot)
         end
       end
@@ -134,19 +139,19 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
       end
 
       #simulation failure protocol
-      if totalPopulation == 0 || totalPopulation > limit
+      if totalPopulation == 0 || totalAdults > limit
         #simply for finishing the progress meter loops
         if progress
           for year = y:years
             for week = 1:52
-              progressBar.desc = " $totalPopulation total agents, Year $year (of $years), week $week of simulation "
+              progressBar.desc = " $totalAdults adults, $totalPopulation total, Year $y (of $years), week $w of simulation "
               next!(progressBar)
             end
           end
         end
-        
+
         removeEmptyClass!(a_db)
-        description = "\n Simulation was stopped in year $y, week $w due to population failure (total population = $totalPopulation, population limit = $limit).\n"
+        description = "\n Simulation was stopped in year $y, week $w due to population failure (total population = $totalPopulation, total adults = $totalAdults, population limit = $limit).\n"
         simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity, popDataFrame, ageDataFrame, harvestDataFrame, spawnDataFrame, killedDataFrame, description)
         return a_db
       end #population regulation failure
