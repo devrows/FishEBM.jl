@@ -89,6 +89,8 @@ function getDirChar()
     return "\\"
   elseif OS_NAME == :Darwin
     return "/"
+  elseif OS_NAME == :Linux
+    return "/"
   end
 end
 
