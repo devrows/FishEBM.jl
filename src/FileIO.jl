@@ -80,7 +80,7 @@ end
 
   Returns: ASCIIString
 
-  Last update: June 2016
+  Last update: July 2016
 """
 function getDirChar()
   @assert(OS_NAME == :Windows || OS_NAME == :Darwin, "There is currently no
