@@ -46,7 +46,7 @@ function move!(agent_db::Vector, agent_a::AgentAssumptions,
         id-totalHeight, id, id+totalHeight,
         id-totalHeight+1, id+1, id+totalHeight+1]
 
-      moveChoices = hcat(moveChoices,[1,2,3,4,5,6,7,8,9])
+      moveChoices = hcat(moveChoices,[1,4,7,2,5,8,3,6,9])
 
       #remove all non water and out of enviro choices
       moveChoices = moveChoices[moveChoices[:,1] .> 0, :]
