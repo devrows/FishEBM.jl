@@ -146,7 +146,7 @@ function killAgeSpecific!(agent_db::Vector, adult_a::AdultAssumptions,
     compFactor = 2*(cdf(Normal(year_specific_cc, year_specific_cc/adult_a.mortalitycompensation), sum(age_specific_pop)))
   end
 
-  @assert(0.0 < compFactor < 2.0, "Population regulation failed in killAgeSpecific!, respecify simulation parameters. Expected:0.0-2.0, Received:$compFactor")
+  @assert(0.0 <= compFactor < 2.0, "Population regulation failed in killAgeSpecific!, respecify simulation parameters. Expected:0.0-2.0, Received:$compFactor")
 
   #find dynamic stock sizes
   for i = 1:(length(adult_a.naturalmortality))

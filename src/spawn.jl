@@ -27,7 +27,7 @@ function spawn!(agent_db::Vector, adult_a::AdultAssumptions, age_assumpt::AgentA
     compensation_factor_a = 2*(1-cdf(Normal(carryingcapacity, carryingcapacity/adult_a.fecunditycompensation), adult_pop))
   end
 
-  @assert(0.0 < compensation_factor_a < 2.0, "Population regulation has failed in spawn, compensation expected:0.0-2.0, actual:$compensation_factor_a")
+  @assert(0.0 <= compensation_factor_a < 2.0, "Population regulation has failed in spawn, compensation expected:0.0-2.0, actual:$compensation_factor_a")
 
   if isnan(adult_a.maturitycompensation)
     compensation_factor_b = 1
