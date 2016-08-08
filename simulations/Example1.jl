@@ -26,8 +26,9 @@ adult_a = AdultAssumptions([0.0045, 0.0055, 0.0065, 0.0075, 0.0085, 0.0095, 0.01
 spawnPath = string(split(Base.source_path(), "FishEBM.jl")[1], "FishEBM.jl/maps/LakeHuron_1km_spawning.csv")
 habitatPath = string(split(Base.source_path(), "FishEBM.jl")[1], "FishEBM.jl/maps/LakeHuron_1km_habitat.csv")
 riskPath = string(split(Base.source_path(), "FishEBM.jl")[1], "FishEBM.jl/maps/LakeHuron_1km_risk.csv")
+harvestPath = string(split(Base.source_path(), "FishEBM.jl")[1], "FishEBM.jl/maps/LakeHuron_1km_harvest.csv")
 
-enviro_a = initEnvironment(spawnPath, habitatPath, riskPath)
+enviro_a = initEnvironment(spawnPath, habitatPath, riskPath, harvestPath)
 
 
 # Specify agent assumptions:
