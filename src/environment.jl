@@ -47,11 +47,12 @@ end
 
   Last update: June 2016
 """
-function initEnvironment(pathToSpawn::ASCIIString, pathToHabitat::ASCIIString, pathToRisk::ASCIIString)
+function initEnvironment(pathToSpawn::ASCIIString, pathToHabitat::ASCIIString, pathToRisk::ASCIIString, pathToHarvest::ASCIIString)
   #Pad all incoming arrays
   spawn = readdlm(pathToSpawn, ',', Bool)[150:end, 200:370]; pad_environment!(spawn);
   habitat = readdlm(pathToHabitat, ',', Int)[150:end, 200:370]; pad_environment!(habitat);
   risk = readdlm(pathToRisk, ',', Bool)[150:end, 200:370]; pad_environment!(risk);
+  harvest = readdlm(pathToHarvest, ',', Bool)[150:end, 200:370]; pad_environment!(harvest);
   totalLength = (size(spawn)[1])*(size(spawn)[2])
 
   abstractSpawn = [0]
