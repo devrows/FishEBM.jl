@@ -45,7 +45,7 @@ end
 
   Returns: EnvironmentAssumptions
 
-  Last update: June 2016
+  Last update: August 2016
 """
 function initEnvironment(pathToSpawn::ASCIIString, pathToHabitat::ASCIIString, pathToRisk::ASCIIString, pathToHarvest::ASCIIString)
   #Pad all incoming arrays
