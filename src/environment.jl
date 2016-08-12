@@ -34,6 +34,11 @@ function hashEnvironment!(a_db::Vector, enviro::EnvironmentAssumptions)
     if spawnNum != 0
       enviro.spawningHash[spawnNum] = agent
     end
+
+    harvestNum = findfirst(enviro.harvest[:Index], (a_db[agent]).locationID)
+    if harvestNum != 0
+      enviro.harvest[harvestNum, 1] = agent
+    end
   end
 end
 
