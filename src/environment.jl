@@ -15,7 +15,7 @@
 
   Returns: Operates directly on enviro
 
-  Last update: May 2016
+  Last update: August 2016
 """
 function hashEnvironment!(a_db::Vector, enviro::EnvironmentAssumptions)
   #Initialize required variables
