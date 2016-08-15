@@ -15,7 +15,7 @@
 
   Returns: Operates directly on enviro
 
-  Last update: May 2016
+  Last update: August 2016
 """
 function hashEnvironment!(a_db::Vector, enviro::EnvironmentAssumptions)
   #Initialize required variables
@@ -34,6 +34,11 @@ function hashEnvironment!(a_db::Vector, enviro::EnvironmentAssumptions)
     if spawnNum != 0
       enviro.spawningHash[spawnNum] = agent
     end
+
+    harvestNum = findfirst(enviro.harvest[:Index], (a_db[agent]).locationID)
+    if harvestNum != 0
+      enviro.harvest[harvestNum, 1] = agent
+    end
   end
 end
 
@@ -45,17 +50,19 @@ end
 
   Returns: EnvironmentAssumptions
 
-  Last update: June 2016
+  Last update: August 2016
 """
-function initEnvironment(pathToSpawn::ASCIIString, pathToHabitat::ASCIIString, pathToRisk::ASCIIString)
+function initEnvironment(pathToSpawn::ASCIIString, pathToHabitat::ASCIIString, pathToRisk::ASCIIString, pathToHarvest::ASCIIString)
   #Pad all incoming arrays
   spawn = readdlm(pathToSpawn, ',', Bool)[150:end, 200:370]; pad_environment!(spawn);
   habitat = readdlm(pathToHabitat, ',', Int)[150:end, 200:370]; pad_environment!(habitat);
   risk = readdlm(pathToRisk, ',', Bool)[150:end, 200:370]; pad_environment!(risk);
+  harvest = readdlm(pathToHarvest, ',', Int)[150:end, 200:370]; pad_environment!(harvest);
   totalLength = (size(spawn)[1])*(size(spawn)[2])
 
   abstractSpawn = [0]
   abstractRisk = [0]
+  abstractHarvest = DataFrame(Index = 0, Zone = 0)
 
   #Generate a hashmap
   for index = 1:totalLength
@@ -76,13 +83,24 @@ function initEnvironment(pathToSpawn::ASCIIString, pathToHabitat::ASCIIString, p
         push!(abstractRisk, index)
       end
     end
+
+    #Hash harvest locations
+    if harvest[index] != 0
+      if abstractHarvest[1,1] == 0
+        abstractHarvest[1,1] = index
+        abstractHarvest[1,2] = harvest[index]
+      else
+        push!(abstractHarvest, (index, harvest[index]))
+      end #if abstractHarvest
+    end #if harvest
   end
 
   e_a = EnvironmentAssumptions(abstractSpawn,
                             [0],
                             habitat,
                             abstractRisk,
-                            [0])
+                            [0],
+                            abstractHarvest)
 
   return e_a
 end
