@@ -127,7 +127,7 @@ end
 
   Returns: Operates directly on agent_db
 
-  Last update: June 2016
+  Last update: August 2016
 """
 function killAgeSpecific!(agent_db::Vector, adult_a::AdultAssumptions,
   age_specific_pop::Vector, year_specific_cc::Float64, current_week::Int64, kdf::DataFrame)
@@ -175,7 +175,6 @@ function killAgeSpecific!(agent_db::Vector, adult_a::AdultAssumptions,
 
           if estimatedMortality > 1.0
             estimatedMortality = 1.0
-            print("\t\t went over :(, estimatedMortality = $estimatedMortality \n")
           end # if est.mort > 1
         end
         killedAdult = rand(Binomial(agent_db[j].alive[k], estimatedMortality))

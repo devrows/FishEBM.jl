@@ -15,7 +15,7 @@
 
   Returns: Operates directly on agent_db
 
-  Last Update: June 2016
+  Last Update: August 2016
 """
 function spawn!(agent_db::Vector, adult_a::AdultAssumptions, age_assumpt::AgentAssumptions, enviro_a::EnvironmentAssumptions, week::Int64, carryingcapacity::Float64, sdf::DataFrame)
 

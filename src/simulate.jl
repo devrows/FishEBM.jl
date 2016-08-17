@@ -9,7 +9,7 @@
 
   Contributors: Justin Angevaare, Devin Rose
 
-  Last update: July 2016
+  Last update: August 2016
 """
 
 function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
