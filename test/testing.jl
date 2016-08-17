@@ -22,11 +22,13 @@ adult_a = AdultAssumptions([0.35, 0.40, 0.45, 0.50, 0.55, 0.60, 0.65],
 # * e_a.spawning = Spawning areas
 # * e_a.habitat = Habitat types
 # * e_a.risk = Risk areas
+# * e_a.harvest = Harvest areas
 spawnPath = string(split(Base.source_path(), "FishEBM.jl")[1], "FishEBM.jl/maps/LakeHuron_1km_spawning.csv")
 habitatPath = string(split(Base.source_path(), "FishEBM.jl")[1], "FishEBM.jl/maps/LakeHuron_1km_habitat.csv")
 riskPath = string(split(Base.source_path(), "FishEBM.jl")[1], "FishEBM.jl/maps/LakeHuron_1km_risk.csv")
+harvestPath = string(split(Base.source_path(), "FishEBM.jl")[1], "FishEBM.jl/maps/LakeHuron_1km_harvest.csv")
 
-enviro_a = initEnvironment(spawnPath, habitatPath, riskPath)
+enviro_a = initEnvironment(spawnPath, habitatPath, riskPath, harvestPath)
 
 
 
