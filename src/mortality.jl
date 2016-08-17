@@ -7,8 +7,6 @@
 =#
 
 
-#Adding age specific mortality soon for adults
-
 
 """
   Description: Generates a harvest size based on total number of age-specific
@@ -169,9 +167,20 @@ function killAgeSpecific!(agent_db::Vector, adult_a::AdultAssumptions,
     if (isEmpty(agent_db[j]) == false)
       k = 1
       while ageVector[k] > 1 && k < length(ageVector)
-        killedAdult = rand(Binomial(agent_db[j].alive[k], adult_a.naturalmortality[ageVector[k]-1]))
-        agent_db[j].alive[k] -= killedAdult
+        estimatedMortality = adult_a.naturalmortality[ageVector[k]-1]
+        if ageVector[k] == 8
+          overAge = floor((current_week-agent_db[1].weekNum[k])/52)
+          ageEffect = (overAge-7)^2
+          estimatedMortality = ageEffect*estimatedMortality
 
+          if estimatedMortality > 1.0
+            estimatedMortality = 1.0
+            print("\t\t went over :(, estimatedMortality = $estimatedMortality \n")
+          end # if est.mort > 1
+        end
+        killedAdult = rand(Binomial(agent_db[j].alive[k], estimatedMortality))
+
+        agent_db[j].alive[k] -= killedAdult
         totalKilled += killedAdult
 
         k+=1

@@ -93,22 +93,52 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
 
       #harvest and spawn can be set to any week(s)
       if w > harvestMin
+        if w == 50
+          tic()
+        end
         harvest!(harvest_effort[y], totalWeek, a_db, e_a, adult_a, age_a, harvestDataFrame)
+        if w == 50
+          harvestTime = toq()
+        end
       else
         push!(harvestDataFrame, (totalWeek, 0, 0, 0, 0, 0, 0, 0, 0))
       end
 
       if w > spawnMin
+        if w == 50
+          tic()
+        end
         spawn!(a_db, adult_a, age_a, e_a, totalWeek, carrying_capacity[y], spawnDataFrame)
+        if w == 50
+          spawnTime = toq()
+        end
       else
         push!(spawnDataFrame, (totalWeek, 0, 0, 0, 0, 0, 0, 0, 0))
       end
 
       #Agents are killed and moved weekly
       push!(killedDataFrame, (totalWeek, 0, 0, 0, 0))
+      if w == 50
+        tic()
+      end
       killAgeSpecific!(a_db, adult_a, ageSpecificPop, carrying_capacity[y], totalWeek, killedDataFrame)
+      if w == 50
+        killAgeSpec = toq()
+      end
+      if w == 50
+        tic()
+      end
       kill!(a_db, e_a, age_a, totalWeek, killedDataFrame)
+      if w == 50
+        killTime = toq()
+      end
+      if w == 50
+        tic()
+      end
       move!(a_db, age_a, e_a, totalWeek)
+      if w == 50
+        moveTime = toq()
+      end
 
       #update population information
       stagePopulation = [0,0,0,0]; totalPopulation = 0;
@@ -117,6 +147,10 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
       end
       totalPopulation = sum(stagePopulation)
       push!(popDataFrame,(totalWeek,stagePopulation[1],stagePopulation[2],stagePopulation[3],stagePopulation[4], totalPopulation))
+
+      if w == 50
+        print("\n\n For year $y, during week 50, \n\t harvestTime = $harvestTime \n\t spawnTime = $spawnTime \n\t killAgeSpec = $killAgeSpec \n\t killTime = $killTime \n\t moveTime = $moveTime \n\n")
+      end
 
       #show a real time plot (every 10 weeks) of agent movement
       if plotPopDensity
