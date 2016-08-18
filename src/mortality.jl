@@ -9,14 +9,13 @@
 
 
 """
-  Description: Generates a harvest size based on total number of age-specific
-    fish in the environment. Currently, harvest location is a randomly
-    generated vector of locations from the spawningHash. Harvest size is
-    divided up into each harvest location.
+  Description: Generates a harvest event based on the number of adult fish in
+    the current environment. Operates on the 3 basins of Lake Huron, all divided
+    into their specific zones. 
 
   Returns: Operates directly on agent_db
 
-  Last Update: June 2016
+  Last Update: August 2016
 """
 function harvest!(effort::Float64, current_week::Int64, agent_db::Vector, enviro_a::EnvironmentAssumptions, adult_a::AdultAssumptions, agent_a::AgentAssumptions, hdf::DataFrame)
   #Get zone numbers in main basin
