@@ -48,57 +48,7 @@ function harvest!(effort::Float64, current_week::Int64, agent_db::Vector, enviro
     end #isempty
   end #for basin
 
-  return totalHarvested
-
-#
-#  harvest_size = fill(0, size(adult_a.catchability))
-#  ageSpecificPop = fill(0, size(adult_a.catchability))
-#
-#  #Get total age specific population for each age
-#  for i = 1:length(agent_db)
-#    for age = 2:8
-#      ageSpecificPop[age - 1] += getAgeSpecificPop(age, week, agent_db[i].alive, agent_db[i].weekNum, a_a)
-#    end #for age
-#  end #for i
-#
-#  #Generate harvest size for each age
-#  for i = 1:length(harvest_size)
-#    harvest_size[i] = rand(Poisson(ageSpecificPop[i]*adult_a.catchability[i]*effort))
-#  end
-#
-#  push!(hdf, (vcat(week, harvest_size..., sum(harvest_size)))) #Add each age specific harvest size to dataframe
-#
-#  harvest_loc = sample(find(enviro_a.spawningHash), rand(1:10)) #generate random harvest locations
-#
-#  for age = 2:8 #loop through all ages
-#    harvestFromEach = round(Int, floor(harvest_size[age - 1] / length(harvest_loc))) #Divide harvest_size by number of harvest locations
-#    leftOver = harvest_size[age - 1] % length(harvest_loc) #Will subtract leftover from random location
-#    for i = 1:length(harvest_loc) #loop through all harvest locations
-#      cohort = getCohortNumber(age, week, agent_db[enviro_a.spawningHash[harvest_loc[i]]].weekNum)
-#      if cohort == 0 #check if cohort exists
-#        leftOver += harvestFromEach #If cohort does not exist in agent, add what woud have been their harvest to leftover
-#      else
-#        agent_db[enviro_a.spawningHash[harvest_loc[i]]].harvest += harvestFromEach
-#        agent_db[enviro_a.spawningHash[harvest_loc[i]]].alive[cohort] -= harvestFromEach
-#        if agent_db[enviro_a.spawningHash[harvest_loc[i]]].alive[cohort] < 0
-#          harvestFromEach += 0 - agent_db[enviro_a.spawningHash[harvest_loc[i]]].alive[cohort]
-#          agent_db[enviro_a.spawningHash[harvest_loc[i]]].alive[cohort] = 0
-#        end #if agent_db
-#      end #if cohort
-#    end #for i
-#
-#    randomAgents = rand(1:length(harvest_loc), leftOver) #Get random samples from harvest_loc depending on how many leftover fish
-#    for i = 1:length(randomAgents) #loop through all harvest locations
-#      cohort = getCohortNumber(age, week, agent_db[enviro_a.spawningHash[randomAgents[i]]].weekNum)
-#      if cohort != 0
-#        agent_db[enviro_a.spawningHash[harvest_loc[i]]].harvest += 1
-#        agent_db[enviro_a.spawningHash[harvest_loc[i]]].alive[cohort] -= 1
-#        if agent_db[enviro_a.spawningHash[harvest_loc[i]]].alive[cohort] < 0
-#          agent_db[enviro_a.spawningHash[harvest_loc[i]]].alive[cohort] = 0
-#        end #if agent_db
-#      end #if cohort
-#    end #for i=1:length(randomAgents)
-#  end #for age
+  push!(hdf, (vcat(current_week, totalHarvested..., sum(totalHarvested))))
 end
 
 
