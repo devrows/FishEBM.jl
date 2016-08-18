@@ -11,7 +11,7 @@
 """
   Description: Generates a harvest event based on the number of adult fish in
     the current environment. Operates on the 3 basins of Lake Huron, all divided
-    into their specific zones. 
+    into their specific zones.
 
   Returns: Operates directly on agent_db
 
@@ -36,7 +36,7 @@ function harvest!(effort::Float64, current_week::Int64, agent_db::Vector, enviro
             if (findCurrentStage(current_week, agent_db[basins[n][i,1]].weekNum[j], agent_a.growth)) == 4
               age = getAge(current_week, agent_db[basins[n][i,1]].weekNum[j])
 
-              numHarvest = rand(Binomial(agent_db[basins[n][i,1]].alive[j], adult_a.catchability[1]*effort))
+              numHarvest = rand(Binomial(agent_db[basins[n][i,1]].alive[j], adult_a.catchability[age - 1]*effort))
               agent_db[basins[n][i,1]].harvest += numHarvest
               totalHarvested[age - 1] += numHarvest
               agent_db[basins[n][i,1]].alive[j] -= numHarvest
