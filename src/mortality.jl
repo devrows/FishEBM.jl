@@ -24,24 +24,27 @@ function harvest!(effort::Float64, current_week::Int64, agent_db::Vector, enviro
   gbZones = enviro_a.harvest[(enviro_a.harvest[:Zone] .> 8)&(enviro_a.harvest[:Zone] .< 19), :]
   ncZones = enviro_a.harvest[(enviro_a.harvest[:Zone] .== 7)&(enviro_a.harvest[:Zone] .== 8), :]
 
+  basins = [mbZones, gbZones, ncZones]
+
   classLength = length((agent_db[1]).weekNum)
   totalHarvested = fill(0, size(adult_a.catchability))
 
-  size(mbZones)[1]
-  for i = 1:size(mbZones)[1]
-    if (isEmpty(agent_db[mbZones[i,1]]) == false)
-      for j = 1:classLength
-        if (findCurrentStage(current_week, agent_db[mbZones[i,1]].weekNum[j], agent_a.growth)) == 4
-          age = getAge(current_week, agent_db[mbZones[i,1]].weekNum[j])
+  for n = 1:length(basins)
+    for i = 1:size(basins[n])[1]
+      if (isEmpty(agent_db[basins[n][i,1]]) == false)
+        for j = 1:classLength
+          if (findCurrentStage(current_week, agent_db[basins[n][i,1]].weekNum[j], agent_a.growth)) == 4
+            age = getAge(current_week, agent_db[basins[n][i,1]].weekNum[j])
 
-          numHarvest = rand(Binomial(agent_db[mbZones[i,1]].alive[j], adult_a.catchability[1]*effort))
-          agent_db[mbZones[i,1]].harvest += numHarvest
-          totalHarvested[age - 1] += numHarvest
-          agent_db[mbZones[i,1]].alive[j] -= numHarvest
-        end #if findCurrentStage
-      end #for j
-    end #if isEmpty
-  end #for i
+            numHarvest = rand(Binomial(agent_db[basins[n][i,1]].alive[j], adult_a.catchability[1]*effort))
+            agent_db[basins[n][i,1]].harvest += numHarvest
+            totalHarvested[age - 1] += numHarvest
+            agent_db[basins[n][i,1]].alive[j] -= numHarvest
+          end #if findCurrentStage
+        end #for j
+      end #if isEmpty
+    end #for i
+  end #for basin
 
   return totalHarvested
 
