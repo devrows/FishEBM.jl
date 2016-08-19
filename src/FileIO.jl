@@ -235,7 +235,7 @@ end
       refer to types.jl. Note, runDir and userInput are user given PATH and
       description respectively.
 
-  Last update: June 2016
+  Last update: August 2016
 """
 function simReadme(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumptions, bump::Vector, effort::Vector, initStock::Vector, carryingCap::Vector, path::ASCIIString, userInput::ASCIIString)
 
@@ -243,14 +243,12 @@ function simReadme(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumption
   output_file = open(file_name, "w")
 
   write(output_file,"-------------------------\n")
-  description_string = "Simulation Description: \n-------------------------\n"
-  write(output_file, description_string)
+  write(output_file, "Simulation Description: \n-------------------------\n")
   write(output_file, userInput)
   write(output_file, "\n")
 
   write(output_file,"\n-------------------------\n")
-  genAssumpt_string = "General Assumptions: \n-------------------------\n"
-  write(output_file, genAssumpt_string)
+  write(output_file, "General Assumptions: \n-------------------------\n")
 
   carryingCap_string = string("Carrying capacity: ",carryingCap,"\n")
   write(output_file, carryingCap_string)
@@ -280,6 +278,10 @@ function simReadme(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumption
 
   halfmature_string = string("Age at half maturity: ",adultAssumpt.halfmature,"\n")
   write(output_file,halfmature_string)
+
+  write(output_file,"Broodsize (Age specific fecundity) vector: ")
+  show(output_file,adultAssumpt.broodsize)
+  write(output_file, "\n")
 
   fc_string = string("Fecundity compensation value: ",adultAssumpt.fecunditycompensation,"\n")
   write(output_file,fc_string)
