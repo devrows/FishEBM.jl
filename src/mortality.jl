@@ -28,6 +28,10 @@ function harvest!(effort::Float64, current_week::Int64, agent_db::Vector, enviro
   classLength = length((agent_db[1]).weekNum)
   totalHarvested = fill(0, size(adult_a.catchability))
 
+  numYears = ceil(current_week/52)
+  yearWeek = current_week - (52 * (numYears - 1))
+  seasonalEffort = (-0.4*cos((1/4.138)*yearWeek) + 0.6) * effort
+
   for n = 1:length(basins)
     if isempty(basins[n][:Zone]) == false
       for i = 1:size(basins[n])[1]
@@ -35,8 +39,7 @@ function harvest!(effort::Float64, current_week::Int64, agent_db::Vector, enviro
           for j = 1:classLength
             if (findCurrentStage(current_week, agent_db[basins[n][i,1]].weekNum[j], agent_a.growth)) == 4
               age = getAge(current_week, agent_db[basins[n][i,1]].weekNum[j])
-
-              numHarvest = rand(Binomial(agent_db[basins[n][i,1]].alive[j], adult_a.catchability[age - 1]*effort))
+              numHarvest = rand(Binomial(agent_db[basins[n][i,1]].alive[j], adult_a.catchability[age - 1]*seasonalEffort))
               agent_db[basins[n][i,1]].harvest += numHarvest
               totalHarvested[age - 1] += numHarvest
               agent_db[basins[n][i,1]].alive[j] -= numHarvest
