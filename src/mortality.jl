@@ -23,20 +23,25 @@ function harvest!(effort::Float64, current_week::Int64, agent_db::Vector, enviro
   gbZones = enviro_a.harvest[(enviro_a.harvest[:Zone] .> 8)&(enviro_a.harvest[:Zone] .< 19), :]
   ncZones = enviro_a.harvest[(enviro_a.harvest[:Zone] .== 7)&(enviro_a.harvest[:Zone] .== 8), :]
 
+  #Combine all basins into one vector
   basins = [mbZones, gbZones, ncZones]
 
   classLength = length((agent_db[1]).weekNum)
   totalHarvested = fill(0, size(adult_a.catchability))
 
+  #These three lines find the seasonal effort based on known harvesting data
   numYears = ceil(current_week/52)
   yearWeek = current_week - (52 * (numYears - 1))
   seasonalEffort = (-0.4*cos((1/4.138)*yearWeek) + 0.6) * effort
 
   for n = 1:length(basins)
+    #Check if basin has any zones loaded in
     if isempty(basins[n][:Zone]) == false
       for i = 1:size(basins[n])[1]
+        #Check if agent is empty
         if (isEmpty(agent_db[basins[n][i,1]]) == false)
           for j = 1:classLength
+            #Check if given cohort is an adult population
             if (findCurrentStage(current_week, agent_db[basins[n][i,1]].weekNum[j], agent_a.growth)) == 4
               age = getAge(current_week, agent_db[basins[n][i,1]].weekNum[j])
               numHarvest = rand(Binomial(agent_db[basins[n][i,1]].alive[j], adult_a.catchability[age - 1]*seasonalEffort))
