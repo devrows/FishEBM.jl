@@ -55,62 +55,65 @@ function move!(agent_db::Vector, agent_a::AgentAssumptions,
 
       #for each cohort in the agent database
       for cohort = 1:length(lifeStages)
-        stage = lifeStages[cohort]
-        choices = deepcopy(moveChoices)
+      stage = lifeStages[cohort]
+      
+        if stage > 1
+          choices = deepcopy(moveChoices)
 
-        if stage == 4
-          #Create a periodicMovement function for readability
-          periodicWeek = current_week%52
-          moveX = -5*cosd((180*periodicWeek)/27)+1
-          moveY = -5*sind((180*periodicWeek)/27)+1
-          moveRadius = sqrt(moveX^2 + moveY^2)
-          moveArray = Array(Float64, 3, 3)
-          fill!(moveArray, 1.)
+          if stage == 4
+            #Create a periodicMovement function for readability
+            periodicWeek = current_week%52
+            moveX = -5*cosd((180*periodicWeek)/27)+1
+            moveY = -5*sind((180*periodicWeek)/27)+1
+            moveRadius = sqrt(moveX^2 + moveY^2)
+            moveArray = Array(Float64, 3, 3)
+            fill!(moveArray, 1.)
 
-          if periodicWeek < 14
-            moveArray[2,1] = -moveX
-            moveArray[3,1] = moveRadius
-            moveArray[3,2] = -moveY
-          elseif periodicWeek > 13 && periodicWeek < 27
-            moveArray[2,3] = moveX
-            moveArray[3,2] = -moveY
-            moveArray[3,3] = moveRadius
-          elseif periodicWeek > 26 && periodicWeek < 40
-            moveArray[1,2] = moveY
-            moveArray[1,3] = moveRadius
-            moveArray[2,3] = moveX
-          elseif periodicWeek > 39
-            moveArray[1,1] = moveRadius
-            moveArray[1,2] = moveY
-            moveArray[2,1] = -moveX
+            if periodicWeek < 14
+              moveArray[2,1] = -moveX
+              moveArray[3,1] = moveRadius
+              moveArray[3,2] = -moveY
+            elseif periodicWeek > 13 && periodicWeek < 27
+              moveArray[2,3] = moveX
+              moveArray[3,2] = -moveY
+              moveArray[3,3] = moveRadius
+            elseif periodicWeek > 26 && periodicWeek < 40
+              moveArray[1,2] = moveY
+              moveArray[1,3] = moveRadius
+              moveArray[2,3] = moveX
+            elseif periodicWeek > 39
+              moveArray[1,1] = moveRadius
+              moveArray[1,2] = moveY
+              moveArray[2,1] = -moveX
+            end
+          else
+            moveArray = agent_a.movement[stage]
           end
-        else
-          moveArray = agent_a.movement[stage]
-        end
 
-        #match the moveChoices with the corresponding movement array
-        for moveNum = 1:size(choices)[1]
-          choices[moveNum, 2] = round(Int, moveArray[choices[moveNum, 2]])
-        end
+          #match the moveChoices with the corresponding movement array
+          for moveNum = 1:size(choices)[1]
+            choices[moveNum, 2] = round(Int, moveArray[choices[moveNum, 2]])
+          end
 
-        #Match natural mortality rate by location, habitat type, and fish age
-        choices = hcat(choices, 1-agent_a.naturalmortality[enviro_a.habitat[choices[:,1]], stage])
+          #Match natural mortality rate by location, habitat type, and fish age
+          choices = hcat(choices, 1-agent_a.naturalmortality[enviro_a.habitat[choices[:,1]], stage])
 
-        #Normalize the choices
-        choices[:,2]=choices[:,2]/sum(choices[:,2])
-        choices[:,3]=choices[:,3]/sum(choices[:,3])
+          #Normalize the choices
+          choices[:,2]=choices[:,2]/sum(choices[:,2])
+          choices[:,3]=choices[:,3]/sum(choices[:,3])
 
-        moveDistrib = Multinomial(1, choices[:,2]*(1-agent_a.autonomy[stage])
-          + choices[:,3]*(agent_a.autonomy[stage]))
+          moveDistrib = Multinomial(1, choices[:,2]*(1-agent_a.autonomy[stage])
+            + choices[:,3]*(agent_a.autonomy[stage]))
 
-        for aliveAges = 1:agent_db[n].alive[cohort]
-          newLocation = round(Int, (choices[findfirst(rand(moveDistrib)), 1]))
-          if agent_db[n].locationID != newLocation
-            newAgentNum = IDToAgentNum(agent_db, newLocation, length(agent_db), 1)
-            agent_db[n].alive[cohort] -= 1
-            agent_db[newAgentNum].alive[cohort] += 1
-          end #if doesn't move
-        end #for all alive
+          for aliveAges = 1:agent_db[n].alive[cohort]
+            newLocation = round(Int, (choices[findfirst(rand(moveDistrib)), 1]))
+            if agent_db[n].locationID != newLocation
+              newAgentNum = IDToAgentNum(agent_db, newLocation, length(agent_db), 1)
+              agent_db[n].alive[cohort] -= 1
+              agent_db[newAgentNum].alive[cohort] += 1
+            end #if doesn't move
+          end #for all alive
+        end #if stage > 1
       end #for each cohort
     end #if enviro empty
   end #for number agent
