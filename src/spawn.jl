@@ -20,11 +20,15 @@
 function spawn!(agent_db::Vector, adult_a::AdultAssumptions, age_assumpt::AgentAssumptions, enviro_a::EnvironmentAssumptions, week::Int64, carryingcapacity::Float64, sdf::DataFrame)
 
   adult_pop = getStagePopulation(4, week, agent_db, age_assumpt)
+  totalPop = 0
+  for stage = 1:4
+    totalPop += getStagePopulation(stage, week, agent_db, age_assumpt)
+  end
 
   if isnan(adult_a.fecunditycompensation)
     compensation_factor_a = 1
   else
-    compensation_factor_a = 2*(1-cdf(Normal(carryingcapacity, carryingcapacity/adult_a.fecunditycompensation), adult_pop))
+    compensation_factor_a = 2*(1-cdf(Normal(carryingcapacity, carryingcapacity/adult_a.fecunditycompensation), totalPop))
   end
 
   @assert(0.0 <= compensation_factor_a <= 2.0, "Population regulation has failed in spawn (part a), compensation expected:0.0-2.0, actual:$compensation_factor_a")
@@ -32,7 +36,7 @@ function spawn!(agent_db::Vector, adult_a::AdultAssumptions, age_assumpt::AgentA
   if isnan(adult_a.maturitycompensation)
     compensation_factor_b = 1
   else
-    compensation_factor_b = 2*(1-cdf(Normal(carryingcapacity, carryingcapacity/adult_a.maturitycompensation), adult_pop))
+    compensation_factor_b = 2*(1-cdf(Normal(carryingcapacity, carryingcapacity/adult_a.maturitycompensation), totalPop))
   end
 
   @assert(0.0 <= compensation_factor_b <= 2.0, "Population regulation has failed in spawn (part b), compensation expected:0.0-2.0, actual:$compensation_factor_a")

@@ -1,3 +1,7 @@
+########################################
+# STABLE POPULATION PARAMETERS
+########################################
+
 # Load required packages
 using FishEBM, Distributions
 
