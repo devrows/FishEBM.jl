@@ -91,19 +91,15 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
         next!(progressBar)
       end
 
-      #harvest and spawn can be set to any week(s)
-      if w > harvestMin
-        if w == 50
-          tic()
-        end
-        harvest!(harvest_effort[y], totalWeek, a_db, e_a, adult_a, age_a, harvestDataFrame)
-        if w == 50
-          harvestTime = toq()
-        end
-      else
-        push!(harvestDataFrame, (totalWeek, 0, 0, 0, 0, 0, 0, 0, 0))
+      if w == 50
+        tic()
+      end
+      harvest!(harvest_effort[y], totalWeek, a_db, e_a, adult_a, age_a, harvestDataFrame)
+      if w == 50
+        harvestTime = toq()
       end
 
+      #Spawn can be set to any week(s)
       if w > spawnMin
         if w == 50
           tic()
