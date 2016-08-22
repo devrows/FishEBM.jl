@@ -1,6 +1,6 @@
 #=
   Package: FishEBM
-  File: move.jl
+  File: spawn.jl
   Devin Rose
   Functions for simulating one week of a spawn season
   Created: June 2016
