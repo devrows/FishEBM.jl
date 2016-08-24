@@ -343,14 +343,15 @@ function simSummary(adultAssumpt::AdultAssumptions,
   agentAssumpt::AgentAssumptions, agentDB::Vector, bump::Vector, effort::Vector,
   finalWeek::Int64, initStock::Vector, carryingCap::Vector,
   popDataFrame::DataFrame, ageDataFrame::DataFrame, harvestDataFrame::DataFrame,
-  spawnDataFrame::DataFrame, killedDataFrame::DataFrame, userInput::ASCIIString)
+  spawnDataFrame::DataFrame, yearlySpawn::DataFrame, killedDataFrame::DataFrame,
+  userInput::ASCIIString)
 
   simDir()
   path = runDir(dateDir(resultsDir(setProjPath())[1])[1])[2]
   aliveData(popDataFrame, path)
   ageData(ageDataFrame, path)
   harvestData(harvestDataFrame, path)
-  spawnData(spawnDataFrame, path)
+  spawnData(spawnDataFrame, yearlySpawn, path)
   killedData(killedDataFrame, path)
   simReadme(adultAssumpt, agentAssumpt, bump, effort, initStock, carryingCap, path, userInput)
 end
@@ -362,11 +363,20 @@ end
 
   Last update: June 2016
 """
-function spawnData(sdf::DataFrame, path::ASCIIString)
+function spawnData(sdf::DataFrame, yearlySpawn::DataFrame, path::ASCIIString)
+  #Output weekly spawn summary
   file = string(path,"$(getDirChar())spawnSUMMARY.csv")
   f = open(file, "w")
   sdfOut = convert(Array, sdf)
   writedlm(f, names(sdf)', " ,")
   writedlm(f, sdfOut,  " ,")
+  close(f)
+
+  #Output yearly spawn summary
+  file = string(path,"$(getDirChar())yearSpawnSUMMARY.csv")
+  f = open(file, "w")
+  yearlySpawnOut = convert(Array, yearlySpawn)
+  writedlm(f, names(yearlySpawn)', " ,")
+  writedlm(f, yearlySpawnOut,  " ,")
   close(f)
 end
