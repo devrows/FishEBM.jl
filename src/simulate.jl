@@ -49,6 +49,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
   ageDataFrame = DataFrame(Year = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
   harvestDataFrame = DataFrame(Week = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
   spawnDataFrame = DataFrame(Week = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
+  yearlySpawn = DataFrame(Year = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
   killedDataFrame = DataFrame(Week = 0, Natural = 0, Extra = 0, Compensatory = 0, Total = 0)
 
   bumpvec = fill(0, years)
@@ -104,7 +105,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
         if w == 50
           tic()
         end
-        spawn!(a_db, adult_a, age_a, e_a, totalWeek, carrying_capacity[y], spawnDataFrame)
+        spawn!(a_db, adult_a, age_a, e_a, totalWeek, carrying_capacity[y], spawnDataFrame, yearlySpawn)
         if w == 50
           spawnTime = toq()
         end
@@ -191,6 +192,6 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
   end #end for year
 
   description = "Simulation was successfully completed."
-  simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity, popDataFrame, ageDataFrame, harvestDataFrame, spawnDataFrame, killedDataFrame, description)
+  simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity, popDataFrame, ageDataFrame, harvestDataFrame, spawnDataFrame, yearlySpawn, killedDataFrame, description)
   return a_db
 end
