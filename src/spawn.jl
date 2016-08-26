@@ -17,7 +17,7 @@
 
   Last Update: August 2016
 """
-function spawn!(agent_db::Vector, adult_a::AdultAssumptions, age_assumpt::AgentAssumptions, enviro_a::EnvironmentAssumptions, week::Int64, carryingcapacity::Float64, sdf::DataFrame, yearlySpawn::DataFrame)
+function spawn!(agent_db::Vector, adult_a::AdultAssumptions, age_assumpt::AgentAssumptions, enviro_a::EnvironmentAssumptions, week::Int64, carryingcapacity::Float64, sdf::DataFrame)
 
   adult_pop = getStagePopulation(4, week, agent_db, age_assumpt)
   totalPop = 0
@@ -76,15 +76,5 @@ function spawn!(agent_db::Vector, adult_a::AdultAssumptions, age_assumpt::AgentA
 
   #Push to weekly spawn number data frame
   push!(sdf, (vcat(week, brood_size..., sum(brood_size))))
-
-  #If it is week 40 in the year of the simulation
-  if ((week + 12) % 52) == 0
-    #Push new row to yearly data frame
-    push!(yearlySpawn, (vcat(ceil(week/52), brood_size..., sum(brood_size))))
-  else
-    for i = 1:7
-      yearlySpawn[size(yearlySpawn)[1], i + 1] += brood_size[i]
-    end
-    yearlySpawn[size(yearlySpawn)[1], 9] += sum(brood_size)
-  end
+  
 end
