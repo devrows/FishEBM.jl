@@ -17,7 +17,8 @@
 
   Last Update: August 2016
 """
-function harvest!(effort::Float64, current_week::Int64, agent_db::Vector, enviro_a::EnvironmentAssumptions, adult_a::AdultAssumptions, agent_a::AgentAssumptions, hdf::DataFrame)
+function harvest!(effort::Float64, current_week::Int64, agent_db::Vector, enviro_a::EnvironmentAssumptions,
+  adult_a::AdultAssumptions, agent_a::AgentAssumptions, hdf::DataFrame, zoneData::DataFrame)
   #Get zone numbers in main basin
   mbZones = enviro_a.harvest[(enviro_a.harvest[:Zone] .< 7),:]
   gbZones = enviro_a.harvest[(enviro_a.harvest[:Zone] .> 8)&(enviro_a.harvest[:Zone] .< 19), :]
@@ -28,6 +29,7 @@ function harvest!(effort::Float64, current_week::Int64, agent_db::Vector, enviro
 
   classLength = length((agent_db[1]).weekNum)
   totalHarvested = fill(0, size(adult_a.catchability))
+  zoneHarvest = fill(0, 18)
 
   #These three lines find the seasonal effort based on known harvesting data
   numYears = ceil(current_week/52)
@@ -47,6 +49,7 @@ function harvest!(effort::Float64, current_week::Int64, agent_db::Vector, enviro
               numHarvest = rand(Binomial(agent_db[basins[n][i,1]].alive[j], adult_a.catchability[age - 1]*seasonalEffort))
               agent_db[basins[n][i,1]].harvest += numHarvest
               totalHarvested[age - 1] += numHarvest
+              zoneHarvest[basins[n][i,2]] += numHarvest
               agent_db[basins[n][i,1]].alive[j] -= numHarvest
             end #if findCurrentStage
           end #for j
@@ -56,6 +59,7 @@ function harvest!(effort::Float64, current_week::Int64, agent_db::Vector, enviro
   end #for basin
 
   push!(hdf, (vcat(current_week, totalHarvested..., sum(totalHarvested))))
+  push!(zoneData, (vcat(current_week, zoneHarvest..., sum(zoneHarvest))))
 end
 
 
