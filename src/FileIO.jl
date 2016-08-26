@@ -17,11 +17,8 @@ function ageData(adf::DataFrame, path::ASCIIString)
   separateDirChar = getDirChar()
 
   file = string(path,"$(separateDirChar)ageSpecificSUMMARY.csv")
-  f = open(file, "w")
-  adfOut = convert(Array, adf)
-  writedlm(f, names(adf)', " ,")
-  writedlm(f, adfOut,  " ,")
-  close(f)
+  writetable(file, adf);
+
 end
 
 
@@ -35,18 +32,10 @@ function aliveData(popDataFrame::DataFrame, yearlyStageData::DataFrame, path::AS
   separateDirChar = getDirChar()
 
   file = string(path,"$(separateDirChar)stageSUMMARY.csv")
-  f = open(file, "w")
-  popDataOutput = convert(Array, popDataFrame)
-  writedlm(f, names(popDataFrame)', " ,")
-  writedlm(f, popDataOutput,  " ,")
-  close(f)
+  writetable(file, popDataFrame)
 
   file = string(path,"$(separateDirChar)yearlyStageSUMMARY.csv")
-  f = open(file, "w")
-  yearlyStageOutput = convert(Array, yearlyStageData)
-  writedlm(f, names(yearlyStageData)', " ,")
-  writedlm(f, yearlyStageOutput,  " ,")
-  close(f)
+  writetable(file, yearlyStageData)
 end
 
 
@@ -126,7 +115,6 @@ end
 """
 function killedData(kdf::DataFrame, path::ASCIIString)
   file = string(path,"$(getDirChar())killedSUMMARY.csv")
-  f = open(file, "w")
 
   #Sum natural, extra, and Compensatory mortalities before outputting to .csv
   for i = 1:size(kdf)[1]
@@ -137,10 +125,7 @@ function killedData(kdf::DataFrame, path::ASCIIString)
     kdf[i,5] = totalKill
   end #for i
 
-  kdfOut = convert(Array, kdf)
-  writedlm(f, names(kdf)', " ,")
-  writedlm(f, kdfOut,  " ,")
-  close(f)
+  writetable(file, kdf)
 end
 
 
@@ -377,17 +362,9 @@ end
 function spawnData(sdf::DataFrame, yearlySpawn::DataFrame, path::ASCIIString)
   #Output weekly spawn summary
   file = string(path,"$(getDirChar())spawnSUMMARY.csv")
-  f = open(file, "w")
-  sdfOut = convert(Array, sdf)
-  writedlm(f, names(sdf)', " ,")
-  writedlm(f, sdfOut,  " ,")
-  close(f)
+  writetable(file, sdf)
 
   #Output yearly spawn summary
   file = string(path,"$(getDirChar())yearSpawnSUMMARY.csv")
-  f = open(file, "w")
-  yearlySpawnOut = convert(Array, yearlySpawn)
-  writedlm(f, names(yearlySpawn)', " ,")
-  writedlm(f, yearlySpawnOut,  " ,")
-  close(f)
+  writetable(file, yearlySpawn)
 end
