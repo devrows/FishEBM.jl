@@ -135,7 +135,11 @@ function killedData(kdf::DataFrame, path::ASCIIString)
 
   for year = 1:numYears
     yearData = kdf[(kdf[:Week] .>= weekMin)&(kdf[:Week] .<= weekMax), :]
-    push!(yearMortality, vcat(year, sum(yearData[:Natural]), sum(yearData[:Extra]), sum(yearData[:Compensatory]), sum(yearData[:Total])))
+    mortalities = [0,0,0]
+    for i = 1:3
+      mortalities[i] = sum(yearData[i+1])
+    end
+    push!(yearMortality, vcat(year, mortalities..., sum(mortalities)))
     weekMin = weekMin + 52
     weekMax = weekMax + 52
   end
