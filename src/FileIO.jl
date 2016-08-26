@@ -401,8 +401,8 @@ end
 function simSummary(adultAssumpt::AdultAssumptions,
   agentAssumpt::AgentAssumptions, agentDB::Vector, bump::Vector, effort::Vector,
   finalWeek::Int64, initStock::Vector, carryingCap::Vector,
-  stageDataFrame::DataFrame, yearlyStageData::DataFrame, adultDataFrame::DataFrame, harvestDataFrame::DataFrame,
-  harvestZoneData::DataFrame, spawnDataFrame::DataFrame, yearlySpawn::DataFrame,
+  stageDataFrame::DataFrame, yearlyStageData::DataFrame, adultDataFrame::DataFrame,
+  harvestDataFrame::DataFrame, harvestZoneData::DataFrame, spawnDataFrame::DataFrame,
   killedDataFrame::DataFrame, userInput::ASCIIString)
 
   simDir()
@@ -410,7 +410,7 @@ function simSummary(adultAssumpt::AdultAssumptions,
   aliveData(stageDataFrame, yearlyStageData, path)
   ageData(adultDataFrame, path)
   harvestData(harvestDataFrame, harvestZoneData, path)
-  spawnData(spawnDataFrame, yearlySpawn, path)
+  spawnData(spawnDataFrame, path)
   killedData(killedDataFrame, path)
   simReadme(adultAssumpt, agentAssumpt, bump, effort, initStock, carryingCap, path, userInput)
 end
@@ -422,12 +422,28 @@ end
 
   Last update: June 2016
 """
-function spawnData(sdf::DataFrame, yearlySpawn::DataFrame, path::ASCIIString)
+function spawnData(sdf::DataFrame, path::ASCIIString)
   #Output weekly spawn summary
   file = string(path,"$(getDirChar())spawnSUMMARY.csv")
   writetable(file, sdf)
 
   #Output yearly spawn summary
-  file = string(path,"$(getDirChar())yearSpawnSUMMARY.csv")
-  writetable(file, yearlySpawn)
+  file = string(path,"$(getDirChar())yearlySpawnSUMMARY.csv")
+  numYears = ceil((size(sdf)[1] - 1)/52)
+  weekMin = 1
+  weekMax = 52
+
+  yearSpawn = DataFrame(Year = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
+
+  for year = 1:numYears
+    yearData = sdf[(sdf[:Week] .>= weekMin)&(sdf[:Week] .<= weekMax), :]
+    spawn = [0,0,0,0,0,0,0]
+    for i = 1:length(spawn)
+      spawn[i] = sum(yearData[i+1])
+    end
+    push!(yearSpawn, vcat(year, spawn..., sum(spawn)))
+    weekMin = weekMin + 52
+    weekMax = weekMax + 52
+  end
+  writetable(file, yearSpawn)
 end
