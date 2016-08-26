@@ -90,6 +90,32 @@ function getDirChar()
   end
 end
 
+"""
+  Description: Generic function to sum weekly data of dataframes into yearly data
+
+  Last update: August 2016
+"""
+function getYearlyData(weeklyData::DataFrame, yearlyDataFrame::DataFrame)
+  numYears = ceil((size(weeklyData)[1] - 1)/52)
+  weekMin = 1
+  weekMax = 52
+
+  for year = 1:numYears
+    yearData = weeklyData[(weeklyData[:Week] .>= weekMin)&(weeklyData[:Week] .<= weekMax), :]
+
+    #Use size of weekly dataframe - 2 to account for the week and total columns that aren't needed here
+    dataVector = fill(0, (size(weeklyData)[2] - 2))
+    for i = 1:length(dataVector)
+      dataVector[i] = sum(yearData[i+1])
+    end
+    push!(yearlyDataFrame, vcat(year, dataVector, sum(dataVector)))
+    weekMin = weekMin + 52
+    weekMax = weekMax + 52
+  end
+
+  return yearlyDataFrame
+end
+
 
 """
   INPUT: hdf = DataFrame of weekly age-specific harvest levels and total harvest.
@@ -108,44 +134,14 @@ function harvestData(hdf::DataFrame, zoneData::DataFrame, path::ASCIIString)
 
   #Output yearly harvest by age
   file = string(path,"$(getDirChar())yearlyHarvestSUMMARY.csv")
-  numYears = ceil((size(hdf)[1] - 1)/52)
-  weekMin = 1
-  weekMax = 52
-
   yearHarvest = DataFrame(Year = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
-
-  for year = 1:numYears
-    yearData = hdf[(hdf[:Week] .>= weekMin)&(hdf[:Week] .<= weekMax), :]
-    harvest = [0,0,0,0,0,0,0]
-    for i = 1:length(harvest)
-      harvest[i] = sum(yearData[i+1])
-    end
-    push!(yearHarvest, vcat(year, harvest..., sum(harvest)))
-    weekMin = weekMin + 52
-    weekMax = weekMax + 52
-  end
-  writetable(file, yearHarvest)
+  writetable(file, getYearlyData(hdf, yearHarvest))
 
   #Output yearly harvest by zone
   file = string(path,"$(getDirChar())yearlyHarvestZoneSUMMARY.csv")
-  numYears = ceil((size(zoneData)[1] - 1)/52)
-  weekMin = 1
-  weekMax = 52
-
   yearZoneHarvest = DataFrame(Year = 0, z1 = 0, z2 = 0, z3 = 0, z4 = 0, z5 = 0, z6 = 0, z7 = 0, z8 = 0, z9 = 0, z10 = 0,
                               z11 = 0, z12 = 0, z13 = 0, z14 = 0, z15 = 0, z16 = 0, z17 = 0, z18 = 0, Total = 0)
-
-  for year = 1:numYears
-    yearData = zoneData[(zoneData[:Week] .>= weekMin)&(zoneData[:Week] .<= weekMax), :]
-    harvestZone = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-    for i = 1:length(harvestZone)
-      harvestZone[i] = sum(yearData[i+1])
-    end
-    push!(yearZoneHarvest, vcat(year, harvestZone..., sum(harvestZone)))
-    weekMin = weekMin + 52
-    weekMax = weekMax + 52
-  end
-  writetable(file, yearZoneHarvest)
+  writetable(file, getYearlyData(zoneData, yearZoneHarvest))
 
 end
 
@@ -172,23 +168,8 @@ function killedData(kdf::DataFrame, path::ASCIIString)
 
   #Output yearly mortalities
   file = string(path,"$(getDirChar())yearlyKilledSUMMARY.csv")
-  numYears = ceil((size(kdf)[1] - 1)/52)
-  weekMin = 1
-  weekMax = 52
-
   yearMortality = DataFrame(Year = 0, Natural = 0, Extra = 0, Compensatory = 0, Total = 0)
-
-  for year = 1:numYears
-    yearData = kdf[(kdf[:Week] .>= weekMin)&(kdf[:Week] .<= weekMax), :]
-    mortalities = [0,0,0]
-    for i = 1:length(mortalities)
-      mortalities[i] = sum(yearData[i+1])
-    end
-    push!(yearMortality, vcat(year, mortalities..., sum(mortalities)))
-    weekMin = weekMin + 52
-    weekMax = weekMax + 52
-  end
-  writetable(file, yearMortality)
+  writetable(file, getYearlyData(kdf, yearMortality))
 end
 
 
@@ -429,21 +410,6 @@ function spawnData(sdf::DataFrame, path::ASCIIString)
 
   #Output yearly spawn summary
   file = string(path,"$(getDirChar())yearlySpawnSUMMARY.csv")
-  numYears = ceil((size(sdf)[1] - 1)/52)
-  weekMin = 1
-  weekMax = 52
-
   yearSpawn = DataFrame(Year = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
-
-  for year = 1:numYears
-    yearData = sdf[(sdf[:Week] .>= weekMin)&(sdf[:Week] .<= weekMax), :]
-    spawn = [0,0,0,0,0,0,0]
-    for i = 1:length(spawn)
-      spawn[i] = sum(yearData[i+1])
-    end
-    push!(yearSpawn, vcat(year, spawn..., sum(spawn)))
-    weekMin = weekMin + 52
-    weekMax = weekMax + 52
-  end
-  writetable(file, yearSpawn)
+  writetable(file, getYearlyData(sdf, yearSpawn))
 end
