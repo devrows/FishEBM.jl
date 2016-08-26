@@ -124,8 +124,22 @@ function killedData(kdf::DataFrame, path::ASCIIString)
     end #for j
     kdf[i,5] = totalKill
   end #for i
-
   writetable(file, kdf)
+
+  file = string(path,"$(getDirChar())yearlyKilledSUMMARY.csv")
+  numYears = ceil((size(kdf)[1] - 1)/52)
+  weekMin = 1
+  weekMax = 52
+
+  yearMortality = DataFrame(Year = 0, Natural = 0, Extra = 0, Compensatory = 0, Total = 0)
+
+  for year = 1:numYears
+    yearData = kdf[(kdf[:Week] .>= weekMin)&(kdf[:Week] .<= weekMax), :]
+    push!(yearMortality, vcat(year, sum(yearData[:Natural]), sum(yearData[:Extra]), sum(yearData[:Compensatory]), sum(yearData[:Total])))
+    weekMin = weekMin + 52
+    weekMax = weekMax + 52
+  end
+  writetable(file, yearMortality)
 end
 
 
