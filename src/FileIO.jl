@@ -31,7 +31,7 @@ end
 
   Last update: June 2016
 """
-function aliveData(popDataFrame::DataFrame, path::ASCIIString)
+function aliveData(popDataFrame::DataFrame, yearlyStageData::DataFrame, path::ASCIIString)
   separateDirChar = getDirChar()
 
   file = string(path,"$(separateDirChar)stageSUMMARY.csv")
@@ -39,6 +39,13 @@ function aliveData(popDataFrame::DataFrame, path::ASCIIString)
   popDataOutput = convert(Array, popDataFrame)
   writedlm(f, names(popDataFrame)', " ,")
   writedlm(f, popDataOutput,  " ,")
+  close(f)
+
+  file = string(path,"$(separateDirChar)yearlyStageSUMMARY.csv")
+  f = open(file, "w")
+  yearlyStageOutput = convert(Array, yearlyStageData)
+  writedlm(f, names(yearlyStageData)', " ,")
+  writedlm(f, yearlyStageOutput,  " ,")
   close(f)
 end
 
@@ -346,14 +353,14 @@ end
 function simSummary(adultAssumpt::AdultAssumptions,
   agentAssumpt::AgentAssumptions, agentDB::Vector, bump::Vector, effort::Vector,
   finalWeek::Int64, initStock::Vector, carryingCap::Vector,
-  popDataFrame::DataFrame, ageDataFrame::DataFrame, harvestDataFrame::DataFrame,
+  stageDataFrame::DataFrame, yearlyStageData::DataFrame, adultDataFrame::DataFrame, harvestDataFrame::DataFrame,
   harvestZoneData::DataFrame, spawnDataFrame::DataFrame, yearlySpawn::DataFrame,
   killedDataFrame::DataFrame, userInput::ASCIIString)
 
   simDir()
   path = runDir(dateDir(resultsDir(setProjPath())[1])[1])[2]
-  aliveData(popDataFrame, path)
-  ageData(ageDataFrame, path)
+  aliveData(stageDataFrame, yearlyStageData, path)
+  ageData(adultDataFrame, path)
   harvestData(harvestDataFrame, harvestZoneData, path)
   spawnData(spawnDataFrame, yearlySpawn, path)
   killedData(killedDataFrame, path)
