@@ -76,5 +76,5 @@ function spawn!(agent_db::Vector, adult_a::AdultAssumptions, age_assumpt::AgentA
 
   #Push to weekly spawn number data frame
   push!(sdf, (vcat(week, brood_size..., sum(brood_size))))
-  
+
 end
