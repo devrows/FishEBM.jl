@@ -101,9 +101,13 @@ end
 
   Last update: June 2016
 """
-function harvestData(hdf::DataFrame, path::ASCIIString)
+function harvestData(hdf::DataFrame, zoneData::DataFrame, path::ASCIIString)
   file = string(path,"$(getDirChar())harvestSUMMARY.csv")
   writetable(file, hdf)
+
+  file = string(path,"$(getDirChar())harvestZoneSUMMARY.csv")
+  writetable(file, zoneData)
+
 end
 
 
@@ -343,14 +347,14 @@ function simSummary(adultAssumpt::AdultAssumptions,
   agentAssumpt::AgentAssumptions, agentDB::Vector, bump::Vector, effort::Vector,
   finalWeek::Int64, initStock::Vector, carryingCap::Vector,
   popDataFrame::DataFrame, ageDataFrame::DataFrame, harvestDataFrame::DataFrame,
-  spawnDataFrame::DataFrame, yearlySpawn::DataFrame, killedDataFrame::DataFrame,
-  userInput::ASCIIString)
+  harvestZoneData::DataFrame, spawnDataFrame::DataFrame, yearlySpawn::DataFrame,
+  killedDataFrame::DataFrame, userInput::ASCIIString)
 
   simDir()
   path = runDir(dateDir(resultsDir(setProjPath())[1])[1])[2]
   aliveData(popDataFrame, path)
   ageData(ageDataFrame, path)
-  harvestData(harvestDataFrame, path)
+  harvestData(harvestDataFrame, harvestZoneData, path)
   spawnData(spawnDataFrame, yearlySpawn, path)
   killedData(killedDataFrame, path)
   simReadme(adultAssumpt, agentAssumpt, bump, effort, initStock, carryingCap, path, userInput)
