@@ -102,7 +102,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
       if w == 50
         tic()
       end
-      harvest!(harvest_effort[y], totalWeek, a_db, e_a, adult_a, age_a, harvestDataFrame)
+      harvest!(harvest_effort[y], totalWeek, a_db, e_a, adult_a, age_a, harvestDataFrame, harvestZoneData)
       if w == 50
         harvestTime = toq()
       end
@@ -190,7 +190,8 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
 
         removeEmptyClass!(a_db)
         description = "\n Simulation was stopped in year $y, week $w due to population failure (total population = $totalPopulation, total adults = $totalAdults, population limit = $limit).\n"
-        simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity, stageDataFrame, adultDataFrame, harvestDataFrame, spawnDataFrame, killedDataFrame, description)
+        simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity,
+                  stageDataFrame, adultDataFrame, harvestDataFrame, harvestZoneData, spawnDataFrame, killedDataFrame, description)
         return a_db
       end #population regulation failure
     end #end for week
@@ -199,6 +200,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
   end #end for year
 
   description = "Simulation was successfully completed."
-  simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity, stageDataFrame, adultDataFrame, harvestDataFrame, spawnDataFrame, yearlySpawn, killedDataFrame, description)
+  simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity,
+            stageDataFrame, adultDataFrame, harvestDataFrame, harvestZoneData, spawnDataFrame, yearlySpawn, killedDataFrame, description)
   return a_db
 end
