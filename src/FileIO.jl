@@ -19,6 +19,10 @@ function ageData(adf::DataFrame, path::ASCIIString)
   file = string(path,"$(separateDirChar)ageSpecificSUMMARY.csv")
   writetable(file, adf);
 
+  file = string(path,"$(separateDirChar)yearlyAgeSpecificSUMMARY.csv")
+  yearlyData = DataFrame(Year = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
+  writetable(file, getYearlyPop(adf, yearlyData))
+
 end
 
 
@@ -28,14 +32,15 @@ end
 
   Last update: June 2016
 """
-function aliveData(popDataFrame::DataFrame, yearlyStageData::DataFrame, path::ASCIIString)
+function aliveData(popDataFrame::DataFrame, path::ASCIIString)
   separateDirChar = getDirChar()
 
   file = string(path,"$(separateDirChar)stageSUMMARY.csv")
   writetable(file, popDataFrame)
 
   file = string(path,"$(separateDirChar)yearlyStageSUMMARY.csv")
-  writetable(file, yearlyStageData)
+  yearlyData = DataFrame(Year = 0, Stage1 = 0, Stage2 = 0, Stage3 = 0, Stage4 = 0, Total = 0)
+  writetable(file, getYearlyPop(popDataFrame, yearlyData))
 end
 
 
@@ -108,9 +113,33 @@ function getYearlyData(weeklyData::DataFrame, yearlyDataFrame::DataFrame)
     for i = 1:length(dataVector)
       dataVector[i] = sum(yearData[i+1])
     end
-    push!(yearlyDataFrame, vcat(year, dataVector, sum(dataVector)))
+    push!(yearlyDataFrame, vcat(year, dataVector..., sum(dataVector)))
     weekMin = weekMin + 52
     weekMax = weekMax + 52
+  end
+
+  return yearlyDataFrame
+end
+
+"""
+  Description: Generic function to return yearly snapshot of population
+
+  Last update: August 2016
+"""
+function getYearlyPop(weeklyData::DataFrame, yearlyDataFrame::DataFrame)
+  numYears = ceil((size(weeklyData)[1] - 1)/52)
+  week = 1
+
+  for year = 1:numYears
+    yearData = weeklyData[(weeklyData[:Week] .== week), :]
+
+    #Use size of weekly dataframe - 2 to account for the week and total columns that aren't needed here
+    dataVector = fill(0, (size(weeklyData)[2] - 2))
+    for i = 1:length(dataVector)
+      dataVector[i] = sum(yearData[i+1])
+    end
+    push!(yearlyDataFrame, vcat(year, dataVector..., sum(dataVector)))
+    week = week + 52
   end
 
   return yearlyDataFrame
@@ -382,13 +411,12 @@ end
 function simSummary(adultAssumpt::AdultAssumptions,
   agentAssumpt::AgentAssumptions, agentDB::Vector, bump::Vector, effort::Vector,
   finalWeek::Int64, initStock::Vector, carryingCap::Vector,
-  stageDataFrame::DataFrame, yearlyStageData::DataFrame, adultDataFrame::DataFrame,
-  harvestDataFrame::DataFrame, harvestZoneData::DataFrame, spawnDataFrame::DataFrame,
-  killedDataFrame::DataFrame, userInput::ASCIIString)
+  stageDataFrame::DataFrame, adultDataFrame::DataFrame, harvestDataFrame::DataFrame,
+  harvestZoneData::DataFrame, spawnDataFrame::DataFrame, killedDataFrame::DataFrame, userInput::ASCIIString)
 
   simDir()
   path = runDir(dateDir(resultsDir(setProjPath())[1])[1])[2]
-  aliveData(stageDataFrame, yearlyStageData, path)
+  aliveData(stageDataFrame, path)
   ageData(adultDataFrame, path)
   harvestData(harvestDataFrame, harvestZoneData, path)
   spawnData(spawnDataFrame, path)
