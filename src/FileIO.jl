@@ -11,7 +11,7 @@
   INPUT: ageDataFrame = DataFrame of yearly adult age-specific population.
   OUTPUT: ageSUMMARY.csv: file containing yearly age-specific population levels.
 
-  Last update: June 2016
+  Last update: August 2016
 """
 function ageData(adf::DataFrame, path::ASCIIString)
   separateDirChar = getDirChar()
@@ -30,7 +30,7 @@ end
   INPUT: popDataFrame = DataFrame of weekly stage population.
   OUTPUT: simSUMMARY.csv: file containing weekly population levels.
 
-  Last update: June 2016
+  Last update: August 2016
 """
 function aliveData(popDataFrame::DataFrame, path::ASCIIString)
   separateDirChar = getDirChar()
@@ -95,6 +95,7 @@ function getDirChar()
   end
 end
 
+
 """
   Description: Generic function to sum weekly data of dataframes into yearly data
 
@@ -120,6 +121,7 @@ function getYearlyData(weeklyData::DataFrame, yearlyDataFrame::DataFrame)
 
   return yearlyDataFrame
 end
+
 
 """
   Description: Generic function to return yearly snapshot of population
@@ -150,7 +152,7 @@ end
   INPUT: hdf = DataFrame of weekly age-specific harvest levels and total harvest.
   OUTPUT: harvestSUMMARY.csv: file containing weekly harvest levels.
 
-  Last update: June 2016
+  Last update: August 2016
 """
 function harvestData(hdf::DataFrame, zoneData::DataFrame, path::ASCIIString)
   #Output weekly harvest by age
@@ -179,7 +181,7 @@ end
   INPUT: kdf = DataFrame of weekly killed data by natural and extra mortality.
   OUTPUT: killedSUMMARY.csv: file containing weekly mortality levels.
 
-  Last update: June 2016
+  Last update: August 2016
 """
 function killedData(kdf::DataFrame, path::ASCIIString)
   file = string(path,"$(getDirChar())killedSUMMARY.csv")
@@ -406,7 +408,7 @@ end
 
   Returns: N/A.
 
-  Last update: June 2016
+  Last update: August 2016
 """
 function simSummary(adultAssumpt::AdultAssumptions,
   agentAssumpt::AgentAssumptions, agentDB::Vector, bump::Vector, effort::Vector,
@@ -429,7 +431,7 @@ end
   INPUT: sdf = DataFrame of weekly age-specific spawn levels and total spawn size.
   OUTPUT: spawnSUMMARY.csv: file containing weekly spawn levels.
 
-  Last update: June 2016
+  Last update: August 2016
 """
 function spawnData(sdf::DataFrame, path::ASCIIString)
   #Output weekly spawn summary
