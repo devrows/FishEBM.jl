@@ -41,8 +41,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
 
   #Memory allocation for population data storage
   stageDataFrame = DataFrame(Week = 0, Stage1 = 0, Stage2 = 0, Stage3 = 0, Stage4 = 0, Total = 0)
-  yearlyStageData = DataFrame(Year = 0, Stage1 = 0, Stage2 = 0, Stage3 = 0, Stage4 = 0, Total = 0)
-  adultDataFrame = DataFrame(Year = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
+  adultDataFrame = DataFrame(Week = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
 
   #Memory allocation for mortality data storage (includes harvest)
   harvestDataFrame = DataFrame(Week = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
@@ -84,10 +83,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
 
       totalAdults = sum(ageSpecificPop)
 
-      #update annually
-      if w == 1
-        push!(adultDataFrame, vcat(y, ageSpecificPop..., sum(ageSpecificPop)))
-      end
+      push!(adultDataFrame, vcat(totalWeek, ageSpecificPop..., sum(ageSpecificPop)))
 
       if progress
         progressBar.desc = " $totalAdults adults, $totalPopulation total, Year $y (of $years), week $w of simulation "
@@ -147,9 +143,6 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
       totalPopulation = sum(stagePopulation)
 
       push!(stageDataFrame, vcat(totalWeek,stagePopulation..., sum(stagePopulation)))
-      if w == 1
-        push!(yearlyStageData, vcat(y, stagePopulation..., sum(stagePopulation)))
-      end
 
       if w == 50
         print("\n\n For year $y, during week 50, \n\t harvestTime = $harvestTime \n\t spawnTime = $spawnTime \n\t killAgeSpec = $killAgeSpec \n\t killTime = $killTime \n\t moveTime = $moveTime \n\n")
@@ -190,7 +183,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
         removeEmptyClass!(a_db)
         description = "\n Simulation was stopped in year $y, week $w due to population failure (total population = $totalPopulation, total adults = $totalAdults, population limit = $limit).\n"
         simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity,
-                  stageDataFrame, yearlyStageData, adultDataFrame, harvestDataFrame, harvestZoneData, spawnDataFrame, killedDataFrame, description)
+                  stageDataFrame, adultDataFrame, harvestDataFrame, harvestZoneData, spawnDataFrame, killedDataFrame, description)
         return a_db
       end #population regulation failure
     end #end for week
@@ -200,6 +193,6 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
 
   description = "Simulation was successfully completed."
   simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity,
-            stageDataFrame, yearlyStageData, adultDataFrame, harvestDataFrame, harvestZoneData, spawnDataFrame, killedDataFrame, description)
+            stageDataFrame, adultDataFrame, harvestDataFrame, harvestZoneData, spawnDataFrame, killedDataFrame, description)
   return a_db
 end
