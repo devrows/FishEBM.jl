@@ -11,17 +11,18 @@
   INPUT: ageDataFrame = DataFrame of yearly adult age-specific population.
   OUTPUT: ageSUMMARY.csv: file containing yearly age-specific population levels.
 
-  Last update: June 2016
+  Last update: August 2016
 """
 function ageData(adf::DataFrame, path::ASCIIString)
   separateDirChar = getDirChar()
 
   file = string(path,"$(separateDirChar)ageSpecificSUMMARY.csv")
-  f = open(file, "w")
-  adfOut = convert(Array, adf)
-  writedlm(f, names(adf)', " ,")
-  writedlm(f, adfOut,  " ,")
-  close(f)
+  writetable(file, adf);
+
+  file = string(path,"$(separateDirChar)yearlyAgeSpecificSUMMARY.csv")
+  yearlyData = DataFrame(Year = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
+  writetable(file, getYearlyPop(adf, yearlyData))
+
 end
 
 
@@ -29,17 +30,17 @@ end
   INPUT: popDataFrame = DataFrame of weekly stage population.
   OUTPUT: simSUMMARY.csv: file containing weekly population levels.
 
-  Last update: June 2016
+  Last update: August 2016
 """
 function aliveData(popDataFrame::DataFrame, path::ASCIIString)
   separateDirChar = getDirChar()
 
   file = string(path,"$(separateDirChar)stageSUMMARY.csv")
-  f = open(file, "w")
-  popDataOutput = convert(Array, popDataFrame)
-  writedlm(f, names(popDataFrame)', " ,")
-  writedlm(f, popDataOutput,  " ,")
-  close(f)
+  writetable(file, popDataFrame)
+
+  file = string(path,"$(separateDirChar)yearlyStageSUMMARY.csv")
+  yearlyData = DataFrame(Year = 0, Stage1 = 0, Stage2 = 0, Stage3 = 0, Stage4 = 0, Total = 0)
+  writetable(file, getYearlyPop(popDataFrame, yearlyData))
 end
 
 
@@ -96,17 +97,82 @@ end
 
 
 """
+  Description: Generic function to sum weekly data of dataframes into yearly data
+
+  Last update: August 2016
+"""
+function getYearlyData(weeklyData::DataFrame, yearlyDataFrame::DataFrame)
+  numYears = ceil((size(weeklyData)[1] - 1)/52)
+  weekMin = 1
+  weekMax = 52
+
+  for year = 1:numYears
+    yearData = weeklyData[(weeklyData[:Week] .>= weekMin)&(weeklyData[:Week] .<= weekMax), :]
+
+    #Use size of weekly dataframe - 2 to account for the week and total columns that aren't needed here
+    dataVector = fill(0, (size(weeklyData)[2] - 2))
+    for i = 1:length(dataVector)
+      dataVector[i] = sum(yearData[i+1])
+    end
+    push!(yearlyDataFrame, vcat(year, dataVector..., sum(dataVector)))
+    weekMin = weekMin + 52
+    weekMax = weekMax + 52
+  end
+
+  return yearlyDataFrame
+end
+
+
+"""
+  Description: Generic function to return yearly snapshot of population
+
+  Last update: August 2016
+"""
+function getYearlyPop(weeklyData::DataFrame, yearlyDataFrame::DataFrame)
+  numYears = ceil((size(weeklyData)[1] - 1)/52)
+  week = 1
+
+  for year = 1:numYears
+    yearData = weeklyData[(weeklyData[:Week] .== week), :]
+
+    #Use size of weekly dataframe - 2 to account for the week and total columns that aren't needed here
+    dataVector = fill(0, (size(weeklyData)[2] - 2))
+    for i = 1:length(dataVector)
+      dataVector[i] = sum(yearData[i+1])
+    end
+    push!(yearlyDataFrame, vcat(year, dataVector..., sum(dataVector)))
+    week = week + 52
+  end
+
+  return yearlyDataFrame
+end
+
+
+"""
   INPUT: hdf = DataFrame of weekly age-specific harvest levels and total harvest.
   OUTPUT: harvestSUMMARY.csv: file containing weekly harvest levels.
 
-  Last update: June 2016
+  Last update: August 2016
 """
 function harvestData(hdf::DataFrame, zoneData::DataFrame, path::ASCIIString)
+  #Output weekly harvest by age
   file = string(path,"$(getDirChar())harvestSUMMARY.csv")
   writetable(file, hdf)
 
+  #Output weekly harvest by zone
   file = string(path,"$(getDirChar())harvestZoneSUMMARY.csv")
   writetable(file, zoneData)
+
+  #Output yearly harvest by age
+  file = string(path,"$(getDirChar())yearlyHarvestSUMMARY.csv")
+  yearHarvest = DataFrame(Year = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
+  writetable(file, getYearlyData(hdf, yearHarvest))
+
+  #Output yearly harvest by zone
+  file = string(path,"$(getDirChar())yearlyHarvestZoneSUMMARY.csv")
+  yearZoneHarvest = DataFrame(Year = 0, z1 = 0, z2 = 0, z3 = 0, z4 = 0, z5 = 0, z6 = 0, z7 = 0, z8 = 0, z9 = 0, z10 = 0,
+                              z11 = 0, z12 = 0, z13 = 0, z14 = 0, z15 = 0, z16 = 0, z17 = 0, z18 = 0, Total = 0)
+  writetable(file, getYearlyData(zoneData, yearZoneHarvest))
 
 end
 
@@ -115,11 +181,10 @@ end
   INPUT: kdf = DataFrame of weekly killed data by natural and extra mortality.
   OUTPUT: killedSUMMARY.csv: file containing weekly mortality levels.
 
-  Last update: June 2016
+  Last update: August 2016
 """
 function killedData(kdf::DataFrame, path::ASCIIString)
   file = string(path,"$(getDirChar())killedSUMMARY.csv")
-  f = open(file, "w")
 
   #Sum natural, extra, and Compensatory mortalities before outputting to .csv
   for i = 1:size(kdf)[1]
@@ -129,11 +194,13 @@ function killedData(kdf::DataFrame, path::ASCIIString)
     end #for j
     kdf[i,5] = totalKill
   end #for i
+  #Output weekly mortalities
+  writetable(file, kdf)
 
-  kdfOut = convert(Array, kdf)
-  writedlm(f, names(kdf)', " ,")
-  writedlm(f, kdfOut,  " ,")
-  close(f)
+  #Output yearly mortalities
+  file = string(path,"$(getDirChar())yearlyKilledSUMMARY.csv")
+  yearMortality = DataFrame(Year = 0, Natural = 0, Extra = 0, Compensatory = 0, Total = 0)
+  writetable(file, getYearlyData(kdf, yearMortality))
 end
 
 
@@ -341,21 +408,20 @@ end
 
   Returns: N/A.
 
-  Last update: June 2016
+  Last update: August 2016
 """
 function simSummary(adultAssumpt::AdultAssumptions,
   agentAssumpt::AgentAssumptions, agentDB::Vector, bump::Vector, effort::Vector,
   finalWeek::Int64, initStock::Vector, carryingCap::Vector,
-  popDataFrame::DataFrame, ageDataFrame::DataFrame, harvestDataFrame::DataFrame,
-  harvestZoneData::DataFrame, spawnDataFrame::DataFrame, yearlySpawn::DataFrame,
-  killedDataFrame::DataFrame, userInput::ASCIIString)
+  stageDataFrame::DataFrame, adultDataFrame::DataFrame, harvestDataFrame::DataFrame,
+  harvestZoneData::DataFrame, spawnDataFrame::DataFrame, killedDataFrame::DataFrame, userInput::ASCIIString)
 
   simDir()
   path = runDir(dateDir(resultsDir(setProjPath())[1])[1])[2]
-  aliveData(popDataFrame, path)
-  ageData(ageDataFrame, path)
+  aliveData(stageDataFrame, path)
+  ageData(adultDataFrame, path)
   harvestData(harvestDataFrame, harvestZoneData, path)
-  spawnData(spawnDataFrame, yearlySpawn, path)
+  spawnData(spawnDataFrame, path)
   killedData(killedDataFrame, path)
   simReadme(adultAssumpt, agentAssumpt, bump, effort, initStock, carryingCap, path, userInput)
 end
@@ -365,22 +431,15 @@ end
   INPUT: sdf = DataFrame of weekly age-specific spawn levels and total spawn size.
   OUTPUT: spawnSUMMARY.csv: file containing weekly spawn levels.
 
-  Last update: June 2016
+  Last update: August 2016
 """
-function spawnData(sdf::DataFrame, yearlySpawn::DataFrame, path::ASCIIString)
+function spawnData(sdf::DataFrame, path::ASCIIString)
   #Output weekly spawn summary
   file = string(path,"$(getDirChar())spawnSUMMARY.csv")
-  f = open(file, "w")
-  sdfOut = convert(Array, sdf)
-  writedlm(f, names(sdf)', " ,")
-  writedlm(f, sdfOut,  " ,")
-  close(f)
+  writetable(file, sdf)
 
   #Output yearly spawn summary
-  file = string(path,"$(getDirChar())yearSpawnSUMMARY.csv")
-  f = open(file, "w")
-  yearlySpawnOut = convert(Array, yearlySpawn)
-  writedlm(f, names(yearlySpawn)', " ,")
-  writedlm(f, yearlySpawnOut,  " ,")
-  close(f)
+  file = string(path,"$(getDirChar())yearlySpawnSUMMARY.csv")
+  yearSpawn = DataFrame(Year = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
+  writetable(file, getYearlyData(sdf, yearSpawn))
 end

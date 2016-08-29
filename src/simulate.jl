@@ -39,14 +39,9 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
     injectAgents!(a_db, e_a.spawningHash, initStock[length(initStock)+1-i], stock_age[length(initStock)+1-i])
   end
 
-  stagePopulation = [0,0,0,0]; totalPopulation = 0;
-  for j = 1:4
-    stagePopulation[j] = getStagePopulation(j, 0, a_db, age_a)
-  end
-
   #Memory allocation for population data storage
-  stageDataFrame = DataFrame(Week = 0, Stage1 = stagePopulation[1], Stage2 = stagePopulation[2], Stage3 = stagePopulation[3],Stage4 = stagePopulation[4], Total = sum(stagePopulation))
-  adultDataFrame = DataFrame(Year = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
+  stageDataFrame = DataFrame(Week = 0, Stage1 = 0, Stage2 = 0, Stage3 = 0, Stage4 = 0, Total = 0)
+  adultDataFrame = DataFrame(Week = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
 
   #Memory allocation for mortality data storage (includes harvest)
   harvestDataFrame = DataFrame(Week = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
@@ -56,7 +51,6 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
 
   #Memory allocation for spawning data storage
   spawnDataFrame = DataFrame(Week = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
-  yearlySpawn = DataFrame(Year = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
 
 
   bumpvec = fill(0, years)
@@ -89,10 +83,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
 
       totalAdults = sum(ageSpecificPop)
 
-      #update annually
-      if w == 1
-        push!(adultDataFrame, vcat(y, ageSpecificPop..., sum(ageSpecificPop)))
-      end
+      push!(adultDataFrame, vcat(totalWeek, ageSpecificPop..., sum(ageSpecificPop)))
 
       if progress
         progressBar.desc = " $totalAdults adults, $totalPopulation total, Year $y (of $years), week $w of simulation "
@@ -112,7 +103,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
         if w == 50
           tic()
         end
-        spawn!(a_db, adult_a, age_a, e_a, totalWeek, carrying_capacity[y], spawnDataFrame, yearlySpawn)
+        spawn!(a_db, adult_a, age_a, e_a, totalWeek, carrying_capacity[y], spawnDataFrame)
         if w == 50
           spawnTime = toq()
         end
@@ -150,7 +141,8 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
         stagePopulation[j] = getStagePopulation(j, totalWeek, a_db, age_a)
       end
       totalPopulation = sum(stagePopulation)
-      push!(stageDataFrame,(totalWeek,stagePopulation[1],stagePopulation[2],stagePopulation[3],stagePopulation[4], totalPopulation))
+
+      push!(stageDataFrame, vcat(totalWeek,stagePopulation..., sum(stagePopulation)))
 
       if w == 50
         print("\n\n For year $y, during week 50, \n\t harvestTime = $harvestTime \n\t spawnTime = $spawnTime \n\t killAgeSpec = $killAgeSpec \n\t killTime = $killTime \n\t moveTime = $moveTime \n\n")
@@ -201,6 +193,6 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
 
   description = "Simulation was successfully completed."
   simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity,
-            stageDataFrame, adultDataFrame, harvestDataFrame, harvestZoneData, spawnDataFrame, yearlySpawn, killedDataFrame, description)
+            stageDataFrame, adultDataFrame, harvestDataFrame, harvestZoneData, spawnDataFrame, killedDataFrame, description)
   return a_db
 end

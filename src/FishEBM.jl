@@ -34,6 +34,8 @@ module FishEBM
     createDir,
     dateDir,
     getDirChar,
+    getYearlyData,
+    getYearlyPop,
     harvestData,
     killedData,
     resultsDir,
