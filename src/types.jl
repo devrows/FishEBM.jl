@@ -8,11 +8,14 @@
 
 
 """
+  Description: Assumptions regarding mortality, maturity, broodsize, and
+    catchability of age specific adult agents.
+
   naturalmortality = Age specific survivorship (survivorship at carrying
-    capacity if density depedence occurs)
-  halfmature = Age at 50% mature (Binomial cdf assumed)
+    capacity if density depedence occurs).
+  halfmature = Age at 50% mature (Binomial cdf assumed).
   broodsize = Age specific fecundity (i.e. mean quantity of eggs each spawning
-    female will produce)
+    female will produce).
   fecunditycompensation = compensatory strength for changes in fecundity.
     Compensatory strength is a divisor of K which will result in a 68% change in
     fecundity - smaller values indicate lower compensation strength.
@@ -47,7 +50,16 @@ end
 
 
 """
-  Description: Assumptions regarding mortality, movement, and growth of agents.
+  Description: Assumptions regarding mortality, movement, and growth of
+    autonomous agents.
+
+    naturalmortality = Age specific survivorship of each habitat type and stage
+      of agents.
+    extramortality = Age specific survivorship of agents (each independent life
+      stage) in an environment location influenced by anthropogenic effects.
+    growth = Growth rate (in weeks) from one life stage to the next.
+    movement = Movement weight matrices for each life stage.
+    autonomy = Movement autonomy.
 
   Last Update: April 2016
 """
@@ -68,15 +80,21 @@ end
   Description: This "Environment agent" is used to track fish population
     dynamics during a simulation.
 
-  Last Update: June 2016
+  Last Update: September 2016
 """
 type EnviroAgent
-  locationID::Int64 #locationID corresponds to the ID in the habitat array
+   # locationID corresponds to the ID in the habitat array
+  locationID::Int64
 
+  # Number of alive agents alive in each cohort
   alive::Vector
+
+  # Independent mortality tracking by location
   killedNatural::Vector
   killedExtra::Vector
   harvest::Int64
+
+  # The spawning week of each cohort during the simulation
   weekNum::Vector
 
   EnviroAgent(locationID) = new(locationID, [0], [0,0,0,0], [0,0,0,0], 0, [0])
@@ -90,7 +108,7 @@ end
   Precondition: Location id should be specified as NaN when a valid location
     does not exist.
 
-  Last Update: March 2016
+  Last Update: August 2016
 """
 type EnvironmentAssumptions
   spawning::Array
