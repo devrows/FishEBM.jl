@@ -103,6 +103,7 @@ function initEnvironment(pathToSpawn::ASCIIString, pathToHabitat::ASCIIString, p
                             abstractRisk,
                             [0],
                             abstractHarvest,
+                            [0],
                             harvestZones)
 
   return e_a

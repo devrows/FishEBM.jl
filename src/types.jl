@@ -117,10 +117,11 @@ type EnvironmentAssumptions
   risk::Vector
   riskHash::Vector
   harvest::Array
+  harvestHash::Vector
   harvestZones::Array
 
   EnvironmentAssumptions() = new()
 
-  EnvironmentAssumptions(spawning, spawningHash, habitat, risk, riskHash, harvest, harvestZones) =
+  EnvironmentAssumptions(spawning, spawningHash, habitat, risk, riskHash, harvest, harvestHash, harvestZones) =
   new(spawning, spawningHash, habitat, risk, riskHash, harvest, harvestZones)
 end
