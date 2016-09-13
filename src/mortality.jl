@@ -19,13 +19,6 @@
 """
 function harvest!(effort::Float64, current_week::Int64, agent_db::Vector, enviro_a::EnvironmentAssumptions,
   adult_a::AdultAssumptions, agent_a::AgentAssumptions, hdf::DataFrame, zoneData::DataFrame)
-  #Get zone numbers in main basin
-  mbZones = enviro_a.harvest[(enviro_a.harvest[:Zone] .< 7),:]
-  gbZones = enviro_a.harvest[(enviro_a.harvest[:Zone] .> 8)&(enviro_a.harvest[:Zone] .< 19), :]
-  ncZones = enviro_a.harvest[(enviro_a.harvest[:Zone] .== 7)&(enviro_a.harvest[:Zone] .== 8), :]
-
-  #Combine all basins into one vector
-  basins = [mbZones, gbZones, ncZones]
 
   classLength = length((agent_db[1]).weekNum)
   totalHarvested = fill(0, size(adult_a.catchability))
