@@ -22,6 +22,7 @@ function hashEnvironment!(a_db::Vector, enviro::EnvironmentAssumptions)
   totalAgents = length(a_db)
   enviro.spawningHash = Array(Int64, length(enviro.spawning))
   enviro.riskHash = Array(Int64, length(enviro.risk))
+  enviro.harvestHash = Array(Int64, length(enviro.harvest))
 
   #map spawning and risk identities to agent numbers
   for agent = 1:totalAgents
@@ -35,9 +36,9 @@ function hashEnvironment!(a_db::Vector, enviro::EnvironmentAssumptions)
       enviro.spawningHash[spawnNum] = agent
     end
 
-    harvestNum = findfirst(enviro.harvest[:Index], (a_db[agent]).locationID)
+    harvestNum = findfirst(enviro.harvest, (a_db[agent]).locationID)
     if harvestNum != 0
-      enviro.harvest[harvestNum, 1] = agent
+      enviro.harvestHash[harvestNum] = agent
     end
   end
 end
