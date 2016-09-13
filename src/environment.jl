@@ -15,7 +15,7 @@
 
   Returns: Operates directly on enviro
 
-  Last update: August 2016
+  Last update: September 2016
 """
 function hashEnvironment!(a_db::Vector, enviro::EnvironmentAssumptions)
   #Initialize required variables
@@ -51,7 +51,7 @@ end
 
   Returns: EnvironmentAssumptions
 
-  Last update: August 2016
+  Last update: September 2016
 """
 function initEnvironment(pathToSpawn::ASCIIString, pathToHabitat::ASCIIString, pathToRisk::ASCIIString, pathToHarvest::ASCIIString)
   #Pad all incoming arrays

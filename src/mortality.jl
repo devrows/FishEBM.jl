@@ -15,7 +15,7 @@
 
   Returns: Operates directly on agent_db
 
-  Last Update: August 2016
+  Last Update: September 2016
 """
 function harvest!(effort::Float64, current_week::Int64, agent_db::Vector, enviro_a::EnvironmentAssumptions,
   adult_a::AdultAssumptions, agent_a::AgentAssumptions, hdf::DataFrame, zoneData::DataFrame)
