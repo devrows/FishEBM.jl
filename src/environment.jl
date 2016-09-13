@@ -62,7 +62,8 @@ function initEnvironment(pathToSpawn::ASCIIString, pathToHabitat::ASCIIString, p
 
   abstractSpawn = [0]
   abstractRisk = [0]
-  abstractHarvest = DataFrame(Index = 0, Zone = 0)
+  abstractHarvest = [0]
+  harvestZones = [0]
 
   #Generate a hashmap
   for index = 1:totalLength
@@ -86,11 +87,12 @@ function initEnvironment(pathToSpawn::ASCIIString, pathToHabitat::ASCIIString, p
 
     #Hash harvest locations
     if harvest[index] != 0
-      if abstractHarvest[1,1] == 0
-        abstractHarvest[1,1] = index
-        abstractHarvest[1,2] = harvest[index]
+      if abstractHarvest[1] == 0
+        abstractHarvest[1] = index
+        harvestZones[1] = harvest[index]
       else
-        push!(abstractHarvest, (index, harvest[index]))
+        push!(abstractHarvest, index)
+        push!(harvestZones, harvest[index])
       end #if abstractHarvest
     end #if harvest
   end
@@ -100,7 +102,8 @@ function initEnvironment(pathToSpawn::ASCIIString, pathToHabitat::ASCIIString, p
                             habitat,
                             abstractRisk,
                             [0],
-                            abstractHarvest)
+                            abstractHarvest,
+                            harvestZones)
 
   return e_a
 end
