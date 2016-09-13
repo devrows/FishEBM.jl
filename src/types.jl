@@ -108,7 +108,7 @@ end
   Precondition: Location id should be specified as NaN when a valid location
     does not exist.
 
-  Last Update: August 2016
+  Last Update: September 2016
 """
 type EnvironmentAssumptions
   spawning::Array
