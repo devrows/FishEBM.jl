@@ -123,5 +123,5 @@ type EnvironmentAssumptions
   EnvironmentAssumptions() = new()
 
   EnvironmentAssumptions(spawning, spawningHash, habitat, risk, riskHash, harvest, harvestHash, harvestZones) =
-  new(spawning, spawningHash, habitat, risk, riskHash, harvest, harvestZones)
+  new(spawning, spawningHash, habitat, risk, riskHash, harvest, harvestHash, harvestZones)
 end
