@@ -1,14 +1,11 @@
 #=
   Package: FishEBM
   File: utilities.jl
-
-  Description: Utilities for use of FishEBM, plots, memory allocation, etc.
-    during runtime.
-
-  Contributors: Devin Rose
-
+  Devin Rose
+  Utilities for use of FishEBM, plots, memory allocation, etc. during runtime.
   Created: March 2016
 =#
+
 
 
 """
@@ -46,7 +43,7 @@ end
 """
 function updatePopulationDensity!(agent_db::Vector, pop_density::Array)
   totalPop = 0
-  
+
   for k = 1:length(agent_db)
     pop_density[agent_db[k].locationID] = 1
 

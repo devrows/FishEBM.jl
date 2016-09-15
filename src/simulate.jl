@@ -67,8 +67,14 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
 
   spawnMin = 39; harvestMin = 39;
 
+  timeCheck = false
+
   for y = 1:years
     for w = 1:52
+
+      if w == 50 && y%10 == 0
+        timeCheck == true
+      end
 
       #get total number of weeks in simulation
       totalWeek = ((y-1)*52)+w
@@ -90,21 +96,21 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
         next!(progressBar)
       end
 
-      if w == 50
+      if timeCheck
         tic()
       end
       harvest!(harvest_effort[y], totalWeek, a_db, e_a, adult_a, age_a, harvestDataFrame, harvestZoneData)
-      if w == 50
+      if timeCheck
         harvestTime = toq()
       end
 
       #Spawn can be set to any week(s)
       if w > spawnMin
-        if w == 50
+        if timeCheck
           tic()
         end
         spawn!(a_db, adult_a, age_a, e_a, totalWeek, carrying_capacity[y], spawnDataFrame)
-        if w == 50
+        if timeCheck
           spawnTime = toq()
         end
       else
@@ -113,25 +119,27 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
 
       #Agents are killed and moved weekly
       push!(killedDataFrame, (totalWeek, 0, 0, 0, 0))
-      if w == 50
+      if timeCheck
         tic()
       end
       killAgeSpecific!(a_db, adult_a, ageSpecificPop, carrying_capacity[y], totalWeek, killedDataFrame)
-      if w == 50
+      if timeCheck
         killAgeSpec = toq()
       end
-      if w == 50
+
+      if timeCheck
         tic()
       end
       kill!(a_db, e_a, age_a, totalWeek, killedDataFrame)
-      if w == 50
+      if timeCheck
         killTime = toq()
       end
-      if w == 50
+
+      if timeCheck
         tic()
       end
       move!(a_db, age_a, e_a, totalWeek)
-      if w == 50
+      if timeCheck
         moveTime = toq()
       end
 
@@ -144,8 +152,11 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
 
       push!(stageDataFrame, vcat(totalWeek,stagePopulation..., sum(stagePopulation)))
 
-      if w == 50
-        print("\n\n For year $y, during week 50, \n\t harvestTime = $harvestTime \n\t spawnTime = $spawnTime \n\t killAgeSpec = $killAgeSpec \n\t killTime = $killTime \n\t moveTime = $moveTime \n\n")
+      if timeCheck
+        print("\n\n For year $y, during week 50, \n\t harvestTime = $harvestTime
+          \n\t spawnTime = $spawnTime \n\t killAgeSpec = $killAgeSpec
+          \n\t killTime = $killTime \n\t moveTime = $moveTime \n\n")
+        timeCheck = false
       end
 
       #show a real time plot (every 10 weeks) of agent movement
@@ -181,7 +192,10 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
         end
 
         removeEmptyClass!(a_db)
-        description = "\n Simulation was stopped in year $y, week $w due to population failure (total population = $totalPopulation, total adults = $totalAdults, population limit = $limit).\n"
+        description = "\n Simulation was stopped in year $y, week $w due to population failure (total population = $totalPopulation, total adults = $totalAdults, population limit = $limit).\n\n"
+        if simDescription != ""
+          description = string(description, simDescription)
+        end
         simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity,
                   stageDataFrame, adultDataFrame, harvestDataFrame, harvestZoneData, spawnDataFrame, killedDataFrame, description)
         return a_db
@@ -191,8 +205,16 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
     removeEmptyClass!(a_db)
   end #end for year
 
-  description = "Simulation was successfully completed."
-  simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity,
-            stageDataFrame, adultDataFrame, harvestDataFrame, harvestZoneData, spawnDataFrame, killedDataFrame, description)
+  description = "Simulation was successfully completed.\n\n"
+
+  if simDescription != ""
+    description = string(description, simDescription)
+  end
+
+  simSummary(adult_a, age_a, a_db, bump, effort,
+    ((length(carrying_capacity))*52), initStock, carrying_capacity,
+    stageDataFrame, adultDataFrame, harvestDataFrame, harvestZoneData,
+    spawnDataFrame, killedDataFrame, description)
+
   return a_db
 end
