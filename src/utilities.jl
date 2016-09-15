@@ -1,5 +1,5 @@
 #=
-  Package: FishEBM
+  Package: FishEBM.jl
   File: utilities.jl
   Devin Rose
   Utilities for use of FishEBM, plots, memory allocation, etc. during runtime.

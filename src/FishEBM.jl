@@ -43,7 +43,6 @@ module FishEBM
     setProjPath,
     simDir,
     simReadme,
-    simSummary,
     spawnData,
 
     # mortality.jl
@@ -57,8 +56,11 @@ module FishEBM
     # simulate.jl functions
     simulate,
 
-    #spawn.jl
+    # spawn.jl
     spawn!,
+
+    # summary.jl
+    simSummary,
 
     # types.jl
     AdultAssumptions,
@@ -71,8 +73,10 @@ module FishEBM
     initPopulationDensity,
     updatePopulationDensity!
 
-    #include types.jl in the module first, types are used in various .jl files
+    # include types.jl in the module first, types defined in this function are used in other files
     include("types.jl")
+
+    # include any source files with a function used in the module
     include("agents.jl")
     include("environment.jl")
     include("FileIO.jl")
@@ -80,5 +84,6 @@ module FishEBM
     include("move.jl")
     include("simulate.jl")
     include("spawn.jl")
+    include("summary.jl")
     include("utilities.jl")
 end

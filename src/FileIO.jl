@@ -401,33 +401,6 @@ end
 
 
 """
-  INPUT: See: aliveData() & simReadme().
-
-  Description: General function for FishEBM.jl to automatically generate summary
-    files per simulation for archiving and analysis.
-
-  Returns: N/A.
-
-  Last update: August 2016
-"""
-function simSummary(adultAssumpt::AdultAssumptions,
-  agentAssumpt::AgentAssumptions, agentDB::Vector, bump::Vector, effort::Vector,
-  finalWeek::Int64, initStock::Vector, carryingCap::Vector,
-  stageDataFrame::DataFrame, adultDataFrame::DataFrame, harvestDataFrame::DataFrame,
-  harvestZoneData::DataFrame, spawnDataFrame::DataFrame, killedDataFrame::DataFrame, userInput::ASCIIString)
-
-  simDir()
-  path = runDir(dateDir(resultsDir(setProjPath())[1])[1])[2]
-  aliveData(stageDataFrame, path)
-  ageData(adultDataFrame, path)
-  harvestData(harvestDataFrame, harvestZoneData, path)
-  spawnData(spawnDataFrame, path)
-  killedData(killedDataFrame, path)
-  simReadme(adultAssumpt, agentAssumpt, bump, effort, initStock, carryingCap, path, userInput)
-end
-
-
-"""
   INPUT: sdf = DataFrame of weekly age-specific spawn levels and total spawn size.
   OUTPUT: spawnSUMMARY.csv: file containing weekly spawn levels.
 

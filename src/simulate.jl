@@ -24,7 +24,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector, initS
   @assert(length(initStock) == length(stock_age), "Unmatching vector length for initializing the
     population, stock length = $(length(initStock)) & $(length(stock_age))")
 
-  # initialize the agent database and hash the enviro
+  # initialize agent db and hash the enviro
   years = length(carrying_capacity)
   a_db = AgentDB(e_a); hashEnvironment!(a_db, e_a);
   if plotPopDensity
@@ -67,7 +67,7 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector, initS
 
   for y = 1:years
     for w = 1:52
-      #get total number of weeks in simulation
+      # Find total number of weeks passed in the simulation
       totalWeek = ((y-1)*52)+w
 
       # age specific population
