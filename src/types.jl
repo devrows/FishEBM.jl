@@ -116,9 +116,9 @@ type EnvironmentAssumptions
   habitat::Array
   risk::Vector
   riskHash::Vector
-  harvest::Array
+  harvest::Vector
   harvestHash::Vector
-  harvestZones::Array
+  harvestZones::Vector
 
   EnvironmentAssumptions() = new()
 
