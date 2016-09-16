@@ -23,6 +23,7 @@ function hashEnvironment!(a_db::Vector, enviro::EnvironmentAssumptions)
   enviro.spawningHash = Array(Int64, length(enviro.spawning))
   enviro.riskHash = Array(Int64, length(enviro.risk))
   enviro.harvestHash = Array(Int64, length(enviro.harvest))
+  enviro.harvestZones = Array(Int64, length(enviro.harvest))
 
   #map spawning and risk identities to agent numbers
   for agent = 1:totalAgents
@@ -39,6 +40,7 @@ function hashEnvironment!(a_db::Vector, enviro::EnvironmentAssumptions)
     harvestNum = findfirst(enviro.harvest, (a_db[agent]).locationID)
     if harvestNum != 0
       enviro.harvestHash[harvestNum] = agent
+      enviro.harvestZones[harvestNum] = enviro.harvest[(a_db[agent]).locationID]
     end
   end
 end
@@ -59,16 +61,18 @@ function initEnvironment(pathToSpawn::ASCIIString, pathToHabitat::ASCIIString, p
   habitat = readdlm(pathToHabitat, ',', Int)[150:end, 200:370]; pad_environment!(habitat);
   risk = readdlm(pathToRisk, ',', Bool)[150:end, 200:370]; pad_environment!(risk);
   harvest = readdlm(pathToHarvest, ',', Int)[150:end, 200:370]; pad_environment!(harvest);
+
+  @assert(size(habitat)[1] == size(harvest)[1] && size(habitat)[2] == size(harvest)[2], "Harvest areas must match habitat areas!")
+
   totalLength = (size(spawn)[1])*(size(spawn)[2])
 
   abstractSpawn = [0]
   abstractRisk = [0]
   abstractHarvest = [0]
-  harvestZones = [0]
 
-  #Generate a hashmap
+  # Generate a hashmap for applicable environment properties
   for index = 1:totalLength
-    #Hash spawning locations
+    # Hash spawning locations
     if spawn[index] == true
       if abstractSpawn[1] == 0
         abstractSpawn[1] = index
@@ -77,7 +81,7 @@ function initEnvironment(pathToSpawn::ASCIIString, pathToHabitat::ASCIIString, p
       end
     end
 
-    #Hash risk locations
+    # Hash risk locations
     if risk[index] == true
       if abstractRisk[1] == 0
         abstractRisk[1] = index
@@ -86,26 +90,20 @@ function initEnvironment(pathToSpawn::ASCIIString, pathToHabitat::ASCIIString, p
       end
     end
 
-    #Hash harvest locations
+    # Hash harvest locations
     if harvest[index] != 0
       if abstractHarvest[1] == 0
         abstractHarvest[1] = index
-        harvestZones[1] = harvest[index]
       else
         push!(abstractHarvest, index)
-        push!(harvestZones, harvest[index])
       end #if abstractHarvest
     end #if harvest
   end
 
-  e_a = EnvironmentAssumptions(abstractSpawn,
-                            [0],
-                            habitat,
-                            abstractRisk,
-                            [0],
-                            abstractHarvest,
-                            [0],
-                            harvestZones)
+  e_a = EnvironmentAssumptions(abstractSpawn, [0],
+    habitat,
+    abstractRisk, [0],
+    harvest, abstractHarvest, [0])
 
   return e_a
 end

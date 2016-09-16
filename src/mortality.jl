@@ -24,7 +24,7 @@ function harvest!(effort::Float64, current_week::Int64, agent_db::Vector, enviro
   totalHarvested = fill(0, size(adult_a.catchability))
   zoneHarvest = fill(0, 18)
 
-  #These three lines find the seasonal effort based on known harvesting data
+  # These three lines find the seasonal effort based on known harvesting data
   numYears = ceil(current_week/52)
   yearWeek = current_week - (52 * (numYears - 1))
   seasonalEffort = (-0.4*cos((1/4.138)*yearWeek) + 0.6) * effort

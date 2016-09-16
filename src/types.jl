@@ -111,12 +111,19 @@ end
   Last Update: September 2016
 """
 type EnvironmentAssumptions
+  # Spawning map and a hashed list of areas
   spawning::Array
   spawningHash::Vector
+
+  # Habitat type array
   habitat::Array
+
+  # risk map and a hashed list of areas
   risk::Vector
   riskHash::Vector
-  harvest::Vector
+
+  # Harvest map, hashed list and harvest zones
+  harvest::Array
   harvestHash::Vector
   harvestZones::Vector
 
