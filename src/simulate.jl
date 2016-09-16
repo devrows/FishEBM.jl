@@ -12,10 +12,10 @@
   Last update: August 2016
 """
 
-function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector, initStock::Vector,
+function simulate(carrying_capacity::Vector{Float64}, effort::Vector, bump::Vector, initStock::Vector,
   stock_age::Vector, e_a::EnvironmentAssumptions, adult_a::AdultAssumptions,
-  age_a::AgentAssumptions; progress=true::Bool, plotPopDensity=false::Bool,
-  plotPopDistribution=false::Bool, limit=1000000::Int64, simDescription=""::ASCIIString)
+  age_a::AgentAssumptions; progress::Bool=true, plotPopDensity::Bool=false,
+  plotPopDistribution::Bool=false, limit::Int64=1000000, simDescription::ASCIIString="")
 
   # preconditions
   @assert(all(carrying_capacity .> 0.), "There is at least one negative carrying capacity")
