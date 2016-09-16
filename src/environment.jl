@@ -15,13 +15,14 @@
 
   Returns: Operates directly on enviro
 
-  Last update: August 2016
+  Last update: September 2016
 """
 function hashEnvironment!(a_db::Vector, enviro::EnvironmentAssumptions)
   #Initialize required variables
   totalAgents = length(a_db)
   enviro.spawningHash = Array(Int64, length(enviro.spawning))
   enviro.riskHash = Array(Int64, length(enviro.risk))
+  enviro.harvestHash = Array(Int64, length(enviro.harvest))
 
   #map spawning and risk identities to agent numbers
   for agent = 1:totalAgents
@@ -35,9 +36,9 @@ function hashEnvironment!(a_db::Vector, enviro::EnvironmentAssumptions)
       enviro.spawningHash[spawnNum] = agent
     end
 
-    harvestNum = findfirst(enviro.harvest[:Index], (a_db[agent]).locationID)
+    harvestNum = findfirst(enviro.harvest, (a_db[agent]).locationID)
     if harvestNum != 0
-      enviro.harvest[harvestNum, 1] = agent
+      enviro.harvestHash[harvestNum] = agent
     end
   end
 end
@@ -50,7 +51,7 @@ end
 
   Returns: EnvironmentAssumptions
 
-  Last update: August 2016
+  Last update: September 2016
 """
 function initEnvironment(pathToSpawn::ASCIIString, pathToHabitat::ASCIIString, pathToRisk::ASCIIString, pathToHarvest::ASCIIString)
   #Pad all incoming arrays
@@ -62,7 +63,8 @@ function initEnvironment(pathToSpawn::ASCIIString, pathToHabitat::ASCIIString, p
 
   abstractSpawn = [0]
   abstractRisk = [0]
-  abstractHarvest = DataFrame(Index = 0, Zone = 0)
+  abstractHarvest = [0]
+  harvestZones = [0]
 
   #Generate a hashmap
   for index = 1:totalLength
@@ -86,11 +88,12 @@ function initEnvironment(pathToSpawn::ASCIIString, pathToHabitat::ASCIIString, p
 
     #Hash harvest locations
     if harvest[index] != 0
-      if abstractHarvest[1,1] == 0
-        abstractHarvest[1,1] = index
-        abstractHarvest[1,2] = harvest[index]
+      if abstractHarvest[1] == 0
+        abstractHarvest[1] = index
+        harvestZones[1] = harvest[index]
       else
-        push!(abstractHarvest, (index, harvest[index]))
+        push!(abstractHarvest, index)
+        push!(harvestZones, harvest[index])
       end #if abstractHarvest
     end #if harvest
   end
@@ -100,7 +103,9 @@ function initEnvironment(pathToSpawn::ASCIIString, pathToHabitat::ASCIIString, p
                             habitat,
                             abstractRisk,
                             [0],
-                            abstractHarvest)
+                            abstractHarvest,
+                            [0],
+                            harvestZones)
 
   return e_a
 end

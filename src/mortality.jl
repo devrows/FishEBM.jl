@@ -15,17 +15,10 @@
 
   Returns: Operates directly on agent_db
 
-  Last Update: August 2016
+  Last Update: September 2016
 """
 function harvest!(effort::Float64, current_week::Int64, agent_db::Vector, enviro_a::EnvironmentAssumptions,
   adult_a::AdultAssumptions, agent_a::AgentAssumptions, hdf::DataFrame, zoneData::DataFrame)
-  #Get zone numbers in main basin
-  mbZones = enviro_a.harvest[(enviro_a.harvest[:Zone] .< 7),:]
-  gbZones = enviro_a.harvest[(enviro_a.harvest[:Zone] .> 8)&(enviro_a.harvest[:Zone] .< 19), :]
-  ncZones = enviro_a.harvest[(enviro_a.harvest[:Zone] .== 7)&(enviro_a.harvest[:Zone] .== 8), :]
-
-  #Combine all basins into one vector
-  basins = [mbZones, gbZones, ncZones]
 
   classLength = length((agent_db[1]).weekNum)
   totalHarvested = fill(0, size(adult_a.catchability))
@@ -36,27 +29,24 @@ function harvest!(effort::Float64, current_week::Int64, agent_db::Vector, enviro
   yearWeek = current_week - (52 * (numYears - 1))
   seasonalEffort = (-0.4*cos((1/4.138)*yearWeek) + 0.6) * effort
 
-  for n = 1:length(basins)
-    #Check if basin has any zones loaded in
-    if isempty(basins[n][:Zone]) == false
-      for i = 1:size(basins[n])[1]
-        #Check if agent is empty
-        if (isEmpty(agent_db[basins[n][i,1]]) == false)
-          for j = 1:classLength
-            #Check if given cohort is an adult population
-            if (findCurrentStage(current_week, agent_db[basins[n][i,1]].weekNum[j], agent_a.growth)) == 4
-              age = getAge(current_week, agent_db[basins[n][i,1]].weekNum[j])
-              numHarvest = rand(Binomial(agent_db[basins[n][i,1]].alive[j], adult_a.catchability[age - 1]*seasonalEffort))
-              agent_db[basins[n][i,1]].harvest += numHarvest
-              totalHarvested[age - 1] += numHarvest
-              zoneHarvest[basins[n][i,2]] += numHarvest
-              agent_db[basins[n][i,1]].alive[j] -= numHarvest
-            end #if findCurrentStage
-          end #for j
-        end #if isEmpty
-      end #for i
-    end #isempty
-  end #for basin
+  for i = 1:length(enviro_a.harvestHash)
+    #Check if agent is empty
+    if (isEmpty(agent_db[enviro_a.harvestHash[i]]) == false)
+      for j = 1:classLength
+        #Check if given cohort is an adult population
+        if (findCurrentStage(current_week, agent_db[enviro_a.harvestHash[i]].weekNum[j], agent_a.growth)) == 4
+          age = getAge(current_week, agent_db[enviro_a.harvestHash[i]].weekNum[j])
+          numHarvest = rand(Binomial(agent_db[enviro_a.harvestHash[i]].alive[j], adult_a.catchability[age - 1]*seasonalEffort))
+
+          #Add/subtract harvest numbers to appropriate vectors
+          agent_db[enviro_a.harvestHash[i]].harvest += numHarvest
+          totalHarvested[age - 1] += numHarvest
+          zoneHarvest[enviro_a.harvestZones[i]] += numHarvest
+          agent_db[enviro_a.harvestHash[i]].alive[j] -= numHarvest
+        end #if findCurrentStage
+      end #for j
+    end #if isEmpty
+  end #for i
 
   push!(hdf, (vcat(current_week, totalHarvested..., sum(totalHarvested))))
   push!(zoneData, (vcat(current_week, zoneHarvest..., sum(zoneHarvest))))

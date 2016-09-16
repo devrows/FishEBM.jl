@@ -108,7 +108,7 @@ end
   Precondition: Location id should be specified as NaN when a valid location
     does not exist.
 
-  Last Update: August 2016
+  Last Update: September 2016
 """
 type EnvironmentAssumptions
   spawning::Array
@@ -116,10 +116,12 @@ type EnvironmentAssumptions
   habitat::Array
   risk::Vector
   riskHash::Vector
-  harvest::DataFrame
+  harvest::Vector
+  harvestHash::Vector
+  harvestZones::Vector
 
   EnvironmentAssumptions() = new()
 
-  EnvironmentAssumptions(spawning, spawningHash, habitat, risk, riskHash, harvest) =
-  new(spawning, spawningHash, habitat, risk, riskHash, harvest)
+  EnvironmentAssumptions(spawning, spawningHash, habitat, risk, riskHash, harvest, harvestHash, harvestZones) =
+  new(spawning, spawningHash, habitat, risk, riskHash, harvest, harvestHash, harvestZones)
 end
