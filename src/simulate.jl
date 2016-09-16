@@ -12,22 +12,19 @@
   Last update: August 2016
 """
 
-function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
-  initStock::Vector, stock_age::Vector, e_a::EnvironmentAssumptions,
-  adult_a::AdultAssumptions, age_a::AgentAssumptions; progress=true::Bool,
-  plotPopDensity=false::Bool, plotPopDistribution=false::Bool,
-  limit=1000000::Int64, simDescription=""::ASCIIString)
+function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector, initStock::Vector,
+  stock_age::Vector, e_a::EnvironmentAssumptions, adult_a::AdultAssumptions,
+  age_a::AgentAssumptions; progress=true::Bool, plotPopDensity=false::Bool,
+  plotPopDistribution=false::Bool, limit=1000000::Int64, simDescription=""::ASCIIString)
 
   # preconditions
-  @assert(all(carrying_capacity .> 0.), "There is at least one negative carrying
-    capacity")
-  @assert(plotPopDensity == false || plotPopDistribution == false, "Only one
-    plot can be run during a simulation")
-  @assert(length(initStock) == length(stock_age), "Unmatching vector length for
-    initializing the population, stock length = $(length(initStock)) &
-    $(length(stock_age))")
+  @assert(all(carrying_capacity .> 0.), "There is at least one negative carrying capacity")
+  @assert(plotPopDensity == false || plotPopDistribution == false, "Only one plot can be run during
+    a simulation")
+  @assert(length(initStock) == length(stock_age), "Unmatching vector length for initializing the
+    population, stock length = $(length(initStock)) & $(length(stock_age))")
 
-  # initialize the agent database and hash the enviro
+  # initialize agent db and hash the enviro
   years = length(carrying_capacity)
   a_db = AgentDB(e_a); hashEnvironment!(a_db, e_a);
   if plotPopDensity
@@ -65,12 +62,12 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
     progressBar = Progress(years*52, 30, " $totalPopulation total agents, Year 1 (of $years), week 1 of simulation \n", 30)
   end
 
+  # Specify the final week before beginning harvest season
   spawnMin = 39; harvestMin = 39;
 
   for y = 1:years
     for w = 1:52
-
-      #get total number of weeks in simulation
+      # Find total number of weeks passed in the simulation
       totalWeek = ((y-1)*52)+w
 
       # age specific population
@@ -90,50 +87,24 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
         next!(progressBar)
       end
 
-      if w == 50
-        tic()
-      end
+      # Harvest is all year but has peak periods
       harvest!(harvest_effort[y], totalWeek, a_db, e_a, adult_a, age_a, harvestDataFrame, harvestZoneData)
-      if w == 50
-        harvestTime = toq()
-      end
 
       #Spawn can be set to any week(s)
       if w > spawnMin
-        if w == 50
-          tic()
-        end
         spawn!(a_db, adult_a, age_a, e_a, totalWeek, carrying_capacity[y], spawnDataFrame)
-        if w == 50
-          spawnTime = toq()
-        end
       else
         push!(spawnDataFrame, (totalWeek, 0, 0, 0, 0, 0, 0, 0, 0))
       end
 
       #Agents are killed and moved weekly
       push!(killedDataFrame, (totalWeek, 0, 0, 0, 0))
-      if w == 50
-        tic()
-      end
       killAgeSpecific!(a_db, adult_a, ageSpecificPop, carrying_capacity[y], totalWeek, killedDataFrame)
-      if w == 50
-        killAgeSpec = toq()
-      end
-      if w == 50
-        tic()
-      end
+
       kill!(a_db, e_a, age_a, totalWeek, killedDataFrame)
-      if w == 50
-        killTime = toq()
-      end
-      if w == 50
-        tic()
-      end
+
+      # Update agent locations weekly
       move!(a_db, age_a, e_a, totalWeek)
-      if w == 50
-        moveTime = toq()
-      end
 
       #update population information
       stagePopulation = [0,0,0,0]; totalPopulation = 0;
@@ -143,10 +114,6 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
       totalPopulation = sum(stagePopulation)
 
       push!(stageDataFrame, vcat(totalWeek,stagePopulation..., sum(stagePopulation)))
-
-      if w == 50
-        print("\n\n For year $y, during week 50, \n\t harvestTime = $harvestTime \n\t spawnTime = $spawnTime \n\t killAgeSpec = $killAgeSpec \n\t killTime = $killTime \n\t moveTime = $moveTime \n\n")
-      end
 
       #show a real time plot (every 10 weeks) of agent movement
       if plotPopDensity
@@ -181,7 +148,10 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
         end
 
         removeEmptyClass!(a_db)
-        description = "\n Simulation was stopped in year $y, week $w due to population failure (total population = $totalPopulation, total adults = $totalAdults, population limit = $limit).\n"
+        description = "\n Simulation was stopped in year $y, week $w due to population failure (total population = $totalPopulation, total adults = $totalAdults, population limit = $limit).\n\n"
+        if simDescription != ""
+          description = string(description, simDescription)
+        end
         simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity,
                   stageDataFrame, adultDataFrame, harvestDataFrame, harvestZoneData, spawnDataFrame, killedDataFrame, description)
         return a_db
@@ -191,8 +161,15 @@ function simulate(carrying_capacity::Vector, effort::Vector, bump::Vector,
     removeEmptyClass!(a_db)
   end #end for year
 
-  description = "Simulation was successfully completed."
-  simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity,
-            stageDataFrame, adultDataFrame, harvestDataFrame, harvestZoneData, spawnDataFrame, killedDataFrame, description)
+  description = "Simulation was successfully completed.\n\n"
+
+  if simDescription != ""
+    description = string(description, simDescription)
+  end
+
+  simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock,
+    carrying_capacity, stageDataFrame, adultDataFrame, harvestDataFrame, harvestZoneData,
+    spawnDataFrame, killedDataFrame, description)
+
   return a_db
 end
