@@ -14,7 +14,7 @@
 
   Returns: Operates directly on agent_db
 
-  Last update: May 2016
+  Last update: September 2016
 """
 function move!(agent_db::Vector{EnviroAgent}, agent_a::AgentAssumptions,
   enviro_a::EnvironmentAssumptions, current_week::Int64)

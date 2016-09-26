@@ -60,7 +60,7 @@ end
 
   Returns: Operates directly on agent_db and kdf
 
-  Last update: June 2016
+  Last update: September 2016
 """
 function kill!(agent_db::Vector{EnviroAgent}, e_a::EnvironmentAssumptions, a_a::AgentAssumptions, current_week::Int64, kdf::DataFrame)
   classLength = length((agent_db[1]).weekNum)
@@ -109,7 +109,7 @@ end
 
   Returns: Operates directly on agent_db
 
-  Last update: August 2016
+  Last update: September 2016
 """
 function killAgeSpecific!(agent_db::Vector{EnviroAgent}, adult_a::AdultAssumptions, age_specific_pop::Vector{Int64},
   year_specific_cc::Float64, current_week::Int64, kdf::DataFrame)

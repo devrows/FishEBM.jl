@@ -306,7 +306,7 @@ end
       refer to types.jl. Note, runDir and userInput are user given PATH and
       description respectively.
 
-  Last update: August 2016
+  Last update: September 2016
 """
 function simReadme(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumptions, effort::Vector{Int64}, initStock::Vector{Int64}, carryingCap::Vector{Float64}, path::ASCIIString, userInput::ASCIIString)
 

@@ -32,7 +32,7 @@
     strength. Compensation function based on Normal CDF. Use NaN if compensation
     is assumed to not occur.
 
-    Last Update: March 2016
+    Last Update: September 2016
 """
 type AdultAssumptions
   naturalmortality::Vector{Float64}
@@ -61,7 +61,7 @@ end
     movement = Movement weight matrices for each life stage.
     autonomy = Movement autonomy.
 
-  Last Update: April 2016
+  Last Update: September 2016
 """
 type AgentAssumptions
   naturalmortality::Array

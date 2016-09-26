@@ -15,7 +15,7 @@
 
   Returns: Operates directly on agent_db
 
-  Last Update: August 2016
+  Last Update: September 2016
 """
 function spawn!(agent_db::Vector{EnviroAgent}, adult_a::AdultAssumptions,
   age_assumpt::AgentAssumptions, enviro_a::EnvironmentAssumptions, week::Int64,
