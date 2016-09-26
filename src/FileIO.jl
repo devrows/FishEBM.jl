@@ -296,7 +296,7 @@ end
 
 
 """
-  INPUT: runDir, userInput, k, effort, bump, initStock, adultAssumpt,
+  INPUT: runDir, userInput, k, effort, initStock, adultAssumpt,
     agentAssumpt.
   OUTPUT: simREADME.txt
 
@@ -308,7 +308,7 @@ end
 
   Last update: August 2016
 """
-function simReadme(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumptions, bump::Vector, effort::Vector, initStock::Vector, carryingCap::Vector, path::ASCIIString, userInput::ASCIIString)
+function simReadme(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumptions, effort::Vector, initStock::Vector, carryingCap::Vector, path::ASCIIString, userInput::ASCIIString)
 
   file_name = string(path,"$(getDirChar())simREADME.txt")
   output_file = open(file_name, "w")
@@ -327,11 +327,6 @@ function simReadme(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumption
   effort_string = "Effort vector: "
   write(output_file, effort_string)
   show(output_file, effort)
-  write(output_file, "\n")
-
-  bump_string = "Bump vector: "
-  write(output_file, bump_string)
-  show(output_file, bump)
   write(output_file, "\n")
 
   initStock_string = "Initial stock values are: "

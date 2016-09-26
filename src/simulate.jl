@@ -12,7 +12,7 @@
   Last update: August 2016
 """
 
-function simulate(carrying_capacity::Vector{Float64}, effort::Vector, bump::Vector, initStock::Vector,
+function simulate(carrying_capacity::Vector{Float64}, effort::Vector, initStock::Vector,
   stock_age::Vector, e_a::EnvironmentAssumptions, adult_a::AdultAssumptions,
   age_a::AgentAssumptions; progress::Bool=true, plotPopDensity::Bool=false,
   plotPopDistribution::Bool=false, limit::Int64=1000000, simDescription::ASCIIString="")
@@ -50,8 +50,6 @@ function simulate(carrying_capacity::Vector{Float64}, effort::Vector, bump::Vect
   spawnDataFrame = DataFrame(Week = 0, Age2 = 0, Age3 = 0, Age4 = 0, Age5 = 0, Age6 = 0, Age7 = 0, Age8Plus = 0, Total = 0)
 
 
-  bumpvec = fill(0, years)
-  bumpvec[1:length(bump)] = bump
   harvest_effort = fill(0., years)
   harvest_effort[1:length(effort)] = effort
 
@@ -88,7 +86,7 @@ function simulate(carrying_capacity::Vector{Float64}, effort::Vector, bump::Vect
       end
 
       # Harvest is all year but has peak periods
-      harvest!(harvest_effort[y], totalWeek, a_db, e_a, adult_a, age_a, harvestDataFrame, harvestZoneData)
+      #harvest!(harvest_effort[y], totalWeek, a_db, e_a, adult_a, age_a, harvestDataFrame, harvestZoneData)
 
       #Spawn can be set to any week(s)
       if w > spawnMin
@@ -152,7 +150,7 @@ function simulate(carrying_capacity::Vector{Float64}, effort::Vector, bump::Vect
         if simDescription != ""
           description = string(description, simDescription)
         end
-        simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity,
+        simSummary(adult_a, age_a, a_db, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity,
                   stageDataFrame, adultDataFrame, harvestDataFrame, harvestZoneData, spawnDataFrame, killedDataFrame, description)
         return a_db
       end #population regulation failure
@@ -167,7 +165,7 @@ function simulate(carrying_capacity::Vector{Float64}, effort::Vector, bump::Vect
     description = string(description, simDescription)
   end
 
-  simSummary(adult_a, age_a, a_db, bump, effort, ((length(carrying_capacity))*52), initStock,
+  simSummary(adult_a, age_a, a_db, effort, ((length(carrying_capacity))*52), initStock,
     carrying_capacity, stageDataFrame, adultDataFrame, harvestDataFrame, harvestZoneData,
     spawnDataFrame, killedDataFrame, description)
 

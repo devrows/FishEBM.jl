@@ -34,7 +34,6 @@ harvestPath = string(split(Base.source_path(), "FishEBM.jl")[1], "FishEBM.jl/map
 
 enviro_a = initEnvironment(spawnPath, habitatPath, riskPath, harvestPath)
 
-
 # Specify agent assumptions:
 # * a_a.naturalmortality =  Weekly natural mortality rate (by habitat type in the rows, and stage in the columns)
 # * a_a.extramortality = Weekly risk mortality (by stage)
@@ -43,7 +42,7 @@ enviro_a = initEnvironment(spawnPath, habitatPath, riskPath, harvestPath)
 # * a_a.autonomy =  Movement autonomy
 
 agent_a = AgentAssumptions([[0.15 0.10 0.05 0.0015]
-                            [0.132 0.066 0.033 0.001]
+                            [0.13 0.05 0.03 0.001]
                             [0.40 0.20 0.10 0.002]
                             [0.60 0.30 0.15 0.004]
                             [0.80 0.40 0.20 0.006]
@@ -72,6 +71,7 @@ k = rand(Normal(500000, 50000), 100)
 effortVar = [0]
 bumpVar = [100000]
 
+
 #= stock = [stage 1 (0 weeks old), stage 2 (first week of stage 2),
   stage 3 (first week of stage 3), stage 4 (2 years), stage 4 (4 years),
   stage 4 (8 years)] =#
@@ -79,4 +79,4 @@ initialStock = [15000, 12500, 10000, 7000, 5000, 2000]
 stockAge = [0, -agent_a.growth[1], -agent_a.growth[2], -agent_a.growth[3],-4*52,-8*52] # In weeks
 
 # simulate
-adb = simulate(k, effortVar, bumpVar, initialStock, stockAge, enviro_a, adult_a, agent_a)
+adb = simulate(k, effortVar, initialStock, stockAge, enviro_a, adult_a, agent_a)

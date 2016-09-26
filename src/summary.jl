@@ -16,7 +16,7 @@
   Last update: September 2016
 """
 function simSummary(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumptions, agentDB::Vector,
-  bump::Vector, effort::Vector, finalWeek::Int64, initStock::Vector, carryingCap::Vector,
+  effort::Vector, finalWeek::Int64, initStock::Vector, carryingCap::Vector,
   stageDataFrame::DataFrame, adultDataFrame::DataFrame, harvestDataFrame::DataFrame,
   harvestZoneData::DataFrame, spawnDataFrame::DataFrame, killedDataFrame::DataFrame,
   userInput::ASCIIString)
@@ -43,5 +43,5 @@ function simSummary(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumptio
   killedData(killedDataFrame, path)
 
   # Create a readme file to save the simulation paramaters and description
-  simReadme(adultAssumpt, agentAssumpt, bump, effort, initStock, carryingCap, path, userInput)
+  simReadme(adultAssumpt, agentAssumpt, effort, initStock, carryingCap, path, userInput)
 end
