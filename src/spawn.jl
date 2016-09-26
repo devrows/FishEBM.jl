@@ -17,7 +17,9 @@
 
   Last Update: August 2016
 """
-function spawn!(agent_db::Vector, adult_a::AdultAssumptions, age_assumpt::AgentAssumptions, enviro_a::EnvironmentAssumptions, week::Int64, carryingcapacity::Float64, sdf::DataFrame)
+function spawn!(agent_db::Vector{EnviroAgent}, adult_a::AdultAssumptions,
+  age_assumpt::AgentAssumptions, enviro_a::EnvironmentAssumptions, week::Int64,
+  carryingcapacity::Float64, sdf::DataFrame)
 
   adult_pop = getStagePopulation(4, week, agent_db, age_assumpt)
   totalPop = 0

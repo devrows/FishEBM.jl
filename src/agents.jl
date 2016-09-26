@@ -44,7 +44,7 @@ end
 
   Last update: May 2016
 """
-function findCurrentStage(current_week::Int64, spawn_week::Int64, growth_age::Vector)
+function findCurrentStage(current_week::Int64, spawn_week::Int64, growth_age::Vector{Int64})
   #Initialize the life stage number to 4
   currentStage = 4
   q = length(growth_age)-1
@@ -88,7 +88,7 @@ end
 
   Last Update: June 2016
 """
-function getAgeSpecificPop(age::Int64, current_week::Int64, alive::Array, weekNum::Array, a_a::AgentAssumptions)
+function getAgeSpecificPop(age::Int64, current_week::Int64, alive::Vector{Int64}, weekNum::Vector{Int64}, a_a::AgentAssumptions)
   @assert(2 <= age <= 8, "Age argument must be between 2 and 8, inclusive (age = $age was passed).")
   classLength = length(weekNum)
   pop = 0
@@ -120,7 +120,7 @@ end
 
   Last Update: June 2016
 """
-function getCohortNumber(age::Int64, current_week::Int64, weekNum::Array)
+function getCohortNumber(age::Int64, current_week::Int64, weekNum::Vector{Int64})
   classLength = length(weekNum)
   for i = 1:classLength
     if floor((current_week - weekNum[i]) / 52) == age
@@ -141,7 +141,7 @@ end
 
   Last update: June 2016
 """
-function getStagePopulation(stage::Int64, current_week::Int64, agent_db::Vector, a_a::AgentAssumptions)
+function getStagePopulation(stage::Int64, current_week::Int64, agent_db::Vector{EnviroAgent}, a_a::AgentAssumptions)
 
   classLength = length((agent_db[1]).weekNum)
   pop = 0
@@ -167,7 +167,7 @@ end
 
   Last update: June 2016
 """
-function IDToAgentNum(a_db::Vector, id_num::Int64, max_val::Int64, min_val::Int64)
+function IDToAgentNum(a_db::Vector{EnviroAgent}, id_num::Int64, max_val::Int64, min_val::Int64)
   testVal = rand(min_val:max_val)
 
   #uses recursion
@@ -192,7 +192,7 @@ end
 
   Last update: May 2016
 """
-function injectAgents!(agent_db::Vector, spawn_agents::Vector, new_stock::Int64, week_num::Int64)
+function injectAgents!(agent_db::Vector{EnviroAgent}, spawn_agents::Vector{Int64}, new_stock::Int64, week_num::Int64)
   @assert(length(new_stock)<=4, "There can only by four independent life stages of fish.")
 
   addToEach = round(Int, floor(new_stock/length(spawn_agents)))
@@ -226,7 +226,7 @@ end
 
   Last Update: March 2016
 """
-function removeEmptyClass!(age_db::Vector)
+function removeEmptyClass!(age_db::Vector{EnviroAgent})
   if length(age_db[1].alive) > 1
     removeClass = true
     for i = 1:length(age_db)

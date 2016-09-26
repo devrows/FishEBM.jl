@@ -15,11 +15,11 @@
 
   Last update: September 2016
 """
-function simSummary(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumptions, agentDB::Vector,
-  effort::Vector, finalWeek::Int64, initStock::Vector, carryingCap::Vector,
-  stageDataFrame::DataFrame, adultDataFrame::DataFrame, harvestDataFrame::DataFrame,
-  harvestZoneData::DataFrame, spawnDataFrame::DataFrame, killedDataFrame::DataFrame,
-  userInput::ASCIIString)
+function simSummary(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumptions,
+  agentDB::Vector{EnviroAgent}, effort::Vector{Int64}, finalWeek::Int64, initStock::Vector{Int64},
+  carryingCap::Vector{Float64}, stageDataFrame::DataFrame, adultDataFrame::DataFrame,
+  harvestDataFrame::DataFrame, harvestZoneData::DataFrame, spawnDataFrame::DataFrame,
+  killedDataFrame::DataFrame, userInput::ASCIIString)
 
   # Find directory for the results
   simDir()

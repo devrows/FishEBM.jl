@@ -308,7 +308,7 @@ end
 
   Last update: August 2016
 """
-function simReadme(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumptions, effort::Vector, initStock::Vector, carryingCap::Vector, path::ASCIIString, userInput::ASCIIString)
+function simReadme(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumptions, effort::Vector{Int64}, initStock::Vector{Int64}, carryingCap::Vector{Float64}, path::ASCIIString, userInput::ASCIIString)
 
   file_name = string(path,"$(getDirChar())simREADME.txt")
   output_file = open(file_name, "w")

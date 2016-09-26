@@ -17,7 +17,7 @@
 
   Last Update: September 2016
 """
-function harvest!(effort::Float64, current_week::Int64, agent_db::Vector, enviro_a::EnvironmentAssumptions,
+function harvest!(effort::Float64, current_week::Int64, agent_db::Vector{EnviroAgent}, enviro_a::EnvironmentAssumptions,
   adult_a::AdultAssumptions, agent_a::AgentAssumptions, hdf::DataFrame, zoneData::DataFrame)
 
   classLength = length((agent_db[1]).weekNum)
@@ -62,7 +62,7 @@ end
 
   Last update: June 2016
 """
-function kill!(agent_db::Vector, e_a::EnvironmentAssumptions, a_a::AgentAssumptions, current_week::Int64, kdf::DataFrame)
+function kill!(agent_db::Vector{EnviroAgent}, e_a::EnvironmentAssumptions, a_a::AgentAssumptions, current_week::Int64, kdf::DataFrame)
   classLength = length((agent_db[1]).weekNum)
   totalNatural = 0
   totalExtra = 0
@@ -111,8 +111,8 @@ end
 
   Last update: August 2016
 """
-function killAgeSpecific!(agent_db::Vector, adult_a::AdultAssumptions,
-  age_specific_pop::Vector, year_specific_cc::Float64, current_week::Int64, kdf::DataFrame)
+function killAgeSpecific!(agent_db::Vector{EnviroAgent}, adult_a::AdultAssumptions, age_specific_pop::Vector{Int64},
+  year_specific_cc::Float64, current_week::Int64, kdf::DataFrame)
 
   totalKilled = 0
 

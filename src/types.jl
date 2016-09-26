@@ -35,13 +35,13 @@
     Last Update: March 2016
 """
 type AdultAssumptions
-  naturalmortality::Vector
+  naturalmortality::Vector{Float64}
   halfmature::Float64
-  broodsize::Vector
+  broodsize::Vector{Int64}
   fecunditycompensation::Float64
   maturitycompensation::Float64
   mortalitycompensation::Float64
-  catchability::Vector
+  catchability::Vector{Float64}
 
   AdultAssumptions() = new()
   AdultAssumptions(naturalmortality, halfmature, broodsize, fecunditycompensation, maturitycompensation, mortalitycompensation, catchability) =
@@ -65,10 +65,10 @@ end
 """
 type AgentAssumptions
   naturalmortality::Array
-  extramortality::Vector
-  growth::Vector
+  extramortality::Vector{Float64}
+  growth::Vector{Int64}
   movement::Array
-  autonomy::Vector
+  autonomy::Vector{Float64}
 
   AgentAssumptions() = new()
   AgentAssumptions(naturalmortality, extramortality, growth, movement, autonomy) =
@@ -87,15 +87,15 @@ type EnviroAgent
   locationID::Int64
 
   # Number of alive agents alive in each cohort
-  alive::Vector
+  alive::Vector{Int64}
 
   # Independent mortality tracking by location
-  killedNatural::Vector
-  killedExtra::Vector
+  killedNatural::Vector{Int64}
+  killedExtra::Vector{Int64}
   harvest::Int64
 
   # The spawning week of each cohort during the simulation
-  weekNum::Vector
+  weekNum::Vector{Int64}
 
   EnviroAgent(locationID) = new(locationID, [0], [0,0,0,0], [0,0,0,0], 0, [0])
 end
@@ -112,20 +112,20 @@ end
 """
 type EnvironmentAssumptions
   # Spawning map and a hashed list of areas
-  spawning::Array
-  spawningHash::Vector
+  spawning::Vector{Int64}
+  spawningHash::Vector{Int64}
 
   # Habitat type array
-  habitat::Array
+  habitat::Array{Int64}
 
   # risk map and a hashed list of areas
-  risk::Vector
-  riskHash::Vector
+  risk::Vector{Int64}
+  riskHash::Vector{Int64}
 
   # Harvest map, hashed list and harvest zones
-  harvest::Array
-  harvestHash::Vector
-  harvestZones::Vector
+  harvest::Array{Int64}
+  harvestHash::Vector{Int64}
+  harvestZones::Vector{Int64}
 
   EnvironmentAssumptions() = new()
 

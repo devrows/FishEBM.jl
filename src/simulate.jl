@@ -12,8 +12,8 @@
   Last update: August 2016
 """
 
-function simulate(carrying_capacity::Vector{Float64}, effort::Vector, initStock::Vector,
-  stock_age::Vector, e_a::EnvironmentAssumptions, adult_a::AdultAssumptions,
+function simulate(carrying_capacity::Vector{Float64}, effort::Vector{Int64}, initStock::Vector{Int64},
+  stock_age::Vector{Int64}, e_a::EnvironmentAssumptions, adult_a::AdultAssumptions,
   age_a::AgentAssumptions; progress::Bool=true, plotPopDensity::Bool=false,
   plotPopDistribution::Bool=false, limit::Int64=1000000, simDescription::ASCIIString="")
 
@@ -61,7 +61,7 @@ function simulate(carrying_capacity::Vector{Float64}, effort::Vector, initStock:
   end
 
   # Specify the final week before beginning harvest season
-  spawnMin = 39; harvestMin = 39;
+  spawnMin = 39
 
   for y = 1:years
     for w = 1:52
@@ -146,10 +146,9 @@ function simulate(carrying_capacity::Vector{Float64}, effort::Vector, initStock:
         end
 
         removeEmptyClass!(a_db)
-        description = "\n Simulation was stopped in year $y, week $w due to population failure (total population = $totalPopulation, total adults = $totalAdults, population limit = $limit).\n\n"
-        if simDescription != ""
-          description = string(description, simDescription)
-        end
+        description = string("\nSimulation population failure in year $y, week $w (total population
+          = $totalPopulation, total adults = $totalAdults, population limit = $limit).\n\n", simDescription)
+
         simSummary(adult_a, age_a, a_db, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity,
                   stageDataFrame, adultDataFrame, harvestDataFrame, harvestZoneData, spawnDataFrame, killedDataFrame, description)
         return a_db
@@ -159,11 +158,7 @@ function simulate(carrying_capacity::Vector{Float64}, effort::Vector, initStock:
     removeEmptyClass!(a_db)
   end #end for year
 
-  description = "Simulation was successfully completed.\n\n"
-
-  if simDescription != ""
-    description = string(description, simDescription)
-  end
+  description = string("\nSimulation was successfully completed.\n\n", simDescription)
 
   simSummary(adult_a, age_a, a_db, effort, ((length(carrying_capacity))*52), initStock,
     carrying_capacity, stageDataFrame, adultDataFrame, harvestDataFrame, harvestZoneData,

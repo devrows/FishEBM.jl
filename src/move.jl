@@ -16,7 +16,7 @@
 
   Last update: May 2016
 """
-function move!(agent_db::Vector, agent_a::AgentAssumptions,
+function move!(agent_db::Vector{EnviroAgent}, agent_a::AgentAssumptions,
   enviro_a::EnvironmentAssumptions, current_week::Int64)
 
   #@assert(0.<= agent_a.autonomy[stage] <=1., "Autonomy level for stage $stage must be between 0 and 1")
@@ -55,8 +55,8 @@ function move!(agent_db::Vector, agent_a::AgentAssumptions,
 
       #for each cohort in the agent database
       for cohort = 1:length(lifeStages)
-      stage = lifeStages[cohort]
-      
+        stage = lifeStages[cohort]
+
         if stage > 1
           choices = deepcopy(moveChoices)
 
@@ -109,8 +109,8 @@ function move!(agent_db::Vector, agent_a::AgentAssumptions,
             newLocation = round(Int, (choices[findfirst(rand(moveDistrib)), 1]))
             if agent_db[n].locationID != newLocation
               newAgentNum = IDToAgentNum(agent_db, newLocation, length(agent_db), 1)
-              agent_db[n].alive[cohort] -= 1
-              agent_db[newAgentNum].alive[cohort] += 1
+              agent_db[n].alive[cohort] -= 1 # move from
+              agent_db[newAgentNum].alive[cohort] += 1 # move to
             end #if doesn't move
           end #for all alive
         end #if stage > 1

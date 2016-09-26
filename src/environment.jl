@@ -17,7 +17,7 @@
 
   Last update: September 2016
 """
-function hashEnvironment!(a_db::Vector, enviro::EnvironmentAssumptions)
+function hashEnvironment!(a_db::Vector{EnviroAgent}, enviro::EnvironmentAssumptions)
   #Initialize required variables
   totalAgents = length(a_db)
   enviro.spawningHash = Array(Int64, length(enviro.spawning))
