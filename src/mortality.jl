@@ -15,10 +15,10 @@
 
   Returns: Operates directly on agent_db
 
-  Last Update: September 2016
+  Last Update: October 2016
 """
 function harvest!(effort::Float64, current_week::Int64, agent_db::Vector{EnviroAgent}, enviro_a::EnvironmentAssumptions,
-  adult_a::AdultAssumptions, agent_a::AgentAssumptions, hdf::DataFrame, zoneData::DataFrame)
+  adult_a::AdultAssumptions, agent_a::AgentAssumptions, hdf::DataFrame, zoneData::DataFrame; zonesToHarvest::Vector{Int64}=[0])
 
   classLength = length((agent_db[1]).weekNum)
   totalHarvested = fill(0, size(adult_a.catchability))
@@ -29,6 +29,15 @@ function harvest!(effort::Float64, current_week::Int64, agent_db::Vector{EnviroA
   yearWeek = current_week - (52 * (numYears - 1))
   seasonalEffort = (-0.4*cos((1/4.138)*yearWeek) + 0.6) * effort
 
+  # Find which zones should be harvested based on the time of year
+  if zonesToHarvest[1] == 0
+    if (yearWeek < 20 || yearWeek > 40)
+      zonesToHarvest = [1,2,3,4,5,6]
+    else
+      zonesToHarvest = [7,8,9,10,11,12,13,14,15,16,17,18]
+    end
+  end
+
   for i = 1:length(enviro_a.harvestHash)
     #Check if agent is empty
     if (isEmpty(agent_db[enviro_a.harvestHash[i]]) == false)
@@ -36,8 +45,11 @@ function harvest!(effort::Float64, current_week::Int64, agent_db::Vector{EnviroA
         #Check if given cohort is an adult population
         if (findCurrentStage(current_week, agent_db[enviro_a.harvestHash[i]].weekNum[j], agent_a.growth)) == 4
           age = getAge(current_week, agent_db[enviro_a.harvestHash[i]].weekNum[j])
-          numHarvest = rand(Binomial(agent_db[enviro_a.harvestHash[i]].alive[j], adult_a.catchability[age - 1]*seasonalEffort))
-
+          if in(enviro_a.harvestZones[i], zonesToHarvest)
+            numHarvest = rand(Binomial(agent_db[enviro_a.harvestHash[i]].alive[j], adult_a.catchability[age - 1]*seasonalEffort))
+          else
+            numHarvest = rand(Binomial(agent_db[enviro_a.harvestHash[i]].alive[j], adult_a.catchability[age - 1]*(seasonalEffort*0.5)))
+          end
           #Add/subtract harvest numbers to appropriate vectors
           agent_db[enviro_a.harvestHash[i]].harvest += numHarvest
           totalHarvested[age - 1] += numHarvest
