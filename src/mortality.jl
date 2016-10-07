@@ -121,7 +121,7 @@ end
 
   Returns: Operates directly on agent_db
 
-  Last update: September 2016
+  Last update: October 2016
 """
 function killAgeSpecific!(agent_db::Vector{EnviroAgent}, adult_a::AdultAssumptions, age_specific_pop::Vector{Int64},
   year_specific_cc::Float64, current_week::Int64, kdf::DataFrame)
@@ -164,7 +164,7 @@ function killAgeSpecific!(agent_db::Vector{EnviroAgent}, adult_a::AdultAssumptio
         estimatedMortality = adult_a.naturalmortality[ageVector[k]-1]
         if ageVector[k] == 8
           overAge = floor((current_week-agent_db[1].weekNum[k])/52)
-          ageEffect = (overAge-7)^2
+          ageEffect = overAge-7
           estimatedMortality = ageEffect*estimatedMortality
 
           if estimatedMortality > 1.0

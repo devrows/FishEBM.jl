@@ -81,7 +81,7 @@ function simulate(carrying_capacity::Vector{Float64}, effort::Vector{Int64}, ini
       push!(adultDataFrame, vcat(totalWeek, ageSpecificPop..., sum(ageSpecificPop)))
 
       if progress
-        progressBar.desc = " $totalAdults adults, $totalPopulation total, Year $y (of $years), week $w of simulation "
+        progressBar.desc = " $totalAdults adults, $(ageSpecificPop[7]) age 8+, $totalPopulation total, Year $y (of $years), week $w of simulation "
         next!(progressBar)
       end
 
