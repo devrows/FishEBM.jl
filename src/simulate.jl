@@ -9,7 +9,7 @@
 
   Contributors: Justin Angevaare, Devin Rose
 
-  Last update: September 2016
+  Last update: October 2016
 """
 
 function simulate(carrying_capacity::Vector{Float64}, effort::Vector{Int64}, initStock::Vector{Int64},
@@ -86,7 +86,7 @@ function simulate(carrying_capacity::Vector{Float64}, effort::Vector{Int64}, ini
       end
 
       # Harvest is all year but has peak periods
-      #harvest!(harvest_effort[y], totalWeek, a_db, e_a, adult_a, age_a, harvestDataFrame, harvestZoneData)
+      harvest!(harvest_effort[y], totalWeek, a_db, e_a, adult_a, age_a, harvestDataFrame, harvestZoneData)
 
       #Spawn can be set to any week(s)
       if w > spawnMin

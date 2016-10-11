@@ -61,7 +61,7 @@ end
     movement = Movement weight matrices for each life stage.
     autonomy = Movement autonomy.
 
-  Last Update: September 2016
+  Last Update: October 2016
 """
 type AgentAssumptions
   naturalmortality::Array
@@ -103,12 +103,14 @@ end
 
 """
   Description: A specialized type which contains layers of information to
-    indicate spawning area, habitat type, and additional risks.
+    indicate spawning area, habitat type, and additional risks. Abstract matches areas of interest
+    to habitat index number, and hashing matches index numbers to agent numbers. Hash contains agent
+    number during run-time.
 
   Precondition: Location id should be specified as NaN when a valid location
     does not exist.
 
-  Last Update: September 2016
+  Last Update: October 2016
 """
 type EnvironmentAssumptions
   # Spawning map and a hashed list of areas
@@ -124,11 +126,12 @@ type EnvironmentAssumptions
 
   # Harvest map, hashed list and harvest zones
   harvest::Array{Int64}
+  abstractHarvest::Vector{Int64}
+  harvestZoneNum::Vector{Int64}
   harvestHash::Vector{Int64}
-  harvestZones::Vector{Int64}
 
+  # Constructors
   EnvironmentAssumptions() = new()
-
-  EnvironmentAssumptions(spawning, spawningHash, habitat, risk, riskHash, harvest, harvestHash, harvestZones) =
-  new(spawning, spawningHash, habitat, risk, riskHash, harvest, harvestHash, harvestZones)
+  EnvironmentAssumptions(spawning, spawningHash, habitat, risk, riskHash, harvest, abstractHarvest, harvestZoneNum, harvestHash) =
+  new(spawning, spawningHash, habitat, risk, riskHash, harvest, abstractHarvest, harvestZoneNum, harvestHash)
 end

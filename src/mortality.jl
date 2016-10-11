@@ -17,8 +17,9 @@
 
   Last Update: October 2016
 """
-function harvest!(effort::Float64, current_week::Int64, agent_db::Vector{EnviroAgent}, enviro_a::EnvironmentAssumptions,
-  adult_a::AdultAssumptions, agent_a::AgentAssumptions, hdf::DataFrame, zoneData::DataFrame; zonesToHarvest::Vector{Int64}=[0])
+function harvest!(effort::Float64, current_week::Int64, agent_db::Vector{EnviroAgent},
+  enviro_a::EnvironmentAssumptions, adult_a::AdultAssumptions, agent_a::AgentAssumptions,
+  hdf::DataFrame, zoneData::DataFrame; zonesToHarvest::Vector{Int64}=[0])
 
   classLength = length((agent_db[1]).weekNum)
   totalHarvested = fill(0, size(adult_a.catchability))
@@ -39,22 +40,23 @@ function harvest!(effort::Float64, current_week::Int64, agent_db::Vector{EnviroA
   end
 
   for i = 1:length(enviro_a.harvestHash)
-    #Check if agent is empty
-    if (isEmpty(agent_db[enviro_a.harvestHash[i]]) == false)
+    # Check if agent is empty
+    agentNum = enviro_a.harvestHash[i]
+    if (isEmpty(agent_db[agentNum]) == false)
       for j = 1:classLength
         #Check if given cohort is an adult population
-        if (findCurrentStage(current_week, agent_db[enviro_a.harvestHash[i]].weekNum[j], agent_a.growth)) == 4
-          age = getAge(current_week, agent_db[enviro_a.harvestHash[i]].weekNum[j])
-          if in(enviro_a.harvestZones[i], zonesToHarvest)
-            numHarvest = rand(Binomial(agent_db[enviro_a.harvestHash[i]].alive[j], adult_a.catchability[age - 1]*seasonalEffort))
+        if (findCurrentStage(current_week, agent_db[agentNum].weekNum[j], agent_a.growth)) == 4
+          age = getAge(current_week, agent_db[agentNum].weekNum[j])
+          if in(enviro_a.harvestZoneNum[i], zonesToHarvest)
+            numHarvest = rand(Binomial(agent_db[agentNum].alive[j], adult_a.catchability[age - 1]*seasonalEffort))
           else
-            numHarvest = rand(Binomial(agent_db[enviro_a.harvestHash[i]].alive[j], adult_a.catchability[age - 1]*(seasonalEffort*0.5)))
+            numHarvest = rand(Binomial(agent_db[agentNum].alive[j], adult_a.catchability[age - 1]*(seasonalEffort*0.5)))
           end
           #Add/subtract harvest numbers to appropriate vectors
-          agent_db[enviro_a.harvestHash[i]].harvest += numHarvest
+          agent_db[agentNum].harvest += numHarvest
           totalHarvested[age - 1] += numHarvest
-          zoneHarvest[enviro_a.harvestZones[i]] += numHarvest
-          agent_db[enviro_a.harvestHash[i]].alive[j] -= numHarvest
+          zoneHarvest[enviro_a.harvestZoneNum[i]] += numHarvest
+          agent_db[agentNum].alive[j] -= numHarvest
         end #if findCurrentStage
       end #for j
     end #if isEmpty
