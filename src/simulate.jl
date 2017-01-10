@@ -116,7 +116,7 @@ function simulate(carrying_capacity::Vector{Float64}, effort::Vector{Int64}, ini
       #show a real time plot (every 10 weeks) of agent movement
       if plotPopDensity
         if w == 1 || w%10 == 0
-          updatePopulationDensity!(a_db, popDensity)
+          updatePopulationDensity!(a_db, popDensity, totalWeek)
           popPlot = spy(popDensity, Guide.title("Year = $y, week = $w, totalPop=$totalPopulation, totalAdult=$totalAdults"))
           display(popPlot)
         end

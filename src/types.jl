@@ -53,9 +53,9 @@ end
   Description: Assumptions regarding mortality, movement, and growth of
     autonomous agents.
 
-    naturalmortality = Age specific survivorship of each habitat type and stage
+    naturalmortality = Stage specific survivorship of each habitat type and stage
       of agents.
-    extramortality = Age specific survivorship of agents (each independent life
+    extramortality = Stage specific survivorship of agents (each independent life
       stage) in an environment location influenced by anthropogenic effects.
     growth = Growth rate (in weeks) from one life stage to the next.
     movement = Movement weight matrices for each life stage.

@@ -44,4 +44,9 @@ function simSummary(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumptio
 
   # Create a readme file to save the simulation paramaters and description
   simReadme(adultAssumpt, agentAssumpt, effort, initStock, carryingCap, path, userInput)
+
+  # Remove this after testing
+  cd(path)
+  touch("antrho=$(agentAssumpt)-harvest=$(effort[1])-carryPop=$(Integer(carryingCap[1]))-actualAdultPop=$(sum(adultDataFrame[size(adultDataFrame)[1]]))")
+
 end

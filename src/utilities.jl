@@ -41,15 +41,23 @@ end
 
   Last update: June 2016
 """
-function updatePopulationDensity!(agent_db::Vector, pop_density::Array)
+function updatePopulationDensity!(agent_db::Vector, pop_density::Array, week_total::Int64)
   totalPop = 0
+
+  # get adult age vector
+  ageVec = fill(0, length(agent_db[1].alive))
+  for j = 1:length(ageVec)
+    ageVec[j] = getAge(week_total, agent_db[1].weekNum[j])
+  end
 
   for k = 1:length(agent_db)
     pop_density[agent_db[k].locationID] = 1
 
     if isEmpty(agent_db[k]) == false
-      for m = 1:length(agent_db[1].alive)
-        pop_density[agent_db[k].locationID] += agent_db[k].alive[m]
+      for m = 1:length(ageVec)
+        if ageVec[m] != 0
+          pop_density[agent_db[k].locationID] += agent_db[k].alive[m]
+        end
         totalPop += agent_db[k].alive[m]
       end
     end
