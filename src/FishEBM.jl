@@ -7,8 +7,10 @@
 """
 
 module FishEBM
+  # Version number
+  VersionNumber = "0.1"
 
-  #Packages used by this package
+  # Packages used by this package
   using DataArrays, DataFrames, Distributions, Gadfly, ProgressMeter
 
   export
@@ -87,3 +89,7 @@ module FishEBM
     include("summary.jl")
     include("utilities.jl")
 end
+
+using FishEBM
+
+FishEBM.VersionNumber

@@ -1,0 +1,10 @@
+#=
+  Package: FishEBM
+  File: versionLogs.txt
+  devrows
+  Explanation of new updates without official release.
+  Created: January 2017
+=#
+
+Version "0.1": January 15, 2017
+  - Initial version with documented updates.

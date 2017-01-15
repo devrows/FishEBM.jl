@@ -308,11 +308,17 @@ end
 
   Last update: September 2016
 """
+
 function simReadme(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumptions, effort::Vector{Int64}, initStock::Vector{Int64}, carryingCap::Vector{Float64}, path::ASCIIString, userInput::ASCIIString)
 
   file_name = string(path,"$(getDirChar())simREADME.txt")
   output_file = open(file_name, "w")
 
+  # Version number
+  write(output_file,"-------------------------\n")
+  write(output_file, "Version Number: "*FishEBM.VersionNumber*"\n-------------------------\n")
+
+  # Simulation description
   write(output_file,"-------------------------\n")
   write(output_file, "Simulation Description: \n-------------------------\n")
   write(output_file, userInput)
