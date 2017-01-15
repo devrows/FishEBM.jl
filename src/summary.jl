@@ -47,6 +47,10 @@ function simSummary(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumptio
 
   # Saving an empty file inside of the run for quickly checking the simulation check
   cd(path)
-  touch(userInput)
+  if contains(userInput, "\n")
+    touch(split(userInput, "\n")[1])
+  else
+    touch(userInput)
+  end
 
 end

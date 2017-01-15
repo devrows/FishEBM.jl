@@ -146,8 +146,8 @@ function simulate(carrying_capacity::Vector{Float64}, effort::Vector{Int64}, ini
         end
 
         removeEmptyClass!(a_db)
-        description = string("\nSimulation population failure in year $y, week $w (total population
-          = $totalPopulation, total adults = $totalAdults, population limit = $limit).\n\n", simDescription)
+        description = simDescription*"\n\nSimulation population failure in year $y, week $w (total population
+          = $totalPopulation, total adults = $totalAdults, population limit = $limit).\n\n"
 
         simSummary(adult_a, age_a, a_db, effort, ((length(carrying_capacity))*52), initStock, carrying_capacity,
                   stageDataFrame, adultDataFrame, harvestDataFrame, harvestZoneData, spawnDataFrame, killedDataFrame, description)
@@ -158,7 +158,7 @@ function simulate(carrying_capacity::Vector{Float64}, effort::Vector{Int64}, ini
     removeEmptyClass!(a_db)
   end #end for year
 
-  description = string("\nSimulation was successfully completed.\n\n", simDescription)
+  description = string(simDescription, "\n\nSimulation was successfully completed.\n\n")
 
   simSummary(adult_a, age_a, a_db, effort, ((length(carrying_capacity))*52), initStock,
     carrying_capacity, stageDataFrame, adultDataFrame, harvestDataFrame, harvestZoneData,

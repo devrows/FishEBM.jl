@@ -8,3 +8,7 @@
 
 Version "0.1": January 15, 2017
   - Initial version with documented updates.
+
+Version "0.1.1": January 15, 2017
+  - In the summary.jl file, functionality was changed so it's easier to create
+    an empty file to quickly check which scenario was run.
