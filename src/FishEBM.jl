@@ -89,7 +89,3 @@ module FishEBM
     include("summary.jl")
     include("utilities.jl")
 end
-
-using FishEBM
-
-FishEBM.VersionNumber
