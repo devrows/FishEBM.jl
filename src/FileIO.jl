@@ -316,7 +316,7 @@ function simReadme(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumption
 
   # Version number
   write(output_file,"-------------------------\n")
-  write(output_file, "Version Number: "*FishEBM.VersionNumber*"\n-------------------------\n")
+  write(output_file, "FishEBM.jl Version Number: "*FishEBM.VersionNumber*"\n-------------------------\n")
 
   # Simulation description
   write(output_file,"-------------------------\n")
