@@ -12,3 +12,11 @@ Version "0.1": January 15, 2017
 Version "0.1.1": January 15, 2017
   - In the summary.jl file, functionality was changed so it's easier to create
     an empty file to quickly check which scenario was run.
+
+Version "0.2.0": January 24, 2017
+  - Fixed an error with harvest. When passing an effort variable with a length
+    less than the number of years in a simulation there was no
+    ArrayIndexOutOfBounds exception reported so harvest was only applied in the
+    years less than the length of the effort variable array.
+  - This bug has been fixed by changing the arguments in simulate.jl -> simulate
+    and mortality.jl -> harvest!

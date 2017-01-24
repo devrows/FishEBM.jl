@@ -12,7 +12,7 @@
   Last update: October 2016
 """
 
-function simulate(carrying_capacity::Vector{Float64}, effort::Vector{Int64}, initStock::Vector{Int64},
+function simulate(carrying_capacity::Vector{Float64}, effort::Vector{Float64}, initStock::Vector{Int64},
   stock_age::Vector{Int64}, e_a::EnvironmentAssumptions, adult_a::AdultAssumptions,
   age_a::AgentAssumptions; progress::Bool=true, plotPopDensity::Bool=false,
   plotPopDistribution::Bool=false, limit::Int64=1000000, simDescription::ASCIIString="")
@@ -23,6 +23,8 @@ function simulate(carrying_capacity::Vector{Float64}, effort::Vector{Int64}, ini
     a simulation")
   @assert(length(initStock) == length(stock_age), "Unmatching vector length for initializing the
     population, stock length = $(length(initStock)) & $(length(stock_age))")
+  @assert(length(effort) == length(carrying_capacity) || (length(effort) == 1 && effort[1] == 0.0),
+    "Effort must be the same length as the carrying capacity, or a length of one with a value of zero (effort[1] = 0) for no harvest")
 
   # initialize agent db and hash the enviro
   years = length(carrying_capacity)
@@ -88,7 +90,7 @@ function simulate(carrying_capacity::Vector{Float64}, effort::Vector{Int64}, ini
       # Harvest is all year but has peak periods
       harvest!(harvest_effort[y], totalWeek, a_db, e_a, adult_a, age_a, harvestDataFrame, harvestZoneData)
 
-      #Spawn can be set to any week(s)
+      # Spawn can be set to any week(s)
       if w > spawnMin
         spawn!(a_db, adult_a, age_a, e_a, totalWeek, carrying_capacity[y], spawnDataFrame)
       else
