@@ -16,7 +16,7 @@
   Last update: September 2016
 """
 function simSummary(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumptions,
-  agentDB::Vector{EnviroAgent}, effort::Vector{Int64}, finalWeek::Int64, initStock::Vector{Int64},
+  agentDB::Vector{EnviroAgent}, effort::Vector{Float64}, finalWeek::Int64, initStock::Vector{Int64},
   carryingCap::Vector{Float64}, stageDataFrame::DataFrame, adultDataFrame::DataFrame,
   harvestDataFrame::DataFrame, harvestZoneData::DataFrame, spawnDataFrame::DataFrame,
   killedDataFrame::DataFrame, userInput::ASCIIString)
@@ -47,7 +47,7 @@ function simSummary(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumptio
 
   # Saving an empty file inside of the run for quickly checking the simulation check
   cd(path)
-  if contains(userInput, "\n")
+  if contains(userInput, "\n") && startswith(userInput, "\n") == false
     touch(split(userInput, "\n")[1])
   else
     touch(userInput)

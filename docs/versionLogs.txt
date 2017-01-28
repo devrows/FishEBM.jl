@@ -6,12 +6,15 @@
   Created: January 2017
 =#
 
+
 Version "0.1": January 15, 2017
   - Initial version with documented updates.
+
 
 Version "0.1.1": January 15, 2017
   - In the summary.jl file, functionality was changed so it's easier to create
     an empty file to quickly check which scenario was run.
+
 
 Version "0.2.0": January 24, 2017
   - Fixed an error with harvest. When passing an effort variable with a length
@@ -20,3 +23,10 @@ Version "0.2.0": January 24, 2017
     years less than the length of the effort variable array.
   - This bug has been fixed by changing the arguments in simulate.jl -> simulate
     and mortality.jl -> harvest!
+
+
+Version "0.2.1": January 27, 2017
+  - Switched the function signatures in the functions FileIO.jl -> simReadme and
+    summary.jl -> simSummary.
+  - This fixed a bug that occurs when writing the files to summarize simulation
+    results. Data types switched from an array of Int64 to an array of Float64.

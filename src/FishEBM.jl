@@ -8,7 +8,7 @@
 
 module FishEBM
   # Version number
-  VersionNumber = "0.2.0"
+  VersionNumber = "0.2.1"
 
   # Packages used by this package
   using DataArrays, DataFrames, Distributions, Gadfly, ProgressMeter
