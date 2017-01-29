@@ -81,16 +81,15 @@ end
 
   Returns: String
 
-  Last update: July 2016
+  Last update: January 2017
 """
 function getDirChar()
-  @assert(OS_NAME == :Windows || OS_NAME == :Darwin, "There is currently no
-    functionality for the operating system :$OS_NAME, now aborting.")
-  if OS_NAME == :Windows
+  @assert(is_windows() || is_unix(), "There is currently no functionality for
+  the operating system: "$(Sys.KERNEL)", now aborting.")
+
+  if is_windows() # For a windows file system
     return "\\"
-  elseif OS_NAME == :Darwin
-    return "/"
-  elseif OS_NAME == :Linux
+  elseif is_unix() # For apple and linux distributions
     return "/"
   end
 end
