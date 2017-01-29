@@ -19,7 +19,7 @@ function simSummary(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumptio
   agentDB::Vector{EnviroAgent}, effort::Vector{Float64}, finalWeek::Int64, initStock::Vector{Int64},
   carryingCap::Vector{Float64}, stageDataFrame::DataFrame, adultDataFrame::DataFrame,
   harvestDataFrame::DataFrame, harvestZoneData::DataFrame, spawnDataFrame::DataFrame,
-  killedDataFrame::DataFrame, userInput::ASCIIString)
+  killedDataFrame::DataFrame, userInput::String)
 
   # Find directory for the results
   simDir()

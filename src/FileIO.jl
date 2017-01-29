@@ -13,7 +13,7 @@
 
   Last update: August 2016
 """
-function ageData(adf::DataFrame, path::ASCIIString)
+function ageData(adf::DataFrame, path::String)
   separateDirChar = getDirChar()
 
   file = string(path,"$(separateDirChar)ageSpecificSUMMARY.csv")
@@ -32,7 +32,7 @@ end
 
   Last update: August 2016
 """
-function aliveData(popDataFrame::DataFrame, path::ASCIIString)
+function aliveData(popDataFrame::DataFrame, path::String)
   separateDirChar = getDirChar()
 
   file = string(path,"$(separateDirChar)stageSUMMARY.csv")
@@ -53,7 +53,7 @@ end
 
   Last update: June 2016
 """
-function createDir(path::ASCIIString, exists::Bool)
+function createDir(path::String, exists::Bool)
   if exists == true
     print("A directory already exists in the path $path.\n")
   else
@@ -67,7 +67,7 @@ end
   OUTPUT: datePath = dir. for date folder
           & dirExist = True/False.
 """
-function dateDir(path::ASCIIString)
+function dateDir(path::String)
   currentDate = string(Dates.today())
   datePath = string(path,string(getDirChar(), currentDate))
   dirExist = isdir(datePath)
@@ -79,7 +79,7 @@ end
 """
   Description: Finds the character used to separate the path based on current OS
 
-  Returns: ASCIIString
+  Returns: String
 
   Last update: July 2016
 """
@@ -154,7 +154,7 @@ end
 
   Last update: August 2016
 """
-function harvestData(hdf::DataFrame, zoneData::DataFrame, path::ASCIIString)
+function harvestData(hdf::DataFrame, zoneData::DataFrame, path::String)
   #Output weekly harvest by age
   file = string(path,"$(getDirChar())harvestSUMMARY.csv")
   writetable(file, hdf)
@@ -183,7 +183,7 @@ end
 
   Last update: August 2016
 """
-function killedData(kdf::DataFrame, path::ASCIIString)
+function killedData(kdf::DataFrame, path::String)
   file = string(path,"$(getDirChar())killedSUMMARY.csv")
 
   #Sum natural, extra, and Compensatory mortalities before outputting to .csv
@@ -210,7 +210,7 @@ end
   OUTPUT: resultsPath = dir. for results folder
     & dirExist = True/False.
 """
-function resultsDir(path::ASCIIString)
+function resultsDir(path::String)
     resultsPath = string(path, "$(getDirChar())results")
     dirExist = isdir(resultsPath)
 
@@ -224,7 +224,7 @@ end
           currentRunPath = dir. for current run folder,
           & dirExist = True/False.
 """
-function runDir(path::ASCIIString)
+function runDir(path::String)
   dirCounter = 0
   stopCriteria = 0
 
@@ -257,7 +257,7 @@ end
       string of the current directory pathway at the first and second intstance
       of '\\' (in reverse order).
 
-    Returns: ASCIIString
+    Returns: String
 
     Last update: June 2016
 """
@@ -309,7 +309,7 @@ end
   Last update: September 2016
 """
 
-function simReadme(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumptions, effort::Vector{Float64}, initStock::Vector{Int64}, carryingCap::Vector{Float64}, path::ASCIIString, userInput::ASCIIString)
+function simReadme(adultAssumpt::AdultAssumptions, agentAssumpt::AgentAssumptions, effort::Vector{Float64}, initStock::Vector{Int64}, carryingCap::Vector{Float64}, path::String, userInput::String)
 
   file_name = string(path,"$(getDirChar())simREADME.txt")
   output_file = open(file_name, "w")
@@ -407,7 +407,7 @@ end
 
   Last update: August 2016
 """
-function spawnData(sdf::DataFrame, path::ASCIIString)
+function spawnData(sdf::DataFrame, path::String)
   #Output weekly spawn summary
   file = string(path,"$(getDirChar())spawnSUMMARY.csv")
   writetable(file, sdf)

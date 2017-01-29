@@ -15,7 +15,7 @@
 function simulate(carrying_capacity::Vector{Float64}, effort::Vector{Float64}, initStock::Vector{Int64},
   stock_age::Vector{Int64}, e_a::EnvironmentAssumptions, adult_a::AdultAssumptions,
   age_a::AgentAssumptions; progress::Bool=true, plotPopDensity::Bool=false,
-  plotPopDistribution::Bool=false, limit::Int64=1000000, simDescription::ASCIIString="")
+  plotPopDistribution::Bool=false, limit::Int64=1000000, simDescription::String="")
 
   # preconditions
   @assert(all(carrying_capacity .> 0.), "There is at least one negative carrying capacity")

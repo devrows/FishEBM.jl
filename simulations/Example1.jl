@@ -71,9 +71,9 @@ k = rand(Normal(500000, 50000), 100)
 effortVar = [0.0]
 
 
-#= stock = [stage 1 (0 weeks old), stage 2 (first week of stage 2),
-  stage 3 (first week of stage 3), stage 4 (2 years), stage 4 (4 years),
-  stage 4 (8 years)] =#
+# stock = [stage 1 (0 weeks old), stage 2 (first week of stage 2),
+# stage 3 (first week of stage 3), stage 4 (2 years), stage 4 (4 years),
+# stage 4 (8 years)]
 initialStock = [15000, 12500, 10000, 7000, 5000, 2000]
 stockAge = [0, -agent_a.growth[1], -agent_a.growth[2], -agent_a.growth[3],-4*52,-8*52] # In weeks
 

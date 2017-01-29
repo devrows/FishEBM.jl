@@ -30,3 +30,6 @@ Version "0.2.1": January 27, 2017
     summary.jl -> simSummary.
   - This fixed a bug that occurs when writing the files to summarize simulation
     results. Data types switched from an array of Int64 to an array of Float64.
+
+Version "0.2.2": January 29, 2017
+  - Fixed deprecated syntax for Julia v0.5.0, ASCIIString -> String types.

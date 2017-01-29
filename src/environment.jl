@@ -50,7 +50,7 @@ end
 
   Last update: September 2016
 """
-function initEnvironment(pathToSpawn::ASCIIString, pathToHabitat::ASCIIString, pathToRisk::ASCIIString, pathToHarvest::ASCIIString)
+function initEnvironment(pathToSpawn::String, pathToHabitat::String, pathToRisk::String, pathToHarvest::String)
   #Pad all incoming arrays
   spawn = readdlm(pathToSpawn, ',', Bool)[150:end, 200:370]; pad_environment!(spawn)
   habitat = readdlm(pathToHabitat, ',', Int)[150:end, 200:370]; pad_environment!(habitat)
