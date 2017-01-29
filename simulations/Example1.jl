@@ -68,7 +68,7 @@ agent_a = AgentAssumptions([[0.15 0.10 0.05 0.0015]
 
 
 k = rand(Normal(500000, 50000), 100)
-effortVar = [0]
+effortVar = [0.0]
 
 
 #= stock = [stage 1 (0 weeks old), stage 2 (first week of stage 2),
