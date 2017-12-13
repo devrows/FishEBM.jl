@@ -164,7 +164,8 @@ function killAgeSpecific!(agent_db::Vector{EnviroAgent}, adult_a::AdultAssumptio
       k = 1
       while ageVector[k] > 1 && k < length(ageVector)
         estimatedMortality = adult_a.naturalmortality[ageVector[k]-1]
-        if ageVector[k] == 8
+        # Comment out the extra mortality for age8Plus adults
+        #=if ageVector[k] == 8
           overAge = floor((current_week-agent_db[1].weekNum[k])/52)
           ageEffect = overAge-7
           estimatedMortality = ageEffect*estimatedMortality
@@ -172,7 +173,7 @@ function killAgeSpecific!(agent_db::Vector{EnviroAgent}, adult_a::AdultAssumptio
           if estimatedMortality > 1.0
             estimatedMortality = 1.0
           end # if est.mort > 1
-        end
+        end=#
         killedAdult = rand(Binomial(agent_db[j].alive[k], estimatedMortality))
 
         agent_db[j].alive[k] -= killedAdult
