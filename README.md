@@ -12,3 +12,23 @@ To download and use package in Julia:
 `Pkg.clone("https://github.com/devrows/FishEBM.jl.git")`
 
 `using FishEBM`
+
+
+## Extra Reading
+
+For an informal written summary of the project, navigate to the "projects -> ecological model" section on the website below.
+
+Website: http://www.developerrows.com
+
+
+If you use any code or any ideas taken from this repository, please cite the following peer-reviewed publication.
+
+D. Rose, B. P. M. Edwards, R. Kett, M. Yodzis, J. Angevaare, and D. Gillis, \"Exploring anthro- pogenic activities and management decisions using a novel environmental agent based model,\" in *2017 IEEE Canada International Humanitarian Technology Conference (IHTC)*, pp. 85–89, July 2017.
+
+url: http://ieeexplore.ieee.org/document/8058206/
+
+
+### Reporting bugs
+
+If you find any bugs, please email me personally, report an issue or open a pull request so it can be fixed!
+
